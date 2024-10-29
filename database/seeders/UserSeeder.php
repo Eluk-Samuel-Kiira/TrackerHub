@@ -113,6 +113,20 @@ class UserSeeder extends Seeder
         ]);
         $directorUser->assignRole('director');
 
+        $directorUser = User::factory()->create([
+            'name' => 'Daniel',
+            'first_name' => 'Daniel',
+            'last_name' => 'Lodi',
+            'telephone_number' => '0700274198',
+            'job_title' => 'Director',
+            'department_id' => 1,
+            'role' => 'director',
+            'status' => 'active',
+            'email' => 'lodi.dannie@gmail.com',
+            'password' => bcrypt('1234567890')
+        ]);
+        $directorUser->assignRole('director');
+
         $directorDev = User::factory()->create([
             'name' => 'Kenneth',
             'first_name' => 'Kenneth',
