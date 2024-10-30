@@ -16,7 +16,7 @@
                         <span class="menu-title">Dashboards</span>
                         <span class="menu-arrow"></span>
                     </span>
-                                            
+
                     <div class="menu-sub menu-sub-accordion">
                         <div class="menu-item">
                             <a class="menu-link {{ Route::is('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
@@ -34,15 +34,15 @@
                                 <span class="menu-title">eCommerce</span>
                             </a>
                         </div>
-                        
+
                         <div class="menu-item">
-                            <a class="menu-link" href="dashboards/projects.html">
+                            <a class="menu-link {{ request()->is('projects*') ? 'active' : '' }}" href="{{ route('projects.index') }}">
                                 <span class="menu-bullet">
                                     <span class="bullet bullet-dot"></span>
                                 </span>
                                 <span class="menu-title">Projects</span>
                             </a>
-                        </div>  
+                        </div>
                     </div>
                 </div>
             </div>
