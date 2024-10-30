@@ -24,7 +24,7 @@
     </head>
 	<body id="kt_app_body" data-kt-app-layout="dark-sidebar" data-kt-app-header-fixed="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-header="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" class="app-default">
 		<script>var defaultThemeMode = "light"; var themeMode; if ( document.documentElement ) { if ( document.documentElement.hasAttribute("data-bs-theme-mode")) { themeMode = document.documentElement.getAttribute("data-bs-theme-mode"); } else { if ( localStorage.getItem("data-bs-theme") !== null ) { themeMode = localStorage.getItem("data-bs-theme"); } else { themeMode = defaultThemeMode; } } if (themeMode === "system") { themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; } document.documentElement.setAttribute("data-bs-theme", themeMode); }</script>
-		
+
         <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
             <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
 				@include('layouts.header')
@@ -50,8 +50,8 @@
 			</div>
 		</div>
 
-		
-		
+
+
 		<script>var hostUrl = "{{ asset('assets/') }}";</script>
 		<script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
 		<script src="{{ asset('assets/js/scripts.bundle.js') }}"></script>
@@ -77,6 +77,23 @@
 		<script src="{{ asset('assets/js/custom/utilities/modals/create-app.js') }}"></script>
 		<script src="{{ asset('assets/js/custom/utilities/modals/new-target.js') }}"></script>
 		<script src="{{ asset('assets/js/custom/utilities/modals/users-search.js') }}"></script>
+
+        // <!--CKEditor Build Bundles:: Only include the relevant bundles accordingly-->
+        <script src="{{ asset('assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js') }}"></script>
+        <script>
+            $(document).ready(function() {
+                $('#kt_datepicker_1').flatpickr();
+                $('#kt_datepicker_2').flatpickr();
+                ClassicEditor
+                .create(document.querySelector('#kt_docs_ckeditor_classic'))
+                .then(editor => {
+                    console.log(editor);
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+            });
+        </script>
 		@livewireScripts
 	</body>
 </html>
