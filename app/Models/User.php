@@ -55,4 +55,9 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
+
+    public function departmentName() 
+    {
+        return $this->belongsTo(Department::class, 'department_id');
+    }
 }
