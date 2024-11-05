@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Department;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DepartmentController extends Controller
 {
@@ -28,7 +29,16 @@ class DepartmentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'department_name' => 'required|string|max:255|unique:departments,name',
+        ]);
+
+        $department = Department::create([
+            'name' => $request->department_name,
+            'created_by' => Auth::user()->id
+        ]);
+
+        return response()->json(['success' => true, 'department' => $department]);
     }
 
     /**

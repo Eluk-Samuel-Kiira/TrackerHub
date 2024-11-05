@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
 class ClientController extends Controller
 {
     /**
@@ -27,7 +27,21 @@ class ClientController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'client_name' => 'required|string|max:255|unique:clients,name',
+            'client_email' => 'required|email|unique:clients,email',
+            'client_phone' => 'required|string|unique:clients,phone',
+            'client_address' => 'required|string',
+        ]);
+
+        $client = Client::create([
+            'name' => $request->client_name,
+            'email' => $request->client_email,
+            'phone' => $request->client_phone,
+            'address' => $request->client_address,
+            'created_by' => Auth::user()->id
+        ]);
+        return response()->json(['success' => true, 'client' => $client]);
     }
 
     /**

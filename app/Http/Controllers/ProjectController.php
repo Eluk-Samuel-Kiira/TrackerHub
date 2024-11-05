@@ -9,6 +9,7 @@ use App\Models\Currency;
 use App\Models\Department;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
 
 class ProjectController extends Controller
 {
@@ -30,7 +31,8 @@ class ProjectController extends Controller
         $currencies = Currency::where('isActive', 1)->get();
         $departments = Department::where('isActive', 1)->get();
         $users = User::where('status', 'active')->get();
-        return view('projects.create', compact('clients', 'projectCategories', 'currencies', 'departments', 'users'));
+        $roles = Role::all()->pluck('name');
+        return view('projects.create', compact('clients', 'projectCategories', 'currencies', 'departments', 'users', 'roles'));
     }
 
     /**

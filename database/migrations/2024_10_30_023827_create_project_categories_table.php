@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('project_categories', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
             $table->string('name');
+            $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
             $table->integer('isActive')->enum('1', '0')->default(1);
             $table->timestamps();
         });

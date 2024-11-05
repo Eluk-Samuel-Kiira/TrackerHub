@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Currency;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
 class CurrencyController extends Controller
 {
     /**
@@ -28,7 +28,16 @@ class CurrencyController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'currency_code' => 'required|unique:currencies,name'
+        ]);
+
+        $currency = Currency::create([
+            'name' => $request->currency_code,
+            'created_by' => Auth::user()->id
+        ]);
+
+        return response()->json(['success' => true, 'currency' => $currency]);
     }
 
     /**
