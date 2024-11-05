@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ProjectCategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectCategoryController extends Controller
 {
@@ -28,7 +29,15 @@ class ProjectCategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'project_category_name' => 'required|string|max:255|unique:project_categories,name',
+        ]);
+
+        $projectCategory = ProjectCategory::create([
+            'name' => $request->project_category_name,
+            'created_by' => Auth::user()->id
+        ]);
+        return response()->json(['success' => true, 'project_category' => $projectCategory]);
     }
 
     /**
