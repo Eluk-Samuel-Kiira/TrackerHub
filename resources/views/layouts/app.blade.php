@@ -78,6 +78,10 @@
 		<script src="{{ asset('assets/js/custom/utilities/modals/create-app.js') }}"></script>
 		<script src="{{ asset('assets/js/custom/utilities/modals/new-target.js') }}"></script>
 		<script src="{{ asset('assets/js/custom/utilities/modals/users-search.js') }}"></script>
+		
+		<script src="{{ asset('assets/js/custom/apps/user-management/users/list/table.js') }}"></script>
+		<script src="{{ asset('assets/js/custom/apps/user-management/users/list/export-users.js') }}"></script>
+		<script src="{{ asset('assets/js/custom/apps/user-management/users/list/add.js') }}"></script>
 
         // <!--CKEditor Build Bundles:: Only include the relevant bundles accordingly-->
         <script src="{{ asset('assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js') }}"></script>

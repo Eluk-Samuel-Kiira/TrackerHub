@@ -3,11 +3,16 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProjectController;
+
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\ProjectCategoryController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\UserController;
+
+use App\Http\Controllers\Users\EmployeeController;
+
+
 Route::get('/', function () {
     return view('home.welcome');
 });
@@ -35,8 +40,13 @@ Route::middleware('auth')->group(function () {
 
     // Users
     Route::post('/users', [UserController::class, 'store']);
+    // HR
+    Route::resource('employee', EmployeeController::class);
 });
 
 Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
 Route::get('/projects/create', [ProjectController::class, 'create'])->name('projects.create');
+
+
+
 require __DIR__.'/auth.php';

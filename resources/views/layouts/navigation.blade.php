@@ -3,7 +3,7 @@
     <div id="kt_app_sidebar_menu_wrapper" class="app-sidebar-wrapper">
         <div id="kt_app_sidebar_menu_scroll" class="scroll-y my-5 mx-3" data-kt-scroll="true" data-kt-scroll-activate="true" data-kt-scroll-height="auto" data-kt-scroll-dependencies="#kt_app_sidebar_logo, #kt_app_sidebar_footer" data-kt-scroll-wrappers="#kt_app_sidebar_menu" data-kt-scroll-offset="5px">
             <div class="menu menu-column menu-rounded menu-sub-indention px-3" id="#kt_app_sidebar_menu" data-kt-menu="true" data-kt-menu-expand="false">
-                <div data-kt-menu-trigger="click" class="menu-item here show menu-accordion">
+            <div data-kt-menu-trigger="click" class="menu-item here {{ is_tab_show(['dashboard','projects.index',]) }} menu-accordion">
                     <span class="menu-link">
                         <span class="menu-icon">
                             <i class="ki-duotone ki-element-11 fs-2">
@@ -13,25 +13,17 @@
                                 <span class="path4"></span>
                             </i>
                         </span>
-                        <span class="menu-title">Dashboards</span>
+                        <span class="menu-title">{{__('Dashboards')}}</span>
                         <span class="menu-arrow"></span>
                     </span>
 
                     <div class="menu-sub menu-sub-accordion">
                         <div class="menu-item">
-                            <a class="menu-link {{ Route::is('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
+                            <a class="menu-link {{ is_route_active('dashboard') }}" href="{{ route('dashboard') }}">
                                 <span class="menu-bullet">
                                     <span class="bullet bullet-dot"></span>
                                 </span>
                                 <span class="menu-title">{{ __('Dashboard') }}</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a class="menu-link" href="dashboards/ecommerce.html">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">eCommerce</span>
                             </a>
                         </div>
 
@@ -44,6 +36,33 @@
                             </a>
                         </div>
                     </div>
+
+                </div>
+                <div data-kt-menu-trigger="click" class="menu-item here {{ is_tab_show(['employee*',]) }} menu-accordion">
+                    <span class="menu-link">
+                        <span class="menu-icon">
+                            <i class="ki-duotone ki-address-book fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                            </i>
+                        </span>
+                        <span class="menu-title">{{__('Human Resource')}}</span>
+                        <span class="menu-arrow"></span>
+                    </span>
+
+                    <div class="menu-sub menu-sub-accordion">
+                        <div class="menu-item">
+                            <a class="menu-link {{ is_route_active('employee.index') }}" href="{{ route('employee.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">{{__('Employees')}}</span>
+                            </a>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
