@@ -40,6 +40,9 @@ Route::middleware('auth')->group(function () {
 
     // Users
     Route::post('/users', [UserController::class, 'store']);
+    Route::get('/roles', [EmployeeController::class, 'roleIndex'])->name('role.index');
+    
+
     // HR
     Route::resource('employee', EmployeeController::class);
 });

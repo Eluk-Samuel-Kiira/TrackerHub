@@ -1,5 +1,5 @@
 <x-app-layout>
-    @section('title', __('Dashboard'))
+    @section('title', __('Users Index'))
     @section('content')
     
     <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
@@ -282,8 +282,6 @@
         </div>
     </div>
     
-
-
     <div class="d-flex flex-column flex-column-fluid">
         <div id="kt_app_content" class="app-content flex-column-fluid">
             <div id="kt_app_content_container" class="app-container container-xxl">
@@ -369,6 +367,7 @@
             </div>
         </div>
     </div>
+
     <script>
         function updateStatus(employeeId, status) {
             // Implement an AJAX call here to update the employee's status in the backend
