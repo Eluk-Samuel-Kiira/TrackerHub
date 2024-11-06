@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Http\Requests\Users\StoreEmployeeRequest;
 use App\Http\Requests\Users\UpdateEmployeeRequest;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class EmployeeController extends Controller
 {
@@ -65,5 +67,16 @@ class EmployeeController extends Controller
     public function destroy(Employee $employee)
     {
         //
+    }
+
+    public function roleIndex(Request $request)
+    {
+        $roles = Role::with('permissions')->get();
+        $permissions = Permission::all();
+
+        return view('users.role-index', [
+            'roles' => $roles,
+            'permissions' => $permissions,
+        ]);
     }
 }
