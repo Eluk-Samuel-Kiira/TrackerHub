@@ -4,21 +4,31 @@ namespace App\Http\Controllers\Users;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\User;
-use App\Http\Requests\Users\StoreEmployeeRequest;
-use App\Http\Requests\Users\UpdateEmployeeRequest;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use App\Models\User;
 
-class EmployeeController extends Controller
+class RoleController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $employees = User::all();
-        return view('users.employee-index', compact('employees'));
+        $roles = Role::with('permissions')->get();
+        $permissions = Permission::all();
+
+        $rolesWithUserCounts = $roles->map(function($role) {
+            $role->user_count = User::whereHas('roles', function($query) use ($role) {
+                $query->where('id', $role->id);
+            })->count();
+            return $role;
+        });
+
+        return view('users.role-index', [
+            'roles' => $rolesWithUserCounts,
+            'permissions' => $permissions,
+        ]);
     }
 
     /**
@@ -32,7 +42,7 @@ class EmployeeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreEmployeeRequest $request)
+    public function store(Request $request)
     {
         //
     }
@@ -40,7 +50,7 @@ class EmployeeController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Employee $employee)
+    public function show(string $id)
     {
         //
     }
@@ -48,7 +58,7 @@ class EmployeeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Employee $employee)
+    public function edit(string $id)
     {
         //
     }
@@ -56,7 +66,7 @@ class EmployeeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateEmployeeRequest $request, Employee $employee)
+    public function update(Request $request, string $id)
     {
         //
     }
@@ -64,9 +74,8 @@ class EmployeeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Employee $employee)
+    public function destroy(string $id)
     {
         //
     }
-
 }
