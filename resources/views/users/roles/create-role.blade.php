@@ -10,12 +10,13 @@
                 </div>
             </div>
             <div class="modal-body scroll-y mx-lg-5 my-7">
-                <form id="kt_modal_add_role_form" class="form" action="#">
+                <form id="kt_modal_add_role_form" class="form">
+                    @csrf
                     <div class="fv-row mb-10">
                         <label class="fs-5 fw-bold form-label mb-2">
                             <span class="required">{{__('Role name')}}</span>
                         </label>
-                        <input class="form-control form-control-solid" placeholder="Enter a role name" name="role_name" required/>
+                        <input class="form-control form-control-solid" type="text" placeholder="Enter a role name" name="role_name" required/>
                     </div>
                     <div class="fv-row">
                         <label class="fs-5 fw-bold form-label mb-2">{{__('Role Permissions')}}</label>
@@ -26,7 +27,7 @@
                                         <td class="text-gray-800">
                                             <label class="form-check form-check-custom form-check-solid me-9">
                                                 <input class="form-check-input" type="checkbox" id="kt_roles_select_all" />
-                                                <span class="form-check-label" for="kt_roles_select_all">Select all</span>
+                                                <span class="form-check-label" for="kt_roles_select_all">{{__('Select all')}}</span>
                                             </label>
                                         </td>
                                     </tr>
@@ -71,4 +72,32 @@
             checkbox.checked = isChecked;
         });
     });
+</script>
+
+<script>
+    const submitFormEntities = (formId, componentToReload) => {
+        document.getElementById(formId).addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            let permissions = [];
+            document.querySelectorAll('.permission-checkbox:checked').forEach((checkbox) => {
+                permissions.push(checkbox.value);
+            });
+
+            // Collect form data
+            const formData = Object.fromEntries(new FormData(this));
+            formData._method = 'POST';
+            formData._route = '{{ route('role.store') }}';
+            formData.permissions = permissions;
+
+            console.log(formData)
+
+            // Use LiveBlade to submit the form
+            // LiveBlade.load(routeName, method, formData, `#${formId}`, componentToReload);
+            // this.reset(); 
+        });
+    };
+
+    submitFormEntities('kt_modal_add_role_form','');
+
 </script>
