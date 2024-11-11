@@ -43,8 +43,26 @@ class RoleController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        //
+    {   
+        $validatedPermission = $request->validate([
+            'permissions' => 'required|array|max:225',  
+            'permissions.*' => 'exists:permissions,id',  
+            'name' => 'required|string|max:25|unique:roles,name|regex:/^\S+$/', 
+        ]);
+        
+        $userRole = Role::create([
+            'name' => $validatedPermission['name'],
+            'guard_name' => 'web'
+        ]);
+        
+        $permissionNames = Permission::whereIn('id', $validatedPermission['permissions'])->pluck('name');
+        $userRole->syncPermissions($permissionNames);
+        
+        return response()->json([
+            'success' => true,
+            'message' => __('Role Created Successfully'),
+            'redirect' => route('role.index'),
+        ]);
     }
 
     /**
