@@ -22,6 +22,9 @@
         <script>
             if (window.top != window.self) { window.top.location.replace(window.self.location.href); }
         </script>
+		@livewireStyles
+        {{-- laravel bladeLive.js library --}}
+        @include('layouts.liveblade-imports')
     </head>
 	@php
 		use Illuminate\Support\Str;

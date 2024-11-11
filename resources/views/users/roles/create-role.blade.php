@@ -10,13 +10,15 @@
                 </div>
             </div>
             <div class="modal-body scroll-y mx-lg-5 my-7">
+                <div id="status"></div>
                 <form id="kt_modal_add_role_form" class="form">
                     @csrf
                     <div class="fv-row mb-10">
                         <label class="fs-5 fw-bold form-label mb-2">
                             <span class="required">{{__('Role name')}}</span>
                         </label>
-                        <input class="form-control form-control-solid" type="text" placeholder="Enter a role name" name="role_name" required/>
+                        <input class="form-control form-control-solid" type="text" placeholder="Enter a role name" name="name" required/>
+                        <div id="name"></div>
                     </div>
                     <div class="fv-row">
                         <label class="fs-5 fw-bold form-label mb-2">{{__('Role Permissions')}}</label>
@@ -37,11 +39,13 @@
                                                 @foreach ($permissions as $permission)
                                                     <div class="col-md-4">
                                                         <label class="form-check form-check-sm form-check-custom form-check-solid">
-                                                            <input class="form-check-input permission-checkbox" type="checkbox" value="{{ $permission->name }}" name="permissions[]" />
+                                                            <input class="form-check-input permission-checkbox" type="checkbox" 
+                                                            value="{{ $permission->id }}" id="permission{{ $permission->id }}" name="permissions[]" />
                                                             <span class="form-check-label">{{ $permission->name }}</span>
                                                         </label><br>
                                                     </div>
                                                 @endforeach
+                                                <div id="permissions"></div>
                                             </div>
                                         </td>
                                     </tr>
@@ -50,10 +54,11 @@
                         </div>
                     </div>
                     <div class="text-center pt-15">
-                        <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal">Discard</button>
-                        <button type="submit" class="btn btn-primary" data-kt-roles-modal-action="submit">
+                        <button id="discardButton" type="reset" class="btn btn-light me-3" data-bs-dismiss="modal">Discard</button>
+                        <button id="submitButton" type="submit" class="btn btn-primary">
                             <span class="indicator-label">Submit</span>
-                            <span class="indicator-progress">Please wait...
+                            <span class="indicator-progress" style="display: none;">
+                                Please wait...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
                             </span>
                         </button>
@@ -74,30 +79,52 @@
     });
 </script>
 
+
 <script>
-    const submitFormEntities = (formId, componentToReload) => {
+    const submitFormEntities = (formId, submitButtonId, url, method = 'POST') => {
         document.getElementById(formId).addEventListener('submit', function(e) {
             e.preventDefault();
 
+            // Collect selected permissions
             let permissions = [];
             document.querySelectorAll('.permission-checkbox:checked').forEach((checkbox) => {
                 permissions.push(checkbox.value);
             });
 
-            // Collect form data
+            // Collect form data and add additional fields
             const formData = Object.fromEntries(new FormData(this));
-            formData._method = 'POST';
-            formData._route = '{{ route('role.store') }}';
+            formData._method = method;
+            formData.routeName = url;
             formData.permissions = permissions;
 
-            console.log(formData)
+            // console.log(formData);
 
-            // Use LiveBlade to submit the form
-            // LiveBlade.load(routeName, method, formData, `#${formId}`, componentToReload);
-            // this.reset(); 
+            // Reference the submit button and reloading
+            const submitButton = document.getElementById(submitButtonId);
+            LiveBlade.toggleButtonLoading(submitButton, true);
+
+            // Submit form data asynchronously
+            LiveBlade.submitFormItems(formData)
+                .then(noErrors => {
+                    console.log(noErrors);
+                    if (noErrors) {
+                        const closeModal = () => {
+                            document.getElementById('discardButton').click();
+                        };
+                        closeModal();
+                        window.location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('An unexpected error occurred:', error);
+                    // Display user-friendly error feedback here
+                })
+                .finally(() => {
+                    // End loading state using reusable function
+                    LiveBlade.toggleButtonLoading(submitButton, false);
+                });
         });
     };
 
-    submitFormEntities('kt_modal_add_role_form','');
-
+    submitFormEntities('kt_modal_add_role_form', 'submitButton', '{{ route('role.store') }}');
 </script>

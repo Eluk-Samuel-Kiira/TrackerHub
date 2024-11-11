@@ -36,16 +36,16 @@
                     </div>
                     <div class="separator border-gray-200"></div>
                     <div class="px-7 py-5" data-kt-user-table-filter="form">
-                    <div class="mb-10">
-                        <label class="form-label fs-6 fw-semibold">Role:</label>
-                        <select class="form-select form-select-solid fw-bold" data-kt-user-table-filter="role">
-                            <option value="">{{__('Reset Roles')}}</option>
-                            @foreach ($roles as $role)
-                                <option value="{{ $role->name }}">{{ ucwords(str_replace('_', ' ', $role->name)) }}</option>
-                            @endforeach
-                        </select>
+                        <div class="mb-10">
+                            <label class="form-label fs-6 fw-semibold">Role:</label>
+                            <select class="form-select form-select-solid fw-bold" data-kt-user-table-filter="role">
+                                <option value="">{{__('Reset Roles')}}</option>
+                                @foreach ($roles as $role)
+                                    <option value="{{ $role->name }}">{{ ucwords(str_replace('_', ' ', $role->name)) }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
-                </div>
                 </div>
                 <a href="#" class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal" data-bs-target="#create_new_role">Create</a> 
                 @include('users.roles.create-role')
