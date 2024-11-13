@@ -1,7 +1,5 @@
 <?php
 
-
-
 if (! function_exists('is_tab_show')) {
     function is_tab_show($routeName)
     {

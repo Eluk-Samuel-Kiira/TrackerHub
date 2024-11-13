@@ -46,12 +46,13 @@ Route::middleware('auth')->group(function () {
     // HR
     Route::resource('employee', EmployeeController::class);
 
+    //projects
+    Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
     //Roles permissions
     Route::resource('role', RoleController::class);
 });
 
 Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
-Route::get('/projects/create', [ProjectController::class, 'create'])->name('projects.create');
 
 
 
