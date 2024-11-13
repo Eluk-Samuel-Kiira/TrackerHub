@@ -21,7 +21,7 @@
             <a href="{{route('password.request')}}" class="link-primary">{{__('Forgot Password ?')}}</a>
         </div>
         <div class="d-grid mb-10">
-            <button type="submit" class="btn btn-primary" id="submit-button">
+            <button id="submitButton" type="submit" class="btn btn-primary">
                 <span class="indicator-label">{{__('Sign In')}}</span>
                 <span class="indicator-progress" style="display: none;">{{__('Please wait... ')}}
                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -30,7 +30,7 @@
     </form>
     
         <script>
-            const handleFormSubmit = (formId, routeName, method) => {
+            const handleFormSubmit = (formId, submitButtonId, routeName, method = 'POST') => {
                 document.getElementById(formId).addEventListener('submit', function(e) {
                     e.preventDefault();
                     const formData = Object.fromEntries(new FormData(this));
@@ -40,46 +40,47 @@
                     formData._method = method;
 
                     // console.log(formData)
-                    
-                    const submitButton = document.getElementById('submit-button');
-                    submitButton.setAttribute('disabled', 'true'); 
-                    submitButton.querySelector('.indicator-label').style.display = 'none'; 
-                    submitButton.querySelector('.indicator-progress').style.display = 'inline'; 
-                    setTimeout(() => {
 
-                        LiveBlade.submitFormItems(formData).then(noErrors => {
+                    const submitButton = document.getElementById(submitButtonId);
+                    LiveBlade.toggleButtonLoading(submitButton, true);
+
+                    LiveBlade.submitFormItems(formData)
+                        .then(noErrors => {
                             console.log(noErrors);
-                            if (noErrors) {
-                                 // Show a success message using SweetAlert2
-                                Swal.fire({
+                            
+                            const alertOptions = noErrors
+                                ? {
                                     icon: 'success',
                                     title: 'Success!',
                                     text: 'You have successfully logged in!',
                                     confirmButtonText: 'Ok, got it!',
-                                    backdrop: true,
-                                }).then(() => {
-                                    window.location.href = '/dashboard'; // Redirect on button click
-                                });
-                            } else {
-                                Swal.fire({
+                                    backdrop: true
+                                }
+                                : {
                                     icon: 'error',
                                     title: 'Oops!',
                                     text: 'These credentials do not match our records.',
                                     confirmButtonText: 'Ok, got it!',
-                                    backdrop: true,
-                                });
-                            }
-                        }).catch(error => {
+                                    backdrop: true
+                                };
+                            
+                            Swal.fire(alertOptions).then(() => {
+                                if (noErrors) {
+                                    window.location.href = '/dashboard'; // Redirect on success
+                                }
+                            });
+                        })
+                        .catch(error => {
                             console.error('An unexpected error occurred:', error);
+                        })
+                        .finally(() => {
+                            LiveBlade.toggleButtonLoading(submitButton, false);
                         });
 
-                        submitButton.removeAttribute('disabled'); 
-                        submitButton.querySelector('.indicator-label').style.display = 'inline'; // Show the label
-                        submitButton.querySelector('.indicator-progress').style.display = 'none'; // Hide the spinner
-                    }, 3000);
+
                 });
             };
-            handleFormSubmit('kt_sign_in_form', '/login', 'POST');
+            handleFormSubmit('kt_sign_in_form', 'submitButton', '{{ route('login') }}');
         </script>
     @endsection
 

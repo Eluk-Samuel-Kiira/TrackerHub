@@ -22,7 +22,7 @@
             <div id="password_confirmation"></div>
         </div>
         <div class="d-grid mb-10">
-            <button type="submit" class="btn btn-primary" id="submit-button">
+            <button type="submit" class="btn btn-primary" id="submitButton">
                 <span class="indicator-label">{{__('Reset Password')}}</span>
                 <span class="indicator-progress" style="display: none;">{{__('Please wait... ')}}
                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -30,7 +30,7 @@
         </div>
     </form>
     <script>
-        const handleFormSubmit = (formId, routeName, method) => {
+        const handleFormSubmit = (formId, submitButtonId, routeName, method = 'POST') => {
             document.getElementById(formId).addEventListener('submit', function(e) {
                 e.preventDefault();
                 const formData = Object.fromEntries(new FormData(this));
@@ -39,40 +39,46 @@
                 formData.formId = `#${formId}`;
                 formData._method = method;
 
-                console.log(formData)
-                
-                const submitButton = document.getElementById('submit-button');
-                submitButton.setAttribute('disabled', 'true'); 
-                submitButton.querySelector('.indicator-label').style.display = 'none'; 
-                submitButton.querySelector('.indicator-progress').style.display = 'inline'; 
-                setTimeout(() => {
+                // console.log(formData)
+                const submitButton = document.getElementById(submitButtonId);
+                LiveBlade.toggleButtonLoading(submitButton, true);
 
-                    LiveBlade.submitFormItems(formData).then(noErrors => {
+                LiveBlade.submitFormItems(formData)
+                    .then(noErrors => {
                         console.log(noErrors);
-                        if (noErrors) {
-                            Swal.fire({
+                        
+                        const alertOptions = noErrors
+                            ? {
                                 icon: 'success',
                                 title: 'Success!',
                                 text: 'You have successfully reset your password!',
                                 confirmButtonText: 'Ok, got it!',
-                                backdrop: true,
-                            }).then(() => {
-                                window.location.href = '/login'; // Redirect on button click
-                            });
-                        } else {
-                            
-                        }
-                    }).catch(error => {
+                                backdrop: true
+                            }
+                            : {
+                                icon: 'error',
+                                title: 'Oops!',
+                                text: 'Something Has Gone Wrong.',
+                                confirmButtonText: 'Ok, got it!',
+                                backdrop: true
+                            };
+                        
+                        Swal.fire(alertOptions).then(() => {
+                            if (noErrors) {
+                                window.location.href = '/login'; // Redirect on success
+                            }
+                        });
+                    })
+                    .catch(error => {
                         console.error('An unexpected error occurred:', error);
+                    })
+                    .finally(() => {
+                        LiveBlade.toggleButtonLoading(submitButton, false);
                     });
-
-                    submitButton.removeAttribute('disabled'); 
-                    submitButton.querySelector('.indicator-label').style.display = 'inline'; // Show the label
-                    submitButton.querySelector('.indicator-progress').style.display = 'none'; // Hide the spinner
-                }, 2000);
+                    
             });
         };
-        handleFormSubmit('reset_password_form', '/reset-password', 'POST');
+        handleFormSubmit('reset_password_form', 'submitButton', '{{ route('password.store') }}');
     </script>
 
     @endsection

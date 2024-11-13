@@ -75,7 +75,11 @@
                             <a href="account/settings.html" class="menu-link px-5">Account Settings</a>
                         </div>
                         <div class="menu-item px-5">
-                            <a href="authentication/layouts/corporate/sign-in.html" class="menu-link px-5">Sign Out</a>
+                            <a  href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"class="menu-link px-5">{{__('Sign Out')}}</a>
+                            <!-- Logout form (hidden) -->
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                @csrf
+                            </form> 
                         </div>
                     </div>
                 </div>
