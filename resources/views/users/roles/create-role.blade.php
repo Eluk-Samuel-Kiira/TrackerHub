@@ -107,22 +107,39 @@
             LiveBlade.submitFormItems(formData)
                 .then(noErrors => {
                     console.log(noErrors);
+                    
                     if (noErrors) {
+                        // Close the modal if no errors
                         const closeModal = () => {
                             document.getElementById('discardButton').click();
                         };
                         closeModal();
-                        window.location.reload();
+
+                        // window.location.reload();
+                        
+                        // Show success toast notification
+                        // Swal.fire({
+                        //     toast: true,
+                        //     position: 'top-end',
+                        //     icon: 'success',
+                        //     title: 'Success!',
+                        //     text: 'Role Created Successfully',
+                        //     showConfirmButton: false,
+                        //     timer: 3000,
+                        //     timerProgressBar: true,
+                        // });
                     }
                 })
                 .catch(error => {
                     console.error('An unexpected error occurred:', error);
-                    // Display user-friendly error feedback here
+                    // Display user-friendly error feedback here, if needed
                 })
                 .finally(() => {
                     // End loading state using reusable function
                     LiveBlade.toggleButtonLoading(submitButton, false);
                 });
+
+                
         });
     };
 

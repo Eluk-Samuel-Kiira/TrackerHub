@@ -1,5 +1,5 @@
 
-<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-5 g-xl-9">
+<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-5 g-xl-9" id="reloadRoleComponent">
     @foreach ($roles as $role)
         <div class="col-md-4 role-card" data-role="{{ $role->name }}">
             <div class="card card-flush h-md-100">
@@ -28,7 +28,14 @@
                     </div>
                 </div>
                 <div class="card-footer flex-wrap pt-0">
-                    <button type="button" class="btn btn-light btn-active-light-primary my-1" data-bs-toggle="modal" data-bs-target="#kt_modal_update_role">Edit Role</button>
+                    <button type="button" class="btn btn-light btn-active-light-primary my-1" data-bs-toggle="modal" data-bs-target="#edit_role{{ $role->id }}" onclick="initializeModalOnClick({{ $role->id }})">
+                        {{__('Edit')}}
+                    </button>
+                    @include('users.roles.edit-role')
+                    <button type="button" class="btn btn-light btn-active-light-danger my-1" data-bs-toggle="modal" data-bs-target="#delete_role{{ $role->id }}">
+                        {{ __('Delete') }}
+                    </button>
+                    @include('users.roles.delete')
                 </div>
             </div>
         </div>
@@ -83,34 +90,35 @@
 
 
 <script>
-    function showAllPermissions(roleId) {
-        const modalId = `#permissionsModal${roleId}`;
-        const modal = new bootstrap.Modal(document.querySelector(modalId));
-        modal.show();
-    }
+    // Wrap all Js Fuctions here for the sake of reinitialization after reloading the page
+    function initializeComponentScripts() {
+        // Show modal with permissions
 
-
-    document.addEventListener('DOMContentLoaded', function() {
+        // Set up role filtering
         const roleFilterSelect = document.querySelector('[data-kt-user-table-filter="role"]');
         const roleCards = document.querySelectorAll('.role-card');
 
-        // Filter roles based on the selected option
         roleFilterSelect.addEventListener('change', function() {
             const selectedRole = roleFilterSelect.value;
 
             roleCards.forEach(card => {
                 const roleName = card.getAttribute('data-role');
-
-                // Show card if it matches the selected role or if no role is selected
-                if (selectedRole === "" || roleName === selectedRole) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
+                // Show or hide card based on filter
+                card.style.display = selectedRole === "" || roleName === selectedRole ? 'block' : 'none';
             });
         });
-    });
 
+        setupCardSearch('roleSearchBar', '.role-card', 'data-role', '.card-title h2');
+
+        // Just for global access as an inner function
+        window.showAllPermissions = showAllPermissions;
+    }
+    
+    function showAllPermissions(roleId) {
+        const modalId = `#permissionsModal${roleId}`;
+        const modal = new bootstrap.Modal(document.querySelector(modalId));
+        modal.show();
+    }
 </script>
 
 

@@ -4,7 +4,7 @@
     <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
         <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
             <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
-                <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">{{__('Roles Lists')}}</h1>
+                <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">{{__('Roles Lists -')}} ( {{$roles->count()}} )</h1>
                 <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
                     <li class="breadcrumb-item text-muted">
                         @php
@@ -35,6 +35,12 @@
                         <div class="fs-5 text-gray-900 fw-bold">Filter Options</div>
                     </div>
                     <div class="separator border-gray-200"></div>
+
+                    <!-- Search Bar -->
+                    <div class="px-7 py-5">
+                        <input type="text" id="roleSearchBar" class="form-control" placeholder="Search roles...">
+                    </div>
+
                     <div class="px-7 py-5" data-kt-user-table-filter="form">
                         <div class="mb-10">
                             <label class="form-label fs-6 fw-semibold">Role:</label>
@@ -47,6 +53,7 @@
                         </div>
                     </div>
                 </div>
+
                 <a href="#" class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal" data-bs-target="#create_new_role">Create</a> 
                 @include('users.roles.create-role')
             </div>
@@ -56,11 +63,24 @@
     
     <div id="kt_app_content" class="app-content flex-column-fluid">
         <div id="kt_app_content_container" class="app-container container-xxl">
+            <div id="status"></div>
             @include('users.roles.role-component')
         </div>
     </div>
     
+    <script>
+        // Reusable function to filter cards based on search input
+        function setupCardSearch(inputId, cardSelector, attributeName, titleSelector) {
+            LiveBlade.searchCardItems(inputId, cardSelector, attributeName, titleSelector)
+        }
 
+        // Set up the event listener after the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            setupCardSearch('roleSearchBar', '.role-card', 'data-role', '.card-title h2'); // Call the function with parameters
+        });
+
+    </script>
+    
     
     @endsection
 </x-app-layout>

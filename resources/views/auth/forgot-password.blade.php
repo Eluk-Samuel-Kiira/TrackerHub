@@ -16,7 +16,7 @@
             <div id="email"></div>
         </div>
         <div class="d-grid mb-10">
-            <button type="submit" class="btn btn-primary" id="submit-button">
+            <button type="submit" class="btn btn-primary" id="submitButton">
                 <span class="indicator-label">{{ __('Email Password Reset Link') }}</span>
                 <span class="indicator-progress" style="display: none;">{{__('Please wait... ')}}
                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -27,7 +27,7 @@
     <script>
         // Laravel routes and form handling to be pass to js
 
-        const handleFormSubmit = (formId, routeName, method) => {
+        const handleFormSubmit = (formId, submitButtonId, routeName, method = 'POST') => {
             document.getElementById(formId).addEventListener('submit', function(e) {
                 e.preventDefault();
                 const formData = Object.fromEntries(new FormData(this));
@@ -38,36 +38,24 @@
 
                 // console.log(formData)
                 
-                const submitButton = document.getElementById('submit-button');
-                submitButton.setAttribute('disabled', 'true'); 
-                submitButton.querySelector('.indicator-label').style.display = 'none'; 
-                submitButton.querySelector('.indicator-progress').style.display = 'inline'; 
-                setTimeout(() => {
+                const submitButton = document.getElementById(submitButtonId);
+                LiveBlade.toggleButtonLoading(submitButton, true);
 
-                    LiveBlade.submitFormItems(formData).then(noErrors => {
-                        // console.log(noErrors);
-                        if (noErrors) {
-                            
-                        } else {
-                            // Swal.fire({
-                            //     icon: 'error',
-                            //     title: 'Oops!',
-                            //     text: 'Something Went Wrong',
-                            //     confirmButtonText: 'Ok, got it!',
-                            //     backdrop: true,
-                            // });
-                        }
-                    }).catch(error => {
+                LiveBlade.submitFormItems(formData)
+                    .then(noErrors => {
+                        console.log(noErrors);
+                        // nothing
+                    })
+                    .catch(error => {
                         console.error('An unexpected error occurred:', error);
+                    })
+                    .finally(() => {
+                        LiveBlade.toggleButtonLoading(submitButton, false);
                     });
 
-                    submitButton.removeAttribute('disabled'); 
-                    submitButton.querySelector('.indicator-label').style.display = 'inline'; // Show the label
-                    submitButton.querySelector('.indicator-progress').style.display = 'none'; // Hide the spinner
-                }, 2000);
             });
         };
-        handleFormSubmit('forgot_password_form', '/forgot-password', 'POST');
+        handleFormSubmit('forgot_password_form', 'submitButton', '{{ route('password.email') }}');
     </script>
 
     @endsection
