@@ -42,10 +42,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/users', [UserController::class, 'store']);
     // HR
     Route::resource('employee', EmployeeController::class);
+
+    //projects
+    Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
 });
 
 Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
-Route::get('/projects/create', [ProjectController::class, 'create'])->name('projects.create');
 
 
 

@@ -57,7 +57,7 @@ class UserController extends Controller
         Mail::to($user->email)->send(new NewUserMail(
             $user->first_name . ' ' . $user->last_name,
             $user->role,
-            $user->department->name,
+            $user->departmentName->name,
             $user->email,
             $randomPassword
         ));

@@ -18,7 +18,13 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        return view('projects.index');
+        $clients = Client::where('isActive', 1)->get();
+        $projectCategories = ProjectCategory::where('isActive', 1)->get();
+        $currencies = Currency::where('isActive', 1)->get();
+        $departments = Department::where('isActive', 1)->get();
+        $users = User::where('status', 'active')->get();
+        $roles = Role::all()->pluck('name');
+        return view('projects.index', compact('clients', 'projectCategories', 'currencies', 'departments', 'users', 'roles'));
     }
 
     /**
@@ -26,13 +32,7 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        $clients = Client::where('isActive', 1)->get();
-        $projectCategories = ProjectCategory::where('isActive', 1)->get();
-        $currencies = Currency::where('isActive', 1)->get();
-        $departments = Department::where('isActive', 1)->get();
-        $users = User::where('status', 'active')->get();
-        $roles = Role::all()->pluck('name');
-        return view('projects.create', compact('clients', 'projectCategories', 'currencies', 'departments', 'users', 'roles'));
+        //
     }
 
     /**
@@ -40,7 +40,7 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        dd($request->all());
     }
 
     /**
