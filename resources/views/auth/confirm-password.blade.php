@@ -16,7 +16,7 @@
             <div id="password"></div>
         </div>
         <div class="d-grid mb-10">
-            <button type="submit" class="btn btn-primary" id="submit-button">
+            <button type="submit" class="btn btn-primary" id="submitButton">
                 <span class="indicator-label">{{__('Confirm')}}</span>
                 <span class="indicator-progress" style="display: none;">{{__('Please wait... ')}}
                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -28,7 +28,7 @@
     <script>
         // Laravel routes and form handling to be pass to js
 
-        const handleFormSubmit = (formId, routeName, method) => {
+        const handleFormSubmit = (formId, submitButtonId, routeName, method = 'POST') => {
             document.getElementById(formId).addEventListener('submit', function(e) {
                 e.preventDefault();
                 const formData = Object.fromEntries(new FormData(this));
@@ -38,40 +38,45 @@
                 formData._method = method;
 
                 // console.log(formData)
-                
-                const submitButton = document.getElementById('submit-button');
-                submitButton.setAttribute('disabled', 'true'); 
-                submitButton.querySelector('.indicator-label').style.display = 'none'; 
-                submitButton.querySelector('.indicator-progress').style.display = 'inline'; 
-                setTimeout(() => {
+                const submitButton = document.getElementById(submitButtonId);
+                LiveBlade.toggleButtonLoading(submitButton, true);
 
-                    LiveBlade.submitFormItems(formData).then(noErrors => {
-                        // console.log(noErrors);
-                        if (noErrors) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Success!',
-                                text: 'Password Confirmed successfully !',
-                                confirmButtonText: 'Ok, got it!',
-                                backdrop: true,
-                            }).then(() => {
-                                window.location.href = '/dashboard'; // Redirect on button click
-                            });
-                            
-                        } else {
-                            
+                LiveBlade.submitFormItems(formData)
+                .then(noErrors => {
+                    console.log(noErrors);
+                    
+                    const alertOptions = noErrors
+                        ? {
+                            icon: 'success',
+                            title: 'Success!',
+                            text: 'Password Confirmed successfully!',
+                            confirmButtonText: 'Ok, got it!',
+                            backdrop: true
                         }
-                    }).catch(error => {
-                        console.error('An unexpected error occurred:', error);
+                        : {
+                            icon: 'error',
+                            title: 'Oops!',
+                            text: 'The provided password is incorrect...',
+                            confirmButtonText: 'Ok, got it!',
+                            backdrop: true
+                        };
+                    
+                    Swal.fire(alertOptions).then(() => {
+                        if (noErrors) {
+                            window.location.href = '/dashboard'; 
+                        }
                     });
-
-                    submitButton.removeAttribute('disabled'); 
-                    submitButton.querySelector('.indicator-label').style.display = 'inline'; // Show the label
-                    submitButton.querySelector('.indicator-progress').style.display = 'none'; // Hide the spinner
-                }, 2000);
+                })
+                .catch(error => {
+                    console.error('An unexpected error occurred:', error);
+                })
+                .finally(() => {
+                    LiveBlade.toggleButtonLoading(submitButton, false);
+                });
+                
             });
         };
-        handleFormSubmit('confirm_password_form', '/confirm-password', 'POST');
+        handleFormSubmit('confirm_password_form', 'submitButton', '/confirm-password');
     </script>
 
 

@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Http\Requests\Users\StoreEmployeeRequest;
 use App\Http\Requests\Users\UpdateEmployeeRequest;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class EmployeeController extends Controller
 {
@@ -66,4 +68,5 @@ class EmployeeController extends Controller
     {
         //
     }
+
 }

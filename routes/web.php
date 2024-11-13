@@ -11,6 +11,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\UserController;
 
 use App\Http\Controllers\Users\EmployeeController;
+use App\Http\Controllers\Users\RoleController;
 
 
 Route::get('/', function () {
@@ -40,11 +41,15 @@ Route::middleware('auth')->group(function () {
 
     // Users
     Route::post('/users', [UserController::class, 'store']);
+    
+
     // HR
     Route::resource('employee', EmployeeController::class);
 
     //projects
     Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
+    //Roles permissions
+    Route::resource('role', RoleController::class);
 });
 
 Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');

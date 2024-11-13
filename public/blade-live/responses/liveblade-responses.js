@@ -1,128 +1,84 @@
 
 const LiveBladeResponse = {
-    processResponse: function(data, targetSelector, componentToReload) {
-        if (data.success) {
-            if(data.reload && data.redirect){
-                // reload the page component
-                // if (componentToReload === 'DELETE') {
-                //     componentToReload = data.component;
-                // }
-                this.loadComponent(targetSelector, data.redirect, data.component, componentToReload, data.message);
-            } else if (data.redirect && !data.reload) {
-                // Load the new page content in the background
-                this.loadPage(data.redirect);
-            } else {
-                // Handle other success cases if necessary
-                this.displaySuccessMessage(data.html || data.message || 'Success!');
-            }
-        } else if (data.errors) {
-            // Handle Laravel validation errors
-            this.displayValidationErrors(data.errors);
-        } else if (data.message) {
-            // Display an error message if returned
-            this.displayErrorMessage(data.message);
-        } else {
-            // Handle unexpected responses
-            this.displayErrorMessage('An unexpected error occurred.');
-        }
-    },
-
-    loadPage: function(url) {
+    
+    redirectOrFreshPage: function(url) {
         // reload the next page
         window.location.href = url;
     },
 
-    loadComponent: function(component, routeName, viewBlade, componentToReload, message) {
-        // console.log(message);
-        // Clear previous status messages
-        if (component) {
-            const statusDiv = component.querySelector('#status');
-            // include "<div id="status"></div>" in your blade files to display the error message
-            if (statusDiv) {
-                statusDiv.innerHTML = ''; // Clear previous status messages
-            }
-        }
-    
-        // Define the success message
-        let successMessage;
-
-        if (message) {        
-            successMessage = message;
-        } else {
-            successMessage = 'Operation Successfully!';
-        }
-
-    
-        // Construct the URL by appending the viewBlade query parameter
-        const url = `${routeName}?viewBlade=${viewBlade}`;
-    
-        // Fetch new content from the server
-        fetch(url, {
-            method: 'GET',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value // Add CSRF token if needed
-            },
-            credentials: 'same-origin', // Ensure CSRF token works in some browsers
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.text(); // Get the response as HTML
-        })
-        .then(html => {
-            // Replace the inner HTML of the component with the new form content
-            // console.log(componentToReload)
-            if (componentToReload && componentToReload.trim() !== "") {
-                // Find the component by its ID and replace its inner HTML
-                const pageComponent = document.getElementById(componentToReload);
-                
-                if (pageComponent) {
-                    // Replace the entire component with the new HTML
-                    pageComponent.innerHTML = html; // Assuming `html` contains the entire component HTML
-                
-                    // check if a table is a datatale and destroy it
-                    // This shall be done in the future
-                    
-                    // Hide any modal with the class 'modal'
-                    if (typeof $ !== 'undefined') {
-                        $('.modal').modal('hide');
-                    }
-
-
-                    console.log('component reloaded.');
-                } else {
-                    console.error('Component to reload not found.');
-                }
-                              
-            } else {
-                // back to the same id, html here is returned from the specific view in the switch cases in your cotroller
-                // especial for displayers like update profiles
-                component.innerHTML = html;
-                console.log('component reloaded.');
-            }
-    
-            // Display the success message
-            this.displaySuccessMessage(successMessage);
-        })
-        .catch(error => {
-            console.error('Error fetching new content:', error);
-            this.displayErrorMessage('Component Not Found.');
-        });
-    },
-
 
     reloadOrRedirect: function(response) {
-        console.log(response);
         if (response.redirect === '/dashboard') {
             return true;
         }
 
-
-
-        if (response.success) {
+        if (response.success && response.reload && !response.refresh) {
             this.displaySuccessMessage(response.message);
+            this.fetchAndReloadComponent(response)
             return true;
+        } else if(response.success && !response.reload && response.refresh) {
+            this.redirectOrFreshPage(response.redirect);
+            return true;
+        } else if (response.success && !response.reload && !response.refresh) {
+            this.displaySuccessMessage(response.message || 'Operation Successful!');
+            return true;
+        } else {
+            this.displayErrorMessage(response.message || 'Operation Failed');
+            return false
+        }
+
+    },
+
+    fetchAndReloadComponent: function(response) {
+        if (response.componentId) {
+            const componentContainer = document.getElementById(response.componentId);
+            if (componentContainer) {
+                // switch cases for the differenty bladefiles to reload their newly added content
+                const url = `${response.redirect}?bladeFileToReload=${response.componentId}`;
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value // Add CSRF token if needed
+                    },
+                    credentials: 'same-origin', // Ensure CSRF token works in some browsers
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    // Replace the component
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    // Locate the new content within the fetched HTML using the component ID
+                    const newContent = doc.getElementById(response.componentId);
+
+                    if (newContent) {
+                        // Replace the existing component content
+                        componentContainer.innerHTML = newContent.innerHTML;
+                        console.log('Component content replaced successfully.');
+                        
+                        // Re-initialize JavaScript for the component
+                        initializeComponentScripts();
+                     } else {
+                        console.log('An Error Occured');
+                    }
+
+
+                })
+                .catch(error => {
+                    console.error('Error fetching new content:', error);
+                    this.displayErrorMessage('Component Not Found.');
+                });
+
+            } else {
+                this.displayErrorMessage('Component Not Found');
+            }
+            document.addEventListener('DOMContentLoaded', function() {
+                initializeComponentScripts(); // Initialize the component scripts when the page loads
+            });
         }
     },
 

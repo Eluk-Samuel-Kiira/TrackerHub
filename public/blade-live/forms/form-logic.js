@@ -3,58 +3,6 @@ import LiveBladeResponse from '../responses/liveblade-responses.js';
 
 
 const formLogic = {
-    load(routeName, method = 'GET', data = {}, targetSelector, componentToReload='') {
-
-        const url = window.routes[routeName];
-        // console.log(method);
-    
-        if (!url) {
-            console.error(`Route "${routeName}" not found.`);
-            return;
-        }
-    
-        // Prepare fetch options
-        const options = {
-            method: method,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                'Content-Type': 'application/json'
-            }
-        };
-    
-        // If the method is POST, PUT, PATCH, or DELETE, add the data as a JSON string in the body
-        if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method.toUpperCase())) {
-            options.body = JSON.stringify(data);
-        }
-
-        // Fetch content and delegate response handling to LiveBladeResponse
-        fetch(url, options)
-            .then(response => {
-                // If the response is not successful (like 422 Unprocessable Entity), throw the error
-                if (!response.ok) {
-                    return response.json().then(errorData => {
-                        throw errorData; // Throw the error data to be caught by .catch()
-                    });
-                }
-                // If response is successful, return the data as JSON
-                return response.json();
-            })
-            .then(data => {
-                // Delegate response handling to LiveBladeResponse
-                LiveBladeResponse.processResponse(data, document.querySelector(targetSelector), componentToReload);
-            })
-            .catch(error => {
-                // Handle validation errors (422 response)
-                if (error.errors) {
-                    LiveBladeResponse.displayValidationErrors(error.errors);
-                    return;
-                }
-
-                // Display error with detailed information
-                formLogic.handleError(error);
-            });
-    },
 
     handleError(error) {
         let errorMessage = `
@@ -178,53 +126,61 @@ const formLogic = {
         // Display the constructed error message using SweetAlert2
         LiveBladeResponse.displayErrorMessage(errorMessage);
     },
-    
-    
-    loopDeleteForms(deleteUrl)  {
-        // Send AJAX request to delete the role
-        fetch(deleteUrl, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Display success message using Swal
-                Swal.fire({
-                    title: 'Success!',
-                    text: data.message,  // Display the message from the server
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    // Reload the component or remove the row dynamically
-                    const componentToReload = data.component;
-                    LiveBladeResponse.loadComponent('', data.redirect, data.component, componentToReload, data.message);
-                });
-            } else {
-                // Display error message using Swal
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',  // Places the alert at the top-right corner
-                    icon: 'error',        // Error icon
-                    title: `<span style="color: red;">${data.message}</span>`,       // The message to display
-                    showConfirmButton: false,
-                    timer: 5000,          // Auto close after 5 seconds
-                    timerProgressBar: true, // Show a progress bar
-                    customClass: {
-                        popup: 'swal2-show', // Adds a fade-in effect for the popup
-                    }
-                });
-                console.log('Failed to delete');
-            }
-        })
-        .catch(error => {
-            formLogic.handleError(error);
-            console.log('An error occurred. Please try again.', error);
+      
+    loopDeleteForms(deleteUrl) {
+        return new Promise((resolve, reject) => {
+            // Send AJAX request to delete the role
+            fetch(deleteUrl, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(response => {
+                if (response.success) {
+                    // Display success message using Swal
+                    Swal.fire({
+                        title: 'Success!',
+                        text: response.message,  // Display the message from the server
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        // Reload the component or remove the row dynamically
+                        LiveBladeResponse.reloadOrRedirect(response);
+                    });
+                    
+                    resolve(true);
+                } else {
+                    // Display error message using Swal
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',  // Places the alert at the top-right corner
+                        icon: 'error',        // Error icon
+                        title: `<span style="color: red;">${response.message}</span>`,       // The message to display
+                        showConfirmButton: false,
+                        timer: 5000,          // Auto close after 5 seconds
+                        timerProgressBar: true, // Show a progress bar
+                        customClass: {
+                            popup: 'swal2-show', // Adds a fade-in effect for the popup
+                        }
+                    });
+                    console.log('Failed to delete');
+                    
+                    // Return false for failure
+                    resolve(false);
+                }
+            })
+            .catch(error => {
+                // Handle error
+                console.error('An error occurred. Please try again.', error);
+                formLogic.handleError(error);
+                
+                // Return false on error
+                resolve(false);
+            });
         });
-        
     },
 
     getLastSegment(url) {
@@ -232,7 +188,7 @@ const formLogic = {
         return segments[segments.length - 1];
     },
 
-    loopUpdateForms(data, updateUrl, componentToReload) {
+    loopUpdateForms(data, updateUrl) {
         const uniqueId = formLogic.getLastSegment(updateUrl);
         
         // Return a promise
@@ -248,8 +204,7 @@ const formLogic = {
                 success: function(response) {
                     if (response.success) {
                         // If the request is successful
-                        componentToReload = response.component;
-                        LiveBladeResponse.loadComponent('', response.redirect, response.component, componentToReload, response.message);
+                        LiveBladeResponse.reloadOrRedirect(response);
                         resolve(true); // Resolve the promise with true on success
                     } else {
                         // Show error message for failed requests
@@ -293,7 +248,6 @@ const formLogic = {
             });
         });
     },
-
     
     submitFormEntities(data) {
         // console.log(data);
@@ -366,6 +320,30 @@ const formLogic = {
             rows.forEach(row => {
                 let rowData = row.textContent.toLowerCase();
                 row.style.display = rowData.includes(searchQuery) ? '' : 'none'; // Show or hide row
+            });
+        });
+    },
+    
+    beginCardSearch(inputId, cardSelector, attributeName, titleSelector) {
+        
+        const searchBar = document.getElementById(inputId); // Get the search input by ID
+        const roleCards = document.querySelectorAll(cardSelector); // Get all the role cards
+
+        // Add event listener for the search bar input
+        searchBar.addEventListener('input', function() {
+            const searchTerm = searchBar.value.toLowerCase(); // Get the search term and convert to lowercase
+
+            // Loop through all the cards and filter them by name or title
+            roleCards.forEach(card => {
+                const entityValue = card.getAttribute(attributeName).toLowerCase(); // Get the value from the entity attribute (e.g., data-role)
+                const cardTitle = card.querySelector(titleSelector).textContent.toLowerCase(); // Get the title from the card
+
+                // If the entity or title matches the search term, show the card, else hide it
+                if (entityValue.includes(searchTerm) || cardTitle.includes(searchTerm)) {
+                    card.style.display = 'block'; // Show matching card
+                } else {
+                    card.style.display = 'none'; // Hide non-matching card
+                }
             });
         });
     },
