@@ -41,7 +41,7 @@
                 </div>
 
                 {{--Human resource --}}
-                <div data-kt-menu-trigger="click" class="menu-item here {{ is_tab_show(['employee*','role*']) }} menu-accordion">
+                <div data-kt-menu-trigger="click" class="menu-item here {{ is_tab_show(['employee*','role*','permission.index']) }} menu-accordion">
                     <span class="menu-link">
                         <span class="menu-icon">
                             <i class="ki-duotone ki-address-book fs-2">
@@ -73,6 +73,17 @@
                                     <span class="bullet bullet-dot"></span>
                                 </span>
                                 <span class="menu-title">{{__('Roles')}}</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="menu-sub menu-sub-accordion">
+                        <div class="menu-item">
+                            <a class="menu-link {{ is_route_active('permission.index') }}" href="{{ route('permission.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">{{__('Permissions')}}</span>
                             </a>
                         </div>
                     </div>

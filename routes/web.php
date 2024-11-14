@@ -48,8 +48,12 @@ Route::middleware('auth')->group(function () {
 
     //projects
     Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
+
     //Roles permissions
     Route::resource('role', RoleController::class);
+    Route::get('/permissions', [RoleController::class, 'permissionIndex'])->name('permission.index');
+    Route::put('/update-permissions/{id}', [RoleController::class, 'updatePermission'])->name('permission.update');
+    Route::put('/revoke-permissions/{id}', [RoleController::class, 'revokePermission'])->name('permission.revoke');
 });
 
 Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
