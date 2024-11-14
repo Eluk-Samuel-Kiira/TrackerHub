@@ -13,3 +13,15 @@ if (! function_exists('is_route_active')) {
         return request()->routeIs($routeName) ? 'active' : '';
     }
 }
+
+
+if (!function_exists('trim_description')) {
+    function trim_description($text, $wordLimit = 10)
+    {
+        $words = explode(' ', $text);
+        if (count($words) > $wordLimit) {
+            return implode(' ', array_slice($words, 0, $wordLimit)) . '...';
+        }
+        return $text;
+    }
+}

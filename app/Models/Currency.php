@@ -10,4 +10,8 @@ class Currency extends Model
     /** @use HasFactory<\Database\Factories\CurrencyFactory> */
     use HasFactory;
     protected $fillable = ['name', 'created_by', 'isActive'];
+
+    public function projects(){
+        return $this->hasMany(Project::class);
+    }
 }

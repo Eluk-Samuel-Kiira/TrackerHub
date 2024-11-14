@@ -31,74 +31,46 @@
             </h1>
             <div class="my-5">
                 <div class="table-responsive">
-                    <table class="table table-bordered">
+                    <table class="table table-striped gy-7 gs-7">
                         <thead>
-                            <tr class="fw-semibold fs-6 text-gray-800">
-                                <th>Name</th>
-                                <th>Position</th>
-                                <th>Office</th>
-                                <th>Age</th>
-                                <th>Start date</th>
-                                <th>Salary</th>
+                            <tr class="fw-semibold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+                                <th class="min-w-50px">Code</th>
+                                <th class="min-w-100px">Name</th>
+                                <th class="min-w-100px">Start Date</th>
+                                <th class="min-w-100px">Deadline</th>
+                                <th class="min-w-200px">Description</th>
+                                <th class="min-w-150px">Category</th>
+                                <th class="min-w-150px">Department</th>
+                                <th class="min-w-150px">Client</th>
+                                <th class="min-w-200px">Members</th>
+                                <th class="min-w-150px">Budget</th>
+                                <th class="min-w-150px">Budget Limit</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Tiger Nixon</td>
-                                <td>System Architect</td>
-                                <td>Edinburgh</td>
-                                <td>61</td>
-                                <td>2011/04/25</td>
-                                <td>$320,800</td>
-                            </tr>
-                            <tr>
-                                <td>Garrett Winters</td>
-                                <td>Accountant</td>
-                                <td>Tokyo</td>
-                                <td>63</td>
-                                <td>2011/07/25</td>
-                                <td>$170,750</td>
-                            </tr>
-                            <tr>
-                                <td>Ashton Cox</td>
-                                <td>Junior Technical Author</td>
-                                <td>San Francisco</td>
-                                <td>66</td>
-                                <td>2009/01/12</td>
-                                <td>$86,000</td>
-                            </tr>
-                            <tr>
-                                <td>Cedric Kelly</td>
-                                <td>Senior Javascript Developer</td>
-                                <td>Edinburgh</td>
-                                <td>22</td>
-                                <td>2012/03/29</td>
-                                <td>$433,060</td>
-                            </tr>
-                            <tr>
-                                <td>Airi Satou</td>
-                                <td>Accountant</td>
-                                <td>Tokyo</td>
-                                <td>33</td>
-                                <td>2008/11/28</td>
-                                <td>$162,700</td>
-                            </tr>
-                            <tr>
-                                <td>Brielle Williamson</td>
-                                <td>Integration Specialist</td>
-                                <td>New York</td>
-                                <td>61</td>
-                                <td>2012/12/02</td>
-                                <td>$372,000</td>
-                            </tr>
-                            <tr>
-                                <td>Herrod Chandler</td>
-                                <td>Sales Assistant</td>
-                                <td>San Francisco</td>
-                                <td>59</td>
-                                <td>2012/08/06</td>
-                                <td>$137,500</td>
-                            </tr>
+                            @forelse ($projects as $project)
+                                <tr>
+                                    <td>{{ $project->projectCode }}</td>
+                                    <td>{{ $project->projectName }}</td>
+                                    <td>{{ $project->projectStartDate }}</td>
+                                    <td>{{ $project->projectDeadlineDate }}</td>
+                                    <td>{!! trim_description($project->projectDescription,5) !!}</td>
+                                    <td>{{ $project->projectCategory->name }}</td>
+                                    <td>{{ $project->department->name }}</td>
+                                    <td>{{ $project->client->name }}</td>
+                                    <td>
+                                        @foreach ($project->users as $index => $member)
+                                            {{ $member->first_name }} {{ $member->last_name }}@if($index < $project->users->count() - 1), @endif
+                                        @endforeach
+                                    </td>
+                                    <td>{{ $project->currency->name }} {{ number_format($project->projectBudget,2) }}</td>
+                                    <td>{{ $project->currency->name }} {{ number_format($project->projectBudgetLimit,2) }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="12" class="text-center">No projects found</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -206,7 +178,7 @@
                                         <div class="mb-10">
                                             <label class="form-label">Project Members</label>
                                             <div class="d-flex">
-                                                <select id="user" class="form-select form-select" name="projectMemberIds" data-control="select2" data-allow-clear="true" data-dropdown-parent="#add_project_modal" data-close-on-select="false" data-placeholder="Select an option" data-allow-clear="true" multiple="multiple">
+                                                <select id="user" class="form-select form-select" name="projectMemberIds[]" data-control="select2" data-allow-clear="true" data-dropdown-parent="#add_project_modal" data-close-on-select="false" data-placeholder="Select an option" data-allow-clear="true" multiple="multiple">
                                                     <option></option>
                                                     @foreach ($users as $user)
                                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -256,5 +228,112 @@
             </div>
         </div>
     </div>
+
+    <!--begin::Modal - New Target-->
+    <div class="modal fade" id="add_users_modal" tabindex="-1" aria-hidden="true">
+        <!--begin::Modal dialog-->
+        <div class="modal-dialog modal-dialog-centered mw-650px">
+            <!--begin::Modal content-->
+            <div class="modal-content rounded">
+                <!--begin::Modal header-->
+                <div class="modal-header pb-0 border-0 justify-content-end">
+                    <!--begin::Close-->
+                    <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                        <i class="ki-duotone ki-cross fs-1">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+                    </div>
+                    <!--end::Close-->
+                </div>
+                <!--begin::Modal header-->
+                <!--begin::Modal body-->
+                <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
+                    <!--begin:Form-->
+                    <form id="add_users_modal_form">
+                        @csrf
+                        <!--begin::Heading-->
+                        <div class="mb-13 text-center">
+                            <!--begin::Title-->
+                            <h1 class="mb-3">Add User</h1>
+                            <!--end::Title-->
+                        </div>
+                        <!--end::Heading-->
+                        <!--begin::Input group-->
+                        <div class="row g-9 mb-8">
+
+                            <div class="d-flex flex-column mb-8 fv-row col-md-6">
+                                <!--begin::Label-->
+                                <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+                                    <span class="required">First Name</span>
+                                </label>
+                                <!--end::Label-->
+                                <input type="text" id="user_first_name" class="form-control form-control-solid" name="user_first_name" />
+                            </div>
+                            <div class="d-flex flex-column mb-8 fv-row col-md-6">
+                                <!--begin::Label-->
+                                <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+                                    <span class="required">Last Name</span>
+                                </label>
+                                <!--end::Label-->
+                                <input type="text" id="user_last_name" class="form-control form-control-solid" name="user_last_name" />
+                            </div>
+                        </div>
+                        <div class="row g-9 mb-8">
+
+                            <div class="d-flex flex-column mb-8 fv-row col-md-6">
+                                <!--begin::Label-->
+                                <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+                                        <span class="required">User Email</span>
+                                </label>
+                                <!--end::Label-->
+                                    <input type="text" id="user_email" class="form-control form-control-solid" name="user_email" />
+                            </div>
+                        </div>
+                        <div class="row g-9 mb-8">
+                            <div class="d-flex flex-column mb-8 fv-row col-md-6">
+                                <!--begin::Label-->
+                                <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+                                        <span class="required">Role</span>
+                                </label>
+                                <!--end::Label-->
+                                <select id="user_role" name="user_role" class="form-select form-select" data-control="select2" data-close-on-select="false" data-placeholder="Select an option" data-allow-clear="true">
+                                    <option></option>
+                                    @foreach ($roles as $role)
+                                        <option value="{{ $role }}">{{ $role }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="d-flex flex-column mb-8 fv-row col-md-6">
+                                <!--begin::Label-->
+                                <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+                                    <span class="required">User Department</span>
+                                </label>
+                                <!--end::Label-->
+                                <select id="user_department" name="user_department" class="form-select form-select" data-control="select2" data-close-on-select="false" data-placeholder="Select an option" data-allow-clear="true">
+                                    <option></option>
+                                    @foreach ($departments as $department)
+                                        <option value="{{ $department->id }}">{{ $department->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <!--end::Input group-->
+                        <div class="text-center">
+                            <button class="btn btn-light me-3" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">
+                                <span class="indicator-label">Add</span>
+                            </button>
+                        </div>
+                    </form>
+                    <!--end:Form-->
+                </div>
+                <!--end::Modal body-->
+            </div>
+            <!--end::Modal content-->
+        </div>
+        <!--end::Modal dialog-->
+    </div>
+    <!--end::Modal - New Target-->
 
 @endsection
