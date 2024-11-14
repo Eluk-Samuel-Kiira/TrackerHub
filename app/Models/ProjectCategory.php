@@ -10,4 +10,8 @@ class ProjectCategory extends Model
     /** @use HasFactory<\Database\Factories\ProjectCategoryFactory> */
     use HasFactory;
     protected $fillable = ['name', 'isActive', 'created_by'];
+
+    public function projects(){
+        return $this->hasMany(Project::class);
+    }
 }

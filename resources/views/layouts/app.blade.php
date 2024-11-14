@@ -58,6 +58,7 @@
 					</div>
 					<div class="app-main flex-column flex-row-fluid" id="kt_app_main">
 						<div class="d-flex flex-column flex-column-fluid">
+
 							@yield('content')
 						</div>
 					</div>
@@ -320,114 +321,6 @@
             <!--end::Modal dialog-->
         </div>
         // <!--end::Modal - New Target-->
-
-        // <!--begin::Modal - New Target-->
-        <div class="modal fade" id="add_users_modal" tabindex="-1" aria-hidden="true">
-            <!--begin::Modal dialog-->
-            <div class="modal-dialog modal-dialog-centered mw-650px">
-                <!--begin::Modal content-->
-                <div class="modal-content rounded">
-                    <!--begin::Modal header-->
-                    <div class="modal-header pb-0 border-0 justify-content-end">
-                        <!--begin::Close-->
-                        <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
-                            <i class="ki-duotone ki-cross fs-1">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                            </i>
-                        </div>
-                        <!--end::Close-->
-                    </div>
-                    <!--begin::Modal header-->
-                    <!--begin::Modal body-->
-                    <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
-                        <!--begin:Form-->
-                        <form id="add_users_modal_form">
-                            @csrf
-                            <!--begin::Heading-->
-                            <div class="mb-13 text-center">
-                                <!--begin::Title-->
-                                <h1 class="mb-3">Add User</h1>
-                                <!--end::Title-->
-                            </div>
-                            <!--end::Heading-->
-                            <!--begin::Input group-->
-                            <div class="row g-9 mb-8">
-
-                                <div class="d-flex flex-column mb-8 fv-row col-md-6">
-                                    <!--begin::Label-->
-                                    <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                                        <span class="required">First Name</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <input type="text" id="user_first_name" class="form-control form-control-solid" name="user_first_name" />
-                                </div>
-                                <div class="d-flex flex-column mb-8 fv-row col-md-6">
-                                    <!--begin::Label-->
-                                    <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                                        <span class="required">Last Name</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <input type="text" id="user_last_name" class="form-control form-control-solid" name="user_last_name" />
-                                </div>
-                            </div>
-                            <div class="row g-9 mb-8">
-
-                                <div class="d-flex flex-column mb-8 fv-row col-md-6">
-                                    <!--begin::Label-->
-                                    <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                                            <span class="required">User Email</span>
-                                    </label>
-                                    <!--end::Label-->
-                                        <input type="text" id="user_email" class="form-control form-control-solid" name="user_email" />
-                                </div>
-                            </div>
-                            <div class="row g-9 mb-8">
-                                <div class="d-flex flex-column mb-8 fv-row col-md-6">
-                                    <!--begin::Label-->
-                                    <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                                            <span class="required">Role</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <select id="user_role" name="user_role" class="form-select form-select" data-control="select2" data-close-on-select="false" data-placeholder="Select an option" data-allow-clear="true">
-                                        <option></option>
-                                        @foreach ($roles as $role)
-                                            <option value="{{ $role }}">{{ $role }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="d-flex flex-column mb-8 fv-row col-md-6">
-                                    <!--begin::Label-->
-                                    <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                                        <span class="required">User Department</span>
-                                    </label>
-                                    <!--end::Label-->
-                                    <select id="user_department" name="user_department" class="form-select form-select" data-control="select2" data-close-on-select="false" data-placeholder="Select an option" data-allow-clear="true">
-                                        <option></option>
-                                        @foreach ($departments as $department)
-                                            <option value="{{ $department->id }}">{{ $department->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                            <!--end::Input group-->
-                            <div class="text-center">
-                                <button class="btn btn-light me-3" data-bs-dismiss="modal">Cancel</button>
-                                <button type="submit" class="btn btn-primary">
-                                    <span class="indicator-label">Add</span>
-                                </button>
-                            </div>
-                        </form>
-                        <!--end:Form-->
-                    </div>
-                    <!--end::Modal body-->
-                </div>
-                <!--end::Modal content-->
-            </div>
-            <!--end::Modal dialog-->
-        </div>
-        // <!--end::Modal - New Target-->
-
 
 		<script>var hostUrl = "{{ asset('assets/') }}";</script>
 		<script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
@@ -748,6 +641,18 @@
             .catch(error => console.error('Error:', error));
         });
 
+        </script>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                @if(session('toast'))
+                    var toastType = "{{ session('toast.type') }}";
+                    var toastMessage = "{{ session('toast.message') }}";
+
+                    // Trigger Metronic toast
+                    toastr[toastType](toastMessage); // success, info, warning, error
+                @endif
+            });
         </script>
         @stack('scripts')
 		@livewireScripts

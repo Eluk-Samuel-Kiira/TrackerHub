@@ -24,7 +24,8 @@ class ProjectController extends Controller
         $departments = Department::where('isActive', 1)->get();
         $users = User::where('status', 'active')->get();
         $roles = Role::all()->pluck('name');
-        return view('projects.index', compact('clients', 'projectCategories', 'currencies', 'departments', 'users', 'roles'));
+        $projects = Project::with('projectCategory', 'department', 'client', 'currency', 'users')->paginate(10);
+        return view('projects.index', compact('clients', 'projectCategories', 'currencies', 'departments', 'users', 'roles', 'projects'));
     }
 
     /**
@@ -40,7 +41,55 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->all());
+        //dd($request->all());
+
+        $request->validate([
+            "projectCode" => "required|string|unique:projects,projectCode",
+            "projectName" => "required|string|unique:projects,projectName",
+            "projectStartDate" => "required|date",
+            "projectDeadlineDate" => "required|date",
+            "projectDescription" => "required|string",
+            "projectCategoryId" => "required|exists:project_categories,id",
+            "projectDepartmentId" => "required|exists:departments,id",
+            "projectClientId" => "required|exists:clients,id",
+            "projectMemberIds" => "required",
+            "projectBudget" => "required|numeric",
+            "projectBudgetLimit" => "required|numeric",
+            "projectCurrencyId" => "required|exists:currencies,id",
+        ]);
+
+        $project = Project::create([
+            "projectCode" => $request->projectCode,
+            "projectName" => $request->projectName,
+            "projectStartDate" => $request->projectStartDate,
+            "projectDeadlineDate" => $request->projectDeadlineDate,
+            "projectDescription" => $request->projectDescription,
+            "projectCategoryId" => $request->projectCategoryId,
+            "projectDepartmentId" => $request->projectDepartmentId,
+            "projectClientId" => $request->projectClientId,
+            "projectBudget" => $request->projectBudget,
+            "projectBudgetLimit" => $request->projectBudgetLimit,
+            "projectCurrencyId" => $request->projectCurrencyId,
+        ]);
+
+        //user sync() when its update, attach() when its create
+        $project->users()->attach($request->projectMemberIds);
+
+       // Flash toast messages based on success or failure
+        if ($project) {
+            session()->flash('toast', [
+                'type' => 'success',
+                'message' => 'Project created successfully!',
+            ]);
+        } else {
+            session()->flash('toast', [
+                'type' => 'error',
+                'message' => 'Project creation failed!',
+            ]);
+        }
+
+        return redirect()->route('projects.index');
+
     }
 
     /**
