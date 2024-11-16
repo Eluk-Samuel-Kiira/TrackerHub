@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Artisan;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -26,6 +27,7 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): JsonResponse
     {
         $request->authenticate();
+        Artisan::call('optimize:clear');
 
         $request->session()->regenerate();
 
