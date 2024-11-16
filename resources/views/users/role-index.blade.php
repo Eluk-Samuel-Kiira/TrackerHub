@@ -68,6 +68,7 @@
         </div>
     </div>
     
+    
     <script>
         // Reusable function to filter cards based on search input
         function setupCardSearch(inputId, cardSelector, attributeName, titleSelector) {

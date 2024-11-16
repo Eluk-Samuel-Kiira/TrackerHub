@@ -431,7 +431,30 @@ const formLogic = {
                 console.log('An error occurred. Please try again.', error);
             }
         });
-    }
+    },
+    
+    beginTableFilter(dropdownSelector, tableSelector, dataAttribute) {
+        const dropdown = document.querySelector(dropdownSelector);
+        const tableRows = document.querySelectorAll(`${tableSelector} tbody tr`);
+    
+        if (!dropdown || tableRows.length === 0) return;
+    
+        dropdown.addEventListener('change', function () {
+            const selectedValue = this.value.toLowerCase();
+    
+            tableRows.forEach(row => {
+                const rowValue = row.dataset[dataAttribute]?.toLowerCase();
+    
+                if (selectedValue === "" || rowValue === selectedValue) {
+                    row.style.display = ""; // Show the row
+                } else {
+                    row.style.display = "none"; // Hide the row
+                }
+            });
+        });
+    },
+    
+        
     
 };
 
