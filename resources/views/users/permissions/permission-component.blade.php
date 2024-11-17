@@ -85,6 +85,11 @@
 </div>
 
 <script>
+    function initializeComponentScripts() {
+        setupCardSearch('permissionSearchBar', '.permission-card', 'data-perm', '.card-title h2');
+    }
+
+
     function showAllPermissions(userId) {
     var modal = new bootstrap.Modal(document.getElementById('permissionsModal' + userId));
     modal.show();

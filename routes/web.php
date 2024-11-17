@@ -44,7 +44,9 @@ Route::middleware('auth')->group(function () {
     
 
     // HR
-    Route::resource('employee', EmployeeController::class);
+    Route::resource('employee', EmployeeController::class);    
+    Route::post('/employee-status/{id}', [EmployeeController::class, 'changeEmployeeStatus'])->name('employee.status');
+    Route::post('/profile/upload-image', [ProfileController::class, 'uploadImage'])->name('profile.upload_image');
 
     //projects
     Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');

@@ -174,7 +174,7 @@ class RoleController extends Controller
 
         // Check if the role is deletable (i.e., not a special role like 'director', 'developer', etc.)
         $deletableRole = Role::where('id', $id)
-            ->whereNotIn('name', ['director', 'developer', 'resource_manager'])
+            ->whereNotIn('name', ['director', 'developer', 'resource_manager', 'project_manager'])
             ->first();
 
         // If the role is deletable, delete it and return a success response
@@ -224,7 +224,7 @@ class RoleController extends Controller
     {
         // Validate the input permissions
         $validatedPermission = $request->validate([
-            'permissions' => 'required|array|max:2225',  
+            'permissions' => 'nullable|array|max:2225',  
             'permissions.*' => 'exists:permissions,id',  
         ]);
 

@@ -33,14 +33,14 @@
                         </td>
                         <td class="d-flex align-items-center">
                             <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
-                                <a href="apps/user-management/users/view.html">
+                                <a href="#">
                                     <div class="symbol-label">
                                         <img src="assets/media/avatars/300-6.jpg" alt="{{ $employee->first_name }}" class="w-100" />
                                     </div>
                                 </a>
                             </div>
                             <div class="d-flex flex-column">
-                                <a href="apps/user-management/users/view.html" class="text-gray-800 text-hover-primary mb-1">{{ $employee->first_name . ' ' . $employee->last_name }}</a>
+                                <a href="#" class="text-gray-800 text-hover-primary mb-1">{{ $employee->first_name . ' ' . $employee->last_name }}</a>
                                 <span>{{ $employee->email }}</span>
                             </div>
                         </td>
@@ -57,17 +57,54 @@
                                 <option value="inactive" {{ $employee->status === 'inactive' ? 'selected' : '' }}>{{__('Inactive')}}</option>
                             </select>
                         </td>
-                        <td class="text-end">
-                            <a href="#" class="btn btn-light btn-active-light-primary btn-flex btn-center btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">{{__('Actions')}} 
-                            <i class="ki-duotone ki-down fs-5 ms-1"></i></a>
-                            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true">
-                                <div class="menu-item px-3">
-                                    <a href="apps/user-management/users/view.html" class="menu-link px-3">{{__('Edit')}}</a>
-                                </div>
-                                <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3" data-kt-users-table-filter="delete_row">{{__('Delete')}}</a>
+                        <td>
+                            <!-- Edit User Button -->
+                             <button 
+                                class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#editUserModal{{$employee->id}}">
+                                <i class="bi bi-pencil-square fs-2"></i>
+                            </button>
+                            <!-- Delete User Button -->
+                            <button type="button" 
+                                class="btn btn-sm btn-icon btn-bg-light btn-active-color-danger w-30px h-30px" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#deleteUserModal{{$employee->id}}">
+                                <i class="bi bi-trash fs-2"></i>
+                            </button>
+
+                            <!-- Delete User Modal -->
+                            <div class="modal fade" id="deleteUserModal{{$employee->id}}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">{{ __('Confirm Deletion') }}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>{{ __('Are you sure you want to delete this user/Employee?') }}</p>
+                                            <p>{{ __('This action cannot be undone.') }}</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <!-- Discard Button -->
+                                            <button type="button" id="closeDeleteModal{{$employee->id}}" class="btn btn-light me-3" data-bs-dismiss="modal">{{ __('Discard') }}</button>
+                                            <!-- Confirm Button -->
+                                            <button type="button" id="deleteButton{{$employee->id}}" class="btn btn-danger" 
+                                                data-item-url="{{ route('employee.destroy', $employee->id) }}" 
+                                                data-item-id="{{ $employee->id }}"
+                                                onclick="deleteItem(this)">
+                                                <span class="indicator-label">{{ __('Confirm') }}</span>
+                                                <span class="indicator-progress" style="display: none;">
+                                                    {{ __('Please wait...') }}
+                                                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+                            @include('users.employee.edit-user')
+
                         </td>
                     </tr>
                 @endforeach
@@ -79,9 +116,8 @@
 <script>
 
     function initializeComponentScripts() {
-        // Get the DataTable element
         const tableId = '#kt_table_users';
-        
+
         // Destroy the existing DataTable instance if it exists
         if ($.fn.DataTable.isDataTable(tableId)) {
             $(tableId).DataTable().destroy();
@@ -89,16 +125,25 @@
 
         // Reinitialize the DataTable
         $(tableId).DataTable({
-            // Add your DataTable options here
             paging: true,
             searching: true,
             ordering: true,
-            responsive: true,
+            responsive: false, // Disable responsive behavior
+            autoWidth: false, // Prevent automatic column resizing
             language: {
                 emptyTable: "No data available",
             },
+            columnDefs: [
+                // Specify widths for specific columns (optional)
+                { targets: 0, width: "10%" }, // Example for first column
+                { targets: 1, width: "15%" },
+            ],
         });
+
+        
+        LiveBlade.setupTableFilter('#roleFilter', '#kt_table_users', 'role');
     }
+
 
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -115,4 +160,34 @@
         setupTableSearch('searchInput', 'kt_table_users');
         
     });
+</script>
+
+<script>
+    function deleteItem(button) {
+        const itemId = button.getAttribute('data-item-id');
+        const deleteUrl = button.getAttribute('data-item-url');
+
+        const deleteButton = document.getElementById('deleteButton' + itemId);
+        LiveBlade.toggleButtonLoading(deleteButton, true);
+        
+        // Call the delete function to handle the deletion
+        LiveBlade.deleteItemInLoop(deleteUrl)
+            .then(noErrorStatus => {
+                console.log(noErrorStatus)
+                if (noErrorStatus) {
+                    var closeButton = document.getElementById('closeDeleteModal' + itemId);
+                    if (closeButton) {
+                        closeButton.click();
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('An unexpected error occurred:', error);
+                // Handle error gracefully
+            })
+            .finally(() => {
+                // End loading state using reusable function
+                LiveBlade.toggleButtonLoading(deleteButton, false);
+            });
+    }
 </script>

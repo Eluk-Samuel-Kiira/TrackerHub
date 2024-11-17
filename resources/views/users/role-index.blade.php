@@ -44,7 +44,7 @@
                     <div class="px-7 py-5" data-kt-user-table-filter="form">
                         <div class="mb-10">
                             <label class="form-label fs-6 fw-semibold">Role:</label>
-                            <select class="form-select form-select-solid fw-bold" data-kt-user-table-filter="role">
+                            <select class="form-select form-select-solid fw-bold" id="roleFilter">
                                 <option value="">{{__('Reset Roles')}}</option>
                                 @foreach ($roles as $role)
                                     <option value="{{ $role->name }}">{{ ucwords(str_replace('_', ' ', $role->name)) }}</option>
