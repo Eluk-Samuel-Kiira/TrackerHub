@@ -92,27 +92,45 @@
 <script>
     // Wrap all Js Fuctions here for the sake of reinitialization after reloading the page
     function initializeComponentScripts() {
-        // Show modal with permissions
-
-        // Set up role filtering
-        const roleFilterSelect = document.querySelector('[data-kt-user-table-filter="role"]');
-        const roleCards = document.querySelectorAll('.role-card');
-
-        roleFilterSelect.addEventListener('change', function() {
-            const selectedRole = roleFilterSelect.value;
-
-            roleCards.forEach(card => {
-                const roleName = card.getAttribute('data-role');
-                // Show or hide card based on filter
-                card.style.display = selectedRole === "" || roleName === selectedRole ? 'block' : 'none';
-            });
-        });
-
-        setupCardSearch('roleSearchBar', '.role-card', 'data-role', '.card-title h2');
+        filterRole();
 
         // Just for global access as an inner function
         window.showAllPermissions = showAllPermissions;
     }
+    
+    function filterRole () {
+        const roleFilter = document.getElementById('roleFilter');
+        const roleCards = document.querySelectorAll('.role-card');
+
+        // Listen for changes to the dropdown
+        roleFilter.addEventListener('change', function () {
+            const selectedRole = roleFilter.value.toLowerCase(); // Get the selected role value and convert it to lowercase
+
+            // Loop through all the cards and filter them based on the selected role
+            roleCards.forEach(card => {
+                const cardRole = card.getAttribute('data-role').toLowerCase(); // Get the role from the card’s data attribute
+
+                // If the selected role is empty, show all cards. Otherwise, filter based on the selected role
+                if (selectedRole === "" || cardRole.includes(selectedRole)) {
+                    card.style.display = 'block'; // Show matching card
+                } else {
+                    card.style.display = 'none'; // Hide non-matching card
+                }
+            });
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        filterRole();
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        LiveBlade.setupTableFilter('#roleFilter', '#role-card', 'data-role');
+    });
+   
+
+
+
     
     function showAllPermissions(roleId) {
         const modalId = `#permissionsModal${roleId}`;

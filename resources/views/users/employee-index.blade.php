@@ -8,7 +8,16 @@
                 <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">{{__('Employees Table')}}</h1>
                 <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
                     <li class="breadcrumb-item text-muted">
-                        <a href="{{ route('dashboard') }}" class="text-muted text-hover-primary">{{__('Home')}}</a>
+                        @php
+                            $previousUrl = url()->previous();
+                            $previousRouteName = optional(app('router')->getRoutes()->match(request()->create($previousUrl)))->getName();
+                            $formattedRouteName = $previousRouteName 
+                                ? Str::of($previousRouteName)->replace('.', ' ')->title() 
+                                : __('Back');
+                        @endphp
+                        <a href="{{ $previousUrl }}" class="text-muted text-hover-primary">
+                            {{ $formattedRouteName }}
+                        </a>
                     </li>
                     <li class="breadcrumb-item">
                         <span class="bullet bg-gray-500 w-5px h-2px"></span>
@@ -64,8 +73,10 @@
     </div>
 
     <script>
-        function updateStatus(employeeId, status) {
-            console.log("Employee ID:", employeeId, "Selected status:", status);
+        function updateStatus(uniqueId, selectedStatus) {
+            console.log("Employee ID:", uniqueId, "Selected status:", selectedStatus);
+            const updateRoute = '/employee-status/' + uniqueId;
+            LiveBlade.loopUpdateStatus(updateRoute, selectedStatus);
         }
     </script>   
         

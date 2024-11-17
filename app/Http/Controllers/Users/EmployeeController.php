@@ -70,6 +70,7 @@ class EmployeeController extends Controller
             // Create user
             $user = User::create($userData);
             if ($user) {
+                $user->assignRole($request->role);
                 Mail::to($user->email)->send(new NewUserMail(
                     $user->first_name . ' ' . $user->last_name,
                     $user->role,
@@ -102,7 +103,7 @@ class EmployeeController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Employee $employee)
+    public function show(User $employee)
     {
         //
     }
@@ -110,7 +111,7 @@ class EmployeeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Employee $employee)
+    public function edit(User $employee)
     {
         //
     }
@@ -118,17 +119,110 @@ class EmployeeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateEmployeeRequest $request, Employee $employee)
+    public function update(UpdateEmployeeRequest $request, $id)
     {
-        //
+        // Get the validated data
+        $validatedData = $request->validated();
+
+        // Get the authenticated user
+        $authUser = auth()->user();
+
+        // Check if the authenticated user has the required role
+        if ($authUser && in_array($authUser->role, ['director', 'project_manager'])) {
+            // Find the user by ID
+            $user = User::find($id);
+
+            // If the user is found, update their details
+            if ($user) {
+                // Update user details
+                $user->update($validatedData);
+
+                // Synchronize roles (if role has changed)
+                if (isset($validatedData['role'])) {
+                    $user->syncRoles($validatedData['role']);
+                }
+
+                // Return success response
+                return response()->json([
+                    'success' => true,
+                    'reload' => true,
+                    'componentId' => 'reloadEmployeeComponent',
+                    'refresh' => false,
+                    'message' => __('Employee/User Updated Successfully'),
+                    'redirect' => route('employee.index'),
+                ]);
+            }
+
+            // If user not found, return failure response
+            return response()->json([
+                'success' => false,
+                'message' => __('User not found.'),
+            ]);
+        }
+
+        // If authenticated user doesn't have the required role
+        return response()->json([
+            'success' => false,
+            'message' => __('You don\'t have permissions to complete this action!'),
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Employee $employee)
+    public function destroy($id)
     {
-        //
+        $user = User::find($id);
+
+        if ($user && !in_array($user->role, ['director', 'project_manager'])) { 
+            $user->delete();
+            
+            return response()->json([
+                'success' => true,
+                'reload' => true,
+                'componentId' => 'reloadEmployeeComponent',
+                'refresh' => false,
+                'message' => __('Employee/User Deleted Successfully'),
+                'redirect' => route('employee.index'),
+            ]);
+        }
+        
+        return response()->json([
+            'success' => false,
+            'message' => __('This User Cannot Be Deleted!'),
+        ]);
+        
     }
 
+    public function changeEmployeeStatus(Request $request, $id) 
+    {
+        // Validate the request data for status
+        $validated = $request->validate([
+            'status' => 'required|in:active,inactive',  // Ensures only 'active' or 'inactive' are allowed
+        ]);
+    
+        // Find the user by ID
+        $user = User::find($id);
+    
+        // Check if the user exists and update their status
+        if ($user) {
+            $user->status = $validated['status'];  // Directly update the status field
+            if ($user->save()) {  // Save the user object
+                return response()->json([
+                    'success' => true,
+                    'reload' => true,
+                    'refresh' => false,
+                    'componentId' => 'reloadEmployeeComponent',
+                    'message' => __('User status updated successfully'),
+                ]);
+            }
+        }
+    
+        // If user not found or status update failed
+        return response()->json([
+            'success' => false,
+            'message' => __('User not found or status update failed!'),
+        ]);
+    }
+    
 }

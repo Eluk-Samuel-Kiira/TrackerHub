@@ -9,6 +9,7 @@ const LiveBladeResponse = {
 
     reloadOrRedirect: function(response) {
         if (response.redirect === '/dashboard') {
+            
             return true;
         }
 
