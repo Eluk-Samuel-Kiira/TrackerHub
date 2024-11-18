@@ -174,7 +174,7 @@ class RoleController extends Controller
 
         // Check if the role is deletable (i.e., not a special role like 'director', 'developer', etc.)
         $deletableRole = Role::where('id', $id)
-            ->whereNotIn('name', ['director', 'developer', 'resource_manager'])
+            ->whereNotIn('name', ['director', 'developer', 'resource_manager', 'project_manager'])
             ->first();
 
         // If the role is deletable, delete it and return a success response
@@ -197,5 +197,64 @@ class RoleController extends Controller
             'message' => __('This role cannot be deleted.'),
         ]);
     }
+
+
+    public function permissionIndex(Request $request) 
+    {
+        $users = User::with('permissions')->latest()->get();
+        $permissions = Permission::all();
+
+        $bladeToReload = $request->query('bladeFileToReload');
+        switch ($bladeToReload) {
+            case 'reloadPermissionComponent':
+                return view('users.permissions.permission-component', [
+                    'users' => $users,
+                    'permissions' => $permissions,
+                ]);
+            default:
+                return view('users.permissions-index', [
+                    'users' => $users,
+                    'permissions' => $permissions,
+                ]);
+        }
+
+    }
+
+    public function updatePermission(Request $request, $user_id)
+    {
+        // Validate the input permissions
+        $validatedPermission = $request->validate([
+            'permissions' => 'nullable|array|max:2225',  
+            'permissions.*' => 'exists:permissions,id',  
+        ]);
+
+        try {
+            $user = User::findOrFail($user_id);
+
+            $permissions = Permission::whereIn('id', $validatedPermission['permissions'])->pluck('name');
+
+            // Attach the permissions directly to the user (not via roles)
+            $user->syncPermissions($permissions);
+
+            return response()->json([
+                'success' => true,
+                'message' => __('Permissions updated successfully'),
+                'reload' => true,
+                'componentId' => 'reloadPermissionComponent',
+                'refresh' => false,
+                'redirect' => route('permission.index'),
+
+            ]);
+            
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(), 
+            ]);
+        }
+    }
+
+    
 
 }

@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Artisan;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -25,11 +26,28 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): JsonResponse
     {
+        // Authenticate the user
         $request->authenticate();
 
+        // Check if the authenticated user's status is inactive
+        if (auth()->user()->status === 'inactive') {
+            // Call the destroy method to log out the user
+            $this->destroy($request);
+
+            // Return a response indicating the account is suspended
+            return response()->json([
+                'success' => false,
+                'message' => __("Account Suspended, Contact Admin to re-establish it")
+            ]);
+        }
+
+        // Clear application cache
+        Artisan::call('optimize:clear');
+
+        // Regenerate session to prevent session fixation attacks
         $request->session()->regenerate();
 
-        // return redirect()->intended(route('dashboard', absolute: false));
+        // Check if the request is an AJAX request
         if ($request->ajax()) {
             return response()->json([
                 'success' => true,
@@ -37,12 +55,15 @@ class AuthenticatedSessionController extends Controller
                 'redirect' => route('dashboard'),
             ]);
         } else {
+            // If it's not an AJAX request, return failure
             return response()->json([
                 'success' => false,
-                'message' => "__('Authentication Failed')"
+                'message' => __("Authentication Failed")
             ]);
         }
     }
+
+
 
     /**
      * Destroy an authenticated session.

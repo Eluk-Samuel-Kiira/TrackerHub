@@ -45,11 +45,14 @@ Route::middleware('auth')->group(function () {
 
 
     // HR
-    Route::resource('employee', EmployeeController::class);
+    Route::resource('employee', EmployeeController::class);    
+    Route::post('/employee-status/{id}', [EmployeeController::class, 'changeEmployeeStatus'])->name('employee.status');
+    Route::post('/profile/upload-image', [ProfileController::class, 'uploadImage'])->name('profile.upload_image');
 
     //projects
     Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
     Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
+
     Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
 
     Route::delete('/projects/{project}/users/{user}', [ProjectController::class, 'removeUser'])->name('projects.users.remove');
@@ -61,9 +64,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.remove');
 
 
-
     //Roles permissions
     Route::resource('role', RoleController::class);
+    Route::get('/permissions', [RoleController::class, 'permissionIndex'])->name('permission.index');
+    Route::put('/update-permissions/{id}', [RoleController::class, 'updatePermission'])->name('permission.update');
+    Route::put('/revoke-permissions/{id}', [RoleController::class, 'revokePermission'])->name('permission.revoke');
 });
 
 

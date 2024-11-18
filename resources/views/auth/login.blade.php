@@ -59,7 +59,7 @@
                                 : {
                                     icon: 'error',
                                     title: 'Oops!',
-                                    text: 'These credentials do not match our records.',
+                                    text: 'Account Suspended, Contact Admin to re-establish it or These credentials do not match our records.',
                                     confirmButtonText: 'Ok, got it!',
                                     backdrop: true
                                 };

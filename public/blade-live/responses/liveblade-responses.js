@@ -9,6 +9,7 @@ const LiveBladeResponse = {
 
     reloadOrRedirect: function(response) {
         if (response.redirect === '/dashboard') {
+            
             return true;
         }
 
@@ -59,9 +60,13 @@ const LiveBladeResponse = {
                         // Replace the existing component content
                         componentContainer.innerHTML = newContent.innerHTML;
                         console.log('Component content replaced successfully.');
+                        if (typeof initializeComponentScripts === 'function') {
+                            // If the function exists, call it
+                            initializeComponentScripts();
+                        } else {
+                            console.warn("initializeComponentScripts function is not defined.");
+                        }
                         
-                        // Re-initialize JavaScript for the component
-                        initializeComponentScripts();
                      } else {
                         console.log('An Error Occured');
                     }
@@ -76,6 +81,7 @@ const LiveBladeResponse = {
             } else {
                 this.displayErrorMessage('Component Not Found');
             }
+
             document.addEventListener('DOMContentLoaded', function() {
                 initializeComponentScripts(); // Initialize the component scripts when the page loads
             });
