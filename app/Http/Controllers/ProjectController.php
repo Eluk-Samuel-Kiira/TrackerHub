@@ -97,7 +97,16 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        //
+        // Get users not attached to the given project
+        $users = User::where('status', 'active')
+        ->whereDoesntHave('projects', function ($query) use ($project) {
+            $query->where('projects.id','=', $project->id);
+        })
+        ->get();
+
+        $roles = Role::all()->pluck('name');
+        $departments = Department::where('isActive', 1)->get();
+        return view('projects.show', compact('project','users', 'roles', 'departments'));
     }
 
     /**
@@ -122,5 +131,50 @@ class ProjectController extends Controller
     public function destroy(Project $project)
     {
         //
+    }
+
+    public function removeUser(Project $project, User $user)
+    {
+        if(count($project->users) == 1){
+            session()->flash('toast', [
+                'type' => 'error',
+                'message' => 'Cannot remove the last user from the project.',
+            ]);
+            return redirect(url('projects/'.$project->id.'#members'));
+        }
+
+        // Detach the user from the project (if many-to-many relationship)
+        if ($project->users()->detach($user)) {
+            session()->flash('toast', [
+                'type' => 'success',
+                'message' => 'User removed from the project successfully.',
+            ]);
+        }else{
+            session()->flash('toast', [
+                'type' => 'error',
+                'message' => 'Failed to remove the user from the project.',
+            ]);
+        }
+        return redirect(url('projects/'.$project->id.'#members'));
+    }
+
+    public function addUsers(Project $project, Request $request){
+        $request->validate([
+            'projectMemberIds' => 'required',
+        ]);
+
+        // Attach the user to the project (if many-to-many relationship)
+        if ($project->users()->syncWithoutDetaching($request->projectMemberIds)) {
+            session()->flash('toast', [
+                'type' => 'success',
+                'message' => 'Users added to the project successfully.',
+            ]);
+        }else{
+            session()->flash('toast', [
+                'type' => 'error',
+                'message' => 'Failed to add users to the project.',
+            ]);
+        }
+        return redirect(url('projects/'.$project->id.'#members'));
     }
 }

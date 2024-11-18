@@ -43,4 +43,8 @@ class Project extends Model
     public function currency(){
         return $this->belongsTo(Currency::class, 'projectCurrencyId');
     }
+
+    public function tasks(){
+        return $this->hasMany(Task::class);
+    }
 }

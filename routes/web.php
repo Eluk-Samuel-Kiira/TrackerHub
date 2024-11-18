@@ -8,6 +8,7 @@ use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\ProjectCategoryController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 
 use App\Http\Controllers\Users\EmployeeController;
@@ -41,7 +42,7 @@ Route::middleware('auth')->group(function () {
 
     // Users
     Route::post('/users', [UserController::class, 'store']);
-    
+
 
     // HR
     Route::resource('employee', EmployeeController::class);    
@@ -49,7 +50,19 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/upload-image', [ProfileController::class, 'uploadImage'])->name('profile.upload_image');
 
     //projects
+    Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
     Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
+
+    Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
+
+    Route::delete('/projects/{project}/users/{user}', [ProjectController::class, 'removeUser'])->name('projects.users.remove');
+    Route::post('/projects/{project}', [ProjectController::class, 'addUsers'])->name('projects.users.add');
+    Route::post('/projects/{project}', [ProjectController::class, 'addUsers'])->name('projects.users.add');
+
+    //tasks
+    Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.add');
+    Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.remove');
+
 
     //Roles permissions
     Route::resource('role', RoleController::class);
@@ -57,9 +70,6 @@ Route::middleware('auth')->group(function () {
     Route::put('/update-permissions/{id}', [RoleController::class, 'updatePermission'])->name('permission.update');
     Route::put('/revoke-permissions/{id}', [RoleController::class, 'revokePermission'])->name('permission.revoke');
 });
-
-Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
-
 
 
 require __DIR__.'/auth.php';
