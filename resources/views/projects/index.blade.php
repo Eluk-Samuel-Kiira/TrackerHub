@@ -45,6 +45,7 @@
                                 <th class="min-w-200px">Members</th>
                                 <th class="min-w-150px">Budget</th>
                                 <th class="min-w-150px">Budget Limit</th>
+                                <th class="w-auto"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -65,6 +66,7 @@
                                     </td>
                                     <td>{{ $project->currency->name }} {{ number_format($project->projectBudget,2) }}</td>
                                     <td>{{ $project->currency->name }} {{ number_format($project->projectBudgetLimit,2) }}</td>
+                                    <td><a href="{{route('projects.show', $project) }}">View</a></td>
                                 </tr>
                             @empty
                                 <tr>

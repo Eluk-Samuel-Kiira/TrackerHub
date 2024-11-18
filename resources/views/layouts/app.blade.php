@@ -358,6 +358,7 @@
             $(document).ready(function() {
                 $('#kt_datepicker_1').flatpickr();
                 $('#kt_datepicker_2').flatpickr();
+                $('#taskDeadlindDate').flatpickr();
                 ClassicEditor
                 .create(document.querySelector('#kt_docs_ckeditor_classic'))
                 .then(editor => {
@@ -654,6 +655,36 @@
                 @endif
             });
         </script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const navLinks = document.querySelectorAll('.nav-link');
+
+                // Add click event listener to each tab link
+                navLinks.forEach(link => {
+                    link.addEventListener('click', function () {
+                        // Update the URL fragment when a tab is clicked
+                        const target = this.getAttribute('href');
+                        if (history.pushState) {
+                            history.pushState(null, null, target);
+                        } else {
+                            window.location.hash = target;
+                        }
+                    });
+                });
+
+                // Activate the correct tab on page load based on the URL fragment
+                const hash = window.location.hash;
+                if (hash) {
+                    const activeTab = document.querySelector(`.nav-link[href="${hash}"]`);
+                    if (activeTab) {
+                        const tab = new bootstrap.Tab(activeTab);
+                        tab.show();
+                    }
+                }
+            });
+        </script>
+
         @stack('scripts')
 		@livewireScripts
 	</body>
