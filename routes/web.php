@@ -13,6 +13,7 @@ use App\Http\Controllers\UserController;
 
 use App\Http\Controllers\Users\EmployeeController;
 use App\Http\Controllers\Users\RoleController;
+use App\Http\Controllers\Settings\SettingController;
 
 
 Route::get('/', function () {
@@ -69,6 +70,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/permissions', [RoleController::class, 'permissionIndex'])->name('permission.index');
     Route::put('/update-permissions/{id}', [RoleController::class, 'updatePermission'])->name('permission.update');
     Route::put('/revoke-permissions/{id}', [RoleController::class, 'revokePermission'])->name('permission.revoke');
+
+    //Settings
+    Route::get('/settings', [SettingController::class, 'index'])->name('setting.index');
+
 });
 
 
