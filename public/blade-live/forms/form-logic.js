@@ -453,7 +453,63 @@ const formLogic = {
             });
         });
     },
-    
+      
+    actionDrivenCall(elementUrl) {
+        return new Promise((resolve, reject) => {
+            // Send AJAX request to delete the role
+            fetch(elementUrl, {
+                method: 'GET',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(response => {
+                if (response.success) {
+                    // Display success message using Swal
+                    Swal.fire({
+                        title: 'Success!',
+                        text: response.message,  // Display the message from the server
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        // Reload the component or remove the row dynamically
+                        LiveBladeResponse.reloadOrRedirect(response);
+                    });
+                    
+                    resolve(true);
+                } else {
+                    // Display error message using Swal
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',  // Places the alert at the top-right corner
+                        icon: 'error',        // Error icon
+                        title: `<span style="color: red;">${response.message}</span>`,       // The message to display
+                        showConfirmButton: false,
+                        timer: 5000,          // Auto close after 5 seconds
+                        timerProgressBar: true, // Show a progress bar
+                        customClass: {
+                            popup: 'swal2-show', // Adds a fade-in effect for the popup
+                        }
+                    });
+                    console.log('Failed');
+                    
+                    // Return false for failure
+                    resolve(false);
+                }
+            })
+            .catch(error => {
+                // Handle error
+                console.error('An error occurred. Please try again.', error);
+                formLogic.handleError(error);
+                
+                // Return false on error
+                resolve(false);
+            });
+        });
+    },
+
         
     
 };

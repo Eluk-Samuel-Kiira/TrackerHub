@@ -30,13 +30,18 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Currencies
-    Route::post('/currencies', [CurrencyController::class, 'store'])->name('currencies.store');
+    Route::resource('currencies', CurrencyController::class);  
+    Route::post('/currency-status/{id}', [CurrencyController::class, 'changeCurrencyStatus'])->name('currency.status');
+  
 
     // Project Categories
     Route::post('/project_categories', [ProjectCategoryController::class, 'store'])->name('project_categories.store');
 
     // Departments
-    Route::post('/departments', [DepartmentController::class, 'store'])->name('departments.store');
+    Route::resource('departments', DepartmentController::class);  
+    Route::post('/department-status/{id}', [DepartmentController::class, 'changeDepartmentStatus'])->name('employee.status');
+
+    // Route::post('/departments', [DepartmentController::class, 'store'])->name('departments.store');
 
     // Clients
     Route::post('/clients', [ClientController::class, 'store'])->name('clients.store');
@@ -73,6 +78,12 @@ Route::middleware('auth')->group(function () {
 
     //Settings
     Route::get('/settings', [SettingController::class, 'index'])->name('setting.index');
+    Route::put('/settings-update', [SettingController::class, 'updateSettings'])->name('setting.update');
+    Route::post('/logo-upload', [SettingController::class, 'uploadLogo'])->name('logo.upload');
+    Route::post('/favicon-upload', [SettingController::class, 'uploadFavicon'])->name('favicon.upload');
+    Route::get('/database/backup/{element}', [SettingController::class, 'backupOrRestore'])->name('database.backup');
+    Route::post('/database/restore', [SettingController::class, 'restore'])->name('database.restore');
+    
 
 });
 

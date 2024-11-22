@@ -45,6 +45,9 @@
                         <li class="nav-item mt-2">
                             <a class="nav-link text-active-primary ms-0 me-10 py-5" id="deactivate-tab" data-bs-toggle="tab" href="#meta-information">Meta Info</a>
                         </li>
+                        <li class="nav-item mt-2">
+                            <a class="nav-link text-active-primary ms-0 me-10 py-5" id="database-tab" data-bs-toggle="tab" href="#database-mgt">Database</a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -88,10 +91,62 @@
                     </div>
                 </div>
 
+                <!-- Database backup Tab -->
+                <div class="tab-pane fade" id="database-mgt">
+                    <div class="card">
+                        <div class="card-body">
+                            @include('settings.partials.database')
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 
+    <script>
 
+        const submitFormEntities = (formId, submitButtonId, url, method) => {
+            document.getElementById(formId).addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                // Collect form data and add additional fields
+                const formData = Object.fromEntries(new FormData(this));
+
+                formData._method = method;
+                formData.routeName = url;
+
+                // Reference the submit button and reloading
+                const submitButton = document.getElementById(submitButtonId);
+                LiveBlade.toggleButtonLoading(submitButton, true);
+
+                // Submit form data asynchronously
+                LiveBlade.submitFormItems(formData)
+                    .then(noErrors => {
+                        console.log(noErrors);
+                        
+                        if (noErrors) {
+                            // Close the modal if no errors
+                            const closeModal = () => {
+                                document.getElementById('discardButton').click();
+                            };
+                            closeModal();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('An unexpected error occurred:', error);
+                    })
+                    .finally(() => {
+                        LiveBlade.toggleButtonLoading(submitButton, false);
+                    });
+
+                    
+            });
+        };
+
+        submitFormEntities('updateAppInfoForm', 'submitAppInfo', '{{ route('setting.update') }}', 'PUT');
+        submitFormEntities('updateSMTPForm', 'submitupdateSMTP', '{{ route('setting.update') }}', 'PUT');
+        submitFormEntities('updateMetaInfoForm', 'submitMetaInfo', '{{ route('setting.update') }}', 'PUT');
+    </script>
     @endsection
 </x-app-layout>

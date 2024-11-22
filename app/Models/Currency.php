@@ -14,4 +14,9 @@ class Currency extends Model
     public function projects(){
         return $this->hasMany(Project::class);
     }
+
+    public function currencyCreater()
+    {
+        return $this->belongsTo(User::class, 'created_by', 'id');
+    }
 }

@@ -28,18 +28,51 @@
                             </a>
                         </div>
 
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->is('projects*') ? 'active' : '' }}" href="{{ route('projects.index') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Projects</span>
-                            </a>
-                        </div>
                     </div>
 
                 </div>
 
+                {{--Project Mgt --}}
+                <div data-kt-menu-trigger="click" class="menu-item here {{ is_tab_show(['projects*',]) }} menu-accordion">
+                    <span class="menu-link">
+                        <span class="menu-icon">
+                            <i class="ki-duotone ki-abstract-41 fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                            </i>
+                        </span>
+                        <span class="menu-title">{{__('Projects Module')}}</span>
+                        <span class="menu-arrow"></span>
+                    </span>
+
+                    <div class="menu-sub menu-sub-accordion">
+                        <div class="menu-item">
+                            <a class="menu-link {{ is_route_active('projects.index') }}" href="{{ route('projects.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">{{__('Projects Index')}}</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="menu-sub menu-sub-accordion">
+                        <div class="menu-item">
+                            <a class="menu-link {{ is_route_active('projects.index') }}" href="{{ route('projects.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">{{__('Categories')}}</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+
+                </div>
+
+                
                 {{--Human resource --}}
                 <div data-kt-menu-trigger="click" class="menu-item here {{ is_tab_show(['employee*','role*','permission.index']) }} menu-accordion">
                     <span class="menu-link">
@@ -92,10 +125,10 @@
 
                 
                 {{--System setting --}}
-                <div data-kt-menu-trigger="click" class="menu-item here {{ is_tab_show(['setting.index']) }} menu-accordion">
+                <div data-kt-menu-trigger="click" class="menu-item here {{ is_tab_show(['setting*','currencies*','departments*']) }} menu-accordion">
                     <span class="menu-link">
                         <span class="menu-icon">
-                            <i class="ki-duotone ki-address-book fs-2">
+                            <i class="ki-duotone ki-setting fs-2">
                                 <span class="path1"></span>
                                 <span class="path2"></span>
                                 <span class="path3"></span>
@@ -116,7 +149,27 @@
                             </a>
                         </div>
                     </div>
-                    
+                    <div class="menu-sub menu-sub-accordion">
+                        <div class="menu-item">
+                            <a class="menu-link {{ is_route_active('currencies.index') }}" href="{{ route('currencies.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">{{__('Currencies')}}</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="menu-sub menu-sub-accordion">
+                        <div class="menu-item">
+                            <a class="menu-link {{ is_route_active('departments.index') }}" href="{{ route('departments.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">{{__('Departments')}}</span>
+                            </a>
+                        </div>
+                    </div>
+                
 
                 </div>
                 
