@@ -21,4 +21,10 @@ class Department extends Model
     {
         return $this->hasMany(Project::class);
     }
+
+    public function departmentCreater()
+    {
+        return $this->belongsTo(User::class, 'created_by', 'id');
+    }
+
 }

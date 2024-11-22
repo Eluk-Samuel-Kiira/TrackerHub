@@ -1,5 +1,9 @@
 <?php
 
+
+use App\Models\Setting;
+use App\Models\Currency;
+
 if (! function_exists('is_tab_show')) {
     function is_tab_show($routeName)
     {
@@ -52,4 +56,46 @@ if (!function_exists('getProfileImage')) {
         return $defaultImage;
     }
 }
+
+
+
+if (!function_exists('getLogoImage')) {
+    function getLogoImage()
+    {
+        // Retrieve the logo filename from the settings table
+        $setting = Setting::find(1);
+        
+        if ($setting && !empty($setting->logo)) {
+            $logoPath = public_path('app/assets/img/logo/' . $setting->logo);
+            
+            // Check if the logo image exists in the specified location
+            if (file_exists($logoPath)) {
+                return asset('app/assets/img/logo/' . $setting->logo); // Return the logo URL from the database
+            }
+        }
+
+        // Return the default logo if not found in the database or does not exist
+        return asset('assets/media/logos/default-dark.svg'); // Default logo path
+    }
+}
+
+
+if (!function_exists('getFaviconImage')) {
+    function getFaviconImage()
+    {
+        // Retrieve the logo filename from the settings table
+        $setting = Setting::find(1);
+        
+        if ($setting && !empty($setting->favicon)) {
+            $logoPath = public_path('app/assets/img/favicon/' . $setting->favicon);
+            
+            // Check if the logo image exists in the specified location
+            if (file_exists($logoPath)) {
+                return asset('app/assets/img/favicon/' . $setting->favicon); // Return the logo URL from the database
+            }
+        }
+        return asset('assets/media/logos/favicon.ico');
+    }
+}
+
 
