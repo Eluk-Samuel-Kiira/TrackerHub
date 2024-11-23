@@ -33,7 +33,7 @@
                 </div>
 
                 {{--Project Mgt --}}
-                <div data-kt-menu-trigger="click" class="menu-item here {{ is_tab_show(['projects*',]) }} menu-accordion">
+                <div data-kt-menu-trigger="click" class="menu-item here {{ is_tab_show(['projects*','project_categories*','clients*']) }} menu-accordion">
                     <span class="menu-link">
                         <span class="menu-icon">
                             <i class="ki-duotone ki-abstract-41 fs-2">
@@ -60,7 +60,7 @@
 
                     <div class="menu-sub menu-sub-accordion">
                         <div class="menu-item">
-                            <a class="menu-link {{ is_route_active('projects.index') }}" href="{{ route('projects.index') }}">
+                            <a class="menu-link {{ is_route_active('project_categories.index') }}" href="{{ route('project_categories.index') }}">
                                 <span class="menu-bullet">
                                     <span class="bullet bullet-dot"></span>
                                 </span>
@@ -68,7 +68,47 @@
                             </a>
                         </div>
                     </div>
+
+                    <div class="menu-sub menu-sub-accordion">
+                        <div class="menu-item">
+                            <a class="menu-link {{ is_route_active('clients.index') }}" href="{{ route('clients.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">{{__('Clients')}}</span>
+                            </a>
+                        </div>
+                    </div>
                     
+
+                </div>
+
+
+                {{--Requistion Mgt --}}
+                <div data-kt-menu-trigger="click" class="menu-item here {{ is_tab_show(['projects*']) }} menu-accordion">
+                    <span class="menu-link">
+                        <span class="menu-icon">
+                            <i class="ki-duotone ki-color-swatch fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                            </i>
+                        </span>
+                        <span class="menu-title">{{__('Requistion Module')}}</span>
+                        <span class="menu-arrow"></span>
+                    </span>
+
+                    <div class="menu-sub menu-sub-accordion">
+                        <div class="menu-item">
+                            <a class="menu-link {{ is_route_active('projects.index') }}" href="{{ route('projects.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">{{__('Requistion Index')}}</span>
+                            </a>
+                        </div>
+                    </div>
 
                 </div>
 
