@@ -35,6 +35,9 @@ Route::middleware('auth')->group(function () {
   
 
     // Project Categories
+    Route::resource('project_categories', ProjectCategoryController::class); 
+    Route::post('/category-status/{id}', [ProjectCategoryController::class, 'changeCategoryStatus'])->name('category.status');
+
     Route::post('/project_categories', [ProjectCategoryController::class, 'store'])->name('project_categories.store');
 
     // Departments
@@ -44,7 +47,10 @@ Route::middleware('auth')->group(function () {
     // Route::post('/departments', [DepartmentController::class, 'store'])->name('departments.store');
 
     // Clients
-    Route::post('/clients', [ClientController::class, 'store'])->name('clients.store');
+    Route::resource('clients', ClientController::class);     
+    Route::post('/client-status/{id}', [ClientController::class, 'changeClientStatus'])->name('employee.status');
+
+    // Route::post('/clients', [ClientController::class, 'store'])->name('clients.store');
 
     // Users
     Route::post('/users', [UserController::class, 'store']);
