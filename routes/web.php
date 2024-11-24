@@ -61,7 +61,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('requistion', RequistionController::class); 
     Route::post('/requisition-status/{id}', [RequistionController::class, 'changeRequisitionStatus'])->name('requistion.status');
     Route::post('/requisition-response/{id}', [RequistionController::class, 'changeRequisitionResponse'])->name('requistion.response');
-  
+    Route::post('/requisition.upload/{id}', [RequistionController::class, 'uploadRequisitionFile'])->name('requisition.upload');
+
 
     // HR
     Route::resource('employee', EmployeeController::class);    
