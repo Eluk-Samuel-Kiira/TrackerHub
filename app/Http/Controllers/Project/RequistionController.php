@@ -8,6 +8,9 @@ use App\Http\Requests\Project\StoreRequistionRequest;
 use App\Http\Requests\Project\UpdateRequistionRequest;
 use App\Models\Requistion;
 use App\Models\Project;
+use App\Models\DocumentType;
+use App\Models\RequisitionFiles;
+use DB;
 
 class RequistionController extends Controller
 {
@@ -19,6 +22,8 @@ class RequistionController extends Controller
     {        
         $projects = Project::latest()->get();
         $requisitions = Requistion::latest()->get();
+        $document_types = DocumentType::latest()->get();
+        $requistion_files = RequisitionFiles::latest()->get();
         
         $bladeToReload = $request->query('bladeFileToReload');
         switch ($bladeToReload) {
@@ -26,11 +31,15 @@ class RequistionController extends Controller
                 return view('requistions.partials.requistion-component', [
                     'projects' => $projects,
                     'requisitions' => $requisitions,
+                    'document_types' => $document_types,
+                    'requistion_files' => $requistion_files,
                 ]);
             default:
                 return view('requistions.requistion-index', [
                     'projects' => $projects,
                     'requisitions' => $requisitions,
+                    'document_types' => $document_types,
+                    'requistion_files' => $requistion_files,
                 ]);
         }
     }
@@ -221,5 +230,75 @@ class RequistionController extends Controller
             'message' => __('Requisition not found or status update failed!'),
         ]);
     }
+
+    
+    public function uploadRequisitionFile(Request $request, $id)
+{
+    DB::beginTransaction();  // Start a database transaction
+
+    try {
+        // Validate the incoming request
+        $request->validate([
+            'files.*' => 'required|file|mimes:jpg,jpeg,png,pdf,docx,xlsx,pptx,csv,txt|max:4096',
+            'file_type' => 'required|exists:document_types,id',
+        ]);
+
+        // Find the requisition or fail
+        $requisition = Requistion::findOrFail($id);
+        $createdBy = auth()->user()->id;
+        $fileType = $request->input('file_type');
+        $uploadedFiles = [];
+
+        // Check if files are provided
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                // Ensure the file is valid before proceeding
+                if ($file->isValid()) {
+                    // Generate a unique file name
+                    $fileName = 'file_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                    
+                    // Store the file on the 'public' disk
+                    $filePath = $file->storeAs("requisition_files/{$id}", $fileName, 'public');
+
+                    // Manually insert file record into the files table
+                    \DB::table('requisition_files')->insert([
+                        'requisition_id' => $id,  // Foreign key to the requisition
+                        'file_name' => $fileName,
+                        'file_type' => $fileType,
+                        'file_path' => $filePath,
+                        'created_by' => $createdBy,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+
+                    // Add to uploaded files list
+                    $uploadedFiles[] = $fileName;
+                }
+            }
+        }
+
+        // Commit the transaction
+        DB::commit();
+
+        // Return success response
+        return response()->json([
+            'success' => true,
+            'message' => __('Requisition files uploaded successfully'),
+            'uploaded_files' => $uploadedFiles,
+        ]);
+        
+    } catch (\Exception $e) {
+        // Rollback transaction in case of error
+        DB::rollBack();
+
+        // Return error response
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while uploading the files. Please try again later.',
+            'error_details' => $e->getMessage(),
+        ], 500);
+    }
+}
+
 
 }
