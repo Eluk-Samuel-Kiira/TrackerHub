@@ -164,4 +164,6 @@ class DepartmentController extends Controller
             'message' => __('Department not found or status update failed!'),
         ]);
     }
+
+    
 }

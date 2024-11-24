@@ -14,6 +14,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\Users\EmployeeController;
 use App\Http\Controllers\Users\RoleController;
 use App\Http\Controllers\Settings\SettingController;
+use App\Http\Controllers\Project\RequistionController;
 
 
 Route::get('/', function () {
@@ -55,6 +56,12 @@ Route::middleware('auth')->group(function () {
     // Users
     Route::post('/users', [UserController::class, 'store']);
 
+    
+    // Requistions
+    Route::resource('requistion', RequistionController::class); 
+    Route::post('/requisition-status/{id}', [RequistionController::class, 'changeRequisitionStatus'])->name('requistion.status');
+    Route::post('/requisition-response/{id}', [RequistionController::class, 'changeRequisitionResponse'])->name('requistion.response');
+  
 
     // HR
     Route::resource('employee', EmployeeController::class);    
@@ -64,7 +71,6 @@ Route::middleware('auth')->group(function () {
     //projects
     Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
     Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
-
     Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
 
     Route::delete('/projects/{project}/users/{user}', [ProjectController::class, 'removeUser'])->name('projects.users.remove');
@@ -74,6 +80,16 @@ Route::middleware('auth')->group(function () {
     //tasks
     Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.add');
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.remove');
+
+
+
+    // Document Types
+    Route::get('/document-type', [SettingController::class, 'documentIndex'])->name('document.index');
+    Route::post('/document-type', [SettingController::class, 'documentStore'])->name('document.store');
+    Route::put('/document/{id}', [SettingController::class, 'documentUpdate'])->name('document.update');
+    Route::post('/document-status/{id}', [SettingController::class, 'changeDocumentStatus'])->name('document.status');
+
+
 
 
     //Roles permissions

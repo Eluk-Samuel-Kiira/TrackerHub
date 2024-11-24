@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Settings;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Setting;
+use App\Models\DocumentType;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Artisan;
 use ZipArchive;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class SettingController extends Controller
 {
@@ -207,5 +210,104 @@ class SettingController extends Controller
         }
     }
 
+    public function documentIndex(Request $request)
+    {
+        $document_types = DocumentType::latest()->get();
+
+        $bladeToReload = $request->query('bladeFileToReload');
+        switch ($bladeToReload) {
+            case 'documentTypeIndexTable':
+                return view('home.documents.document-component', [
+                    'document_types' => $document_types
+                ]);
+            default:
+                return view('home.document-index', [
+                    'document_types' => $document_types
+                ]);
+        }
+    }
+
+    public function documentStore(Request $request) 
+    {
+        $request->validate([
+            'name' => 'required|string|max:255|unique:document_types,name',
+        ]);
+
+        $document_type = DocumentType::create([
+            'name' => $request->name,
+            'created_by' => Auth::user()->id
+        ]);
+
+        if (isset($request->doctype_page) && !empty($request->doctype_page)) {
+
+            return response()->json([
+                'success' => true,
+                'reload' => true,
+                'componentId' => 'documentTypeIndexTable',
+                'refresh' => false,
+                'message' => __('Document Type Created Successfully'),
+                'redirect' => route('document.index'),
+            ]);
+        }
+    }
+
+
+    public function changeDocumentStatus(Request $request, $id) 
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:1,0',  
+        ]);
+    
+        $document_type = DocumentType::find($id);
+    
+        if ($document_type) {
+            $document_type->isActive = $validated['status']; 
+            if ($document_type->save()) { 
+                return response()->json([
+                    'success' => true,
+                    'reload' => true,
+                    'componentId' => 'documentTypeIndexTable',
+                    'refresh' => false,
+                    'message' => __('Document Type Updated Successfully'),
+                    'redirect' => route('document.index'),
+                ]);
+            }
+        }
+    
+        // If user not found or status update failed
+        return response()->json([
+            'success' => false,
+            'message' => __('Document not found or status update failed!'),
+        ]);
+    }
+
+    public function documentUpdate(Request $request, $id)
+    {
+
+        $request->validate([
+            'name' => [
+                'required',
+                'max:255',
+                Rule::unique('document_types', 'name')->ignore($id),
+            ],
+        ]);
+
+        $document_type = DocumentType::find($id);
+
+        $document_type->update([
+            'name' => $request->name,
+            'created_by' => Auth::user()->id
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'reload' => true,
+            'componentId' => 'documentTypeIndexTable',
+            'refresh' => false,
+            'message' => __('Document Type Created Successfully'),
+            'redirect' => route('document.index'),
+        ]);
+
+    }
 
 }
