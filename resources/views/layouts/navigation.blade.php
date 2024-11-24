@@ -83,9 +83,8 @@
 
                 </div>
 
-
                 {{--Requistion Mgt --}}
-                <div data-kt-menu-trigger="click" class="menu-item here {{ is_tab_show(['projects*']) }} menu-accordion">
+                <div data-kt-menu-trigger="click" class="menu-item here {{ is_tab_show(['requistion*']) }} menu-accordion">
                     <span class="menu-link">
                         <span class="menu-icon">
                             <i class="ki-duotone ki-color-swatch fs-2">
@@ -101,7 +100,7 @@
 
                     <div class="menu-sub menu-sub-accordion">
                         <div class="menu-item">
-                            <a class="menu-link {{ is_route_active('projects.index') }}" href="{{ route('projects.index') }}">
+                            <a class="menu-link {{ is_route_active('requistion.index') }}" href="{{ route('requistion.index') }}">
                                 <span class="menu-bullet">
                                     <span class="bullet bullet-dot"></span>
                                 </span>
@@ -162,10 +161,9 @@
                     </div>
 
                 </div>
-
                 
                 {{--System setting --}}
-                <div data-kt-menu-trigger="click" class="menu-item here {{ is_tab_show(['setting*','currencies*','departments*']) }} menu-accordion">
+                <div data-kt-menu-trigger="click" class="menu-item here {{ is_tab_show(['setting*','currencies*','departments*','document*']) }} menu-accordion">
                     <span class="menu-link">
                         <span class="menu-icon">
                             <i class="ki-duotone ki-setting fs-2">
@@ -206,6 +204,16 @@
                                     <span class="bullet bullet-dot"></span>
                                 </span>
                                 <span class="menu-title">{{__('Departments')}}</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="menu-sub menu-sub-accordion">
+                        <div class="menu-item">
+                            <a class="menu-link {{ is_route_active('document.index') }}" href="{{ route('document.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">{{__('Document Types')}}</span>
                             </a>
                         </div>
                     </div>
