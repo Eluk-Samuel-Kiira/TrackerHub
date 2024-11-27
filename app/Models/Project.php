@@ -22,10 +22,13 @@ class Project extends Model
         'projectBudget',
         'projectBudgetLimit',
         'projectCurrencyId',
+        'completionStatus',
+        'created_by',
+        'isActive',
     ];
 
     public function users(){
-        return $this->belongsToMany(User::class, );
+        return $this->belongsToMany(User::class);
     }
 
     public function projectCategory(){
@@ -46,5 +49,17 @@ class Project extends Model
 
     public function tasks(){
         return $this->hasMany(Task::class);
+    }
+
+    public function createdBy(){
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function projectFiles(){
+        return $this->hasMany(ProjectFile::class, 'project_id');
+    }
+
+    public function invoices(){
+        return $this->hasMany(ProjectInvoice::class,'project_id');
     }
 }
