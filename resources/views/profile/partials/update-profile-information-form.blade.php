@@ -115,7 +115,7 @@
         // Function to upload the image via AJAX
         function uploadProfileImage(file) {
             const formData = new FormData();
-            formData.append('profile_image', file); // Append the file to the FormData object
+            formData.append('profile_image', file); 
 
             fetch('{{ route("profile.upload_image") }}', {
                 method: 'POST',
