@@ -15,6 +15,7 @@ use App\Http\Controllers\ProjectFileController;
 use App\Http\Controllers\Users\EmployeeController;
 use App\Http\Controllers\Users\RoleController;
 use App\Http\Controllers\Settings\SettingController;
+use App\Http\Controllers\Settings\GeneralReportsController;
 use App\Http\Controllers\Project\RequistionController;
 
 
@@ -113,6 +114,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/database/backup/{element}', [SettingController::class, 'backupOrRestore'])->name('database.backup');
     Route::post('/database/restore', [SettingController::class, 'restore'])->name('database.restore');
 
+    // General Reports
+    Route::get('/general-reports', [GeneralReportsController::class, 'index'])->name('report.index');
 
 });
 
