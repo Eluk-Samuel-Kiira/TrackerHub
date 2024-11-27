@@ -10,6 +10,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProjectFileController;
 
 use App\Http\Controllers\Users\EmployeeController;
 use App\Http\Controllers\Users\RoleController;
@@ -31,24 +32,24 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Currencies
-    Route::resource('currencies', CurrencyController::class);  
+    Route::resource('currencies', CurrencyController::class);
     Route::post('/currency-status/{id}', [CurrencyController::class, 'changeCurrencyStatus'])->name('currency.status');
-  
+
 
     // Project Categories
-    Route::resource('project_categories', ProjectCategoryController::class); 
+    Route::resource('project_categories', ProjectCategoryController::class);
     Route::post('/category-status/{id}', [ProjectCategoryController::class, 'changeCategoryStatus'])->name('category.status');
 
     Route::post('/project_categories', [ProjectCategoryController::class, 'store'])->name('project_categories.store');
 
     // Departments
-    Route::resource('departments', DepartmentController::class);  
+    Route::resource('departments', DepartmentController::class);
     Route::post('/department-status/{id}', [DepartmentController::class, 'changeDepartmentStatus'])->name('employee.status');
 
     // Route::post('/departments', [DepartmentController::class, 'store'])->name('departments.store');
 
     // Clients
-    Route::resource('clients', ClientController::class);     
+    Route::resource('clients', ClientController::class);
     Route::post('/client-status/{id}', [ClientController::class, 'changeClientStatus'])->name('employee.status');
 
     // Route::post('/clients', [ClientController::class, 'store'])->name('clients.store');
@@ -56,16 +57,16 @@ Route::middleware('auth')->group(function () {
     // Users
     Route::post('/users', [UserController::class, 'store']);
 
-    
+
     // Requistions
-    Route::resource('requistion', RequistionController::class); 
+    Route::resource('requistion', RequistionController::class);
     Route::post('/requisition-status/{id}', [RequistionController::class, 'changeRequisitionStatus'])->name('requistion.status');
     Route::post('/requisition-response/{id}', [RequistionController::class, 'changeRequisitionResponse'])->name('requistion.response');
     Route::post('/requisition.upload/{id}', [RequistionController::class, 'uploadRequisitionFile'])->name('requisition.upload');
 
 
     // HR
-    Route::resource('employee', EmployeeController::class);    
+    Route::resource('employee', EmployeeController::class);
     Route::post('/employee-status/{id}', [EmployeeController::class, 'changeEmployeeStatus'])->name('employee.status');
     Route::post('/profile/upload-image', [ProfileController::class, 'uploadImage'])->name('profile.upload_image');
 
@@ -81,6 +82,10 @@ Route::middleware('auth')->group(function () {
     //tasks
     Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.add');
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.remove');
+
+    //files
+    Route::post('/files', [ProjectFileController::class, 'store'])->name('files.add');
+    Route::delete('/files/{file}', [ProjectFileController::class, 'destroy'])->name('files.remove');
 
 
 
@@ -106,7 +111,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/favicon-upload', [SettingController::class, 'uploadFavicon'])->name('favicon.upload');
     Route::get('/database/backup/{element}', [SettingController::class, 'backupOrRestore'])->name('database.backup');
     Route::post('/database/restore', [SettingController::class, 'restore'])->name('database.restore');
-    
+
 
 });
 

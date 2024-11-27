@@ -11,11 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('document_types', function (Blueprint $table) {
+        Schema::create('project_files', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
+            $table->foreignId('project_id')->constrained('projects')->cascadeOnDelete();
+            $table->string('document_name')->unique();
+            $table->string('document_path');
+            $table->foreignId('document_type')->constrained('document_types')->cascadeOnDelete();
             $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
-            $table->integer('isActive')->enum('1', '0')->default(1);
+            $table->integer('isActive')->enum(['1', '0'])->default(1);
             $table->timestamps();
         });
     }
@@ -25,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('document_types');
+        Schema::dropIfExists('project_files');
     }
 };

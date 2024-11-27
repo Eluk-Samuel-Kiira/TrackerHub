@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Controllers\ProjectInvoiceController;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -18,5 +19,9 @@ class Client extends Model
     public function clientCreater()
     {
         return $this->belongsTo(User::class, 'created_by', 'id');
+    }
+
+    public function invoices(){
+        return $this->hasMany(ProjectInvoice::class,'client_id');
     }
 }

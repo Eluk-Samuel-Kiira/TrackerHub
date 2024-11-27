@@ -8,8 +8,10 @@ use App\Models\ProjectCategory;
 use App\Models\Currency;
 use App\Models\Department;
 use App\Models\User;
+use App\Models\DocumentType;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
@@ -70,6 +72,7 @@ class ProjectController extends Controller
             "projectBudget" => $request->projectBudget,
             "projectBudgetLimit" => $request->projectBudgetLimit,
             "projectCurrencyId" => $request->projectCurrencyId,
+            'created_by' => Auth::user()->id,
         ]);
 
         //user sync() when its update, attach() when its create
@@ -106,7 +109,8 @@ class ProjectController extends Controller
 
         $roles = Role::all()->pluck('name');
         $departments = Department::where('isActive', 1)->get();
-        return view('projects.show', compact('project','users', 'roles', 'departments'));
+        $documentTypes = DocumentType::where('isActive', 1)->get();
+        return view('projects.show', compact('project','users', 'roles', 'departments', 'documentTypes'));
     }
 
     /**
