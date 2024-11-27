@@ -19,8 +19,7 @@
                         <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
                             <span class="required">Select File Type </span>
                         </label>
-                        <select name="file_type" class="form-select" data-control="select2" 
-                                data-close-on-select="false" data-placeholder="Select an option" data-allow-clear="true">
+                        <select name="file_type" class="form-select">
                             <option></option>
                             @foreach ($document_types as $document_type)
                                 <option value="{{ $document_type->id }}">{{ $document_type->name }}</option>
@@ -35,16 +34,17 @@
                             <span>Upload Files</span>
                         </label>
                         <div class="input-group">
-                            <button type="button" class="btn btn-light-primary" 
-                                    onclick="document.getElementById('imageInput_{{ $requisition->id }}').click()">
-                                <i class="ki-duotone ki-folder-up fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                </i>
-                                {{ __('Select Files') }}
-                            </button>
-                            <input type="file" id="imageInput_{{ $requisition->id }}" style="display:none;" multiple 
-                                onchange="previewAndUploadImages(event, '{{ $requisition->id }}', '{{ route('requisition.upload', $requisition->id) }}')">
+                        <button type="button" class="btn btn-light-primary w-100" 
+                                onclick="document.getElementById('imageInput_{{ $requisition->id }}').click()">
+                            <i class="ki-duotone ki-folder-up fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                            {{ __('Select Files') }}
+                        </button>
+                        <input type="file" id="imageInput_{{ $requisition->id }}" style="display:none;" multiple class="w-100"
+                            onchange="previewAndUploadImages(event, '{{ $requisition->id }}', '{{ route('requisition.upload', $requisition->id) }}')">
+
                         </div>
                     </div>
 
@@ -57,15 +57,18 @@
                                         <!-- File Information -->
                                         <div>
                                             <h5 class="mb-1">{{ $file->file_name }}</h5>
-                                            <p class="mb-0 text-muted">Type: {{ $file->fileType->name ?? 'none' }}</p>
+                                            <p class="mb-0 text-muted">Document Type: {{ $file->fileType->name ?? 'none' }}</p>
                                         </div>
                                         <!-- Action Buttons -->
                                         <div>
-                                            <a href="{{ asset('requisition_files/' . $file->requisition_id . '/' . $file->file_name) }}" 
-                                            class="btn btn-info btn-sm me-2" target="_blank">
+                                            <a href="{{ asset('storage/requisition_files/' . $file->requisition_id . '/' . $file->file_name) }}" 
+                                            class="btn btn-info btn-sm me-2" download>
                                                 Download
                                             </a>
-                                            <button class="btn btn-danger btn-sm delete-file" data-file-id="{{ $file->id }}">
+                                            <button class="btn btn-danger btn-sm delete-file" 
+                                                    data-file-id="{{ $file->id }}" 
+                                                    data-file-location="{{ asset('storage/requisition_files/' . $file->requisition_id . '/' . $file->file_name) }}"
+                                                    data-requisition-id="{{ $file->requisition_id }}">
                                                 Delete
                                             </button>
                                         </div>
@@ -74,15 +77,60 @@
                             @endif
                         @endforeach
                     </div>
-
                 </div>
-
             </div>
-
         </div>
     </div>
 </div>
 
+<script>
+    // Delete button click handler
+    $(document).on('click', '.delete-file', function() {
+        var fileId = $(this).data('file-id');  // Get the file ID
+        var fileLocation = $(this).data('file-location');  // Get the file location
+        var requisitionId = $(this).data('requisition-id');  // Get the requisition ID
+        var fileItem = $('#file-' + fileId); 
+        
+
+        // Confirm the delete action with the user
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You won\'t be able to revert this!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fileItem.css('display', 'none');
+                $.ajax({
+                    url: '{{ route('requisition.deleteFile') }}', 
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',       
+                        file_id: fileId,               // The ID of the file to delete
+                        file_location: fileLocation,   // The file location (path) to delete from storage
+                        requisition_id: requisitionId,       
+                    },
+                    success: function(response) {
+                        if(response.success) {
+                            Swal.fire('Deleted!', 'Your file has been deleted.', 'success');
+                        } else {
+                            Swal.fire('Error!', 'Something went wrong.', 'error');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        Swal.fire('Error!', 'There was an error processing your request.', 'error');
+                        fileItem.css('display', 'block');
+                    }
+                });
+            } else {
+                fileItem.css('display', 'block');
+            }
+        });
+    });
+
+</script>
 
 <script>
     function previewAndUploadImages(event, requisitionId, uploadRoute) {
@@ -96,11 +144,13 @@
         if (!selectedFileType) {
             Swal.fire({
                 icon: 'warning',
-                title: 'No File Type Selected',
                 text: 'Please select a file type before uploading.',
-                confirmButtonText: 'OK'
+                toast: true,
+                showConfirmButton: false,
+                position: 'top-end',
+                timer: 3000,
             });
-            return; // Stop if no file type is selected
+            return;
         }
 
         if (files.length > 0) {
@@ -113,46 +163,44 @@
 
             // Append the selected file type to FormData
             formData.append('file_type', selectedFileType);
-
-            console.log('Uploading files...'); // Optional debug message
+            console.log(formData);
 
             fetch(uploadRoute, {
                 method: 'POST',
-                body: formData,
                 headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'  // Include CSRF token
-                }
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: formData,
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Upload Successful',
-                        text: 'Your files have been uploaded successfully!',
-                        confirmButtonText: 'OK'
-                    }).then(() => {
-                        // Optional: Refresh file list or update UI
-                        location.reload();
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Upload Failed',
-                        text: data.message || 'An error occurred while uploading the files.',
-                        confirmButtonText: 'Try Again'
-                    });
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to upload image');
                 }
+                return response.json();
+            })
+            .then(data => {
+                const message = '{{__('Image Updated Successfully')}}'
+                console.log(message, data);
+                // Optionally handle success or update image path here
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: message,
+                }).then(() => {
+                    // Refresh the page after success
+                    location.reload();
+                });
             })
             .catch(error => {
-                console.error('Error uploading files:', error);
+                const message = '{{__('File Are Larger than 5mbs')}}'
+                console.error(message, error);
                 Swal.fire({
                     icon: 'error',
-                    title: 'Upload Failed',
-                    text: 'An unexpected error occurred. Please try again later.',
-                    confirmButtonText: 'OK'
+                    title: 'Oops!',
+                    text: message,
                 });
             });
+
         }
     }
 </script>

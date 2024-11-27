@@ -509,9 +509,7 @@ const formLogic = {
             });
         });
     },
-
-        
-    
+       
 };
 
 // Export the implementation for internal use

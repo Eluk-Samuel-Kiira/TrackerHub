@@ -11,6 +11,7 @@ use App\Models\Project;
 use App\Models\DocumentType;
 use App\Models\RequisitionFiles;
 use DB;
+use Illuminate\Support\Facades\Storage;
 
 class RequistionController extends Controller
 {
@@ -133,7 +134,6 @@ class RequistionController extends Controller
      */
     public function destroy(Requistion $requistion)
     {
-        
         $requisition_to_project = Requistion::where('id', $requistion->id)->where('status', 'approved')->first();
         if ($requisition_to_project) {
             return response()->json([
@@ -149,16 +149,27 @@ class RequistionController extends Controller
             ]);
         }
     
-        $requistion->delete();
+        try {
+            $requisitionFolderPath = 'requisition_files/' . $requistion->id; 
+            if (Storage::disk('public')->exists($requisitionFolderPath)) {
+                Storage::disk('public')->deleteDirectory($requisitionFolderPath);
+            }
+            $requistion->delete();
 
-        return response()->json([
-            'success' => true,
-            'reload' => true,
-            'componentId' => 'reloadRequisitionComponent',
-            'refresh' => false,
-            'message' => __('Requisition updated and submitted successfully'),
-            'redirect' => route('requistion.index'),
-        ]);
+            return response()->json([
+                'success' => true,
+                'reload' => true,
+                'componentId' => 'reloadRequisitionComponent',
+                'refresh' => false,
+                'message' => __('Requisition updated and submitted successfully'),
+                'redirect' => route('requistion.index'),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => __('Error occurred while deleting the requisition: ') . $e->getMessage(),
+            ]);
+        }
     }
 
     
@@ -231,74 +242,101 @@ class RequistionController extends Controller
         ]);
     }
 
-    
     public function uploadRequisitionFile(Request $request, $id)
-{
-    DB::beginTransaction();  // Start a database transaction
+    {
+        DB::beginTransaction(); 
 
-    try {
-        // Validate the incoming request
-        $request->validate([
-            'files.*' => 'required|file|mimes:jpg,jpeg,png,pdf,docx,xlsx,pptx,csv,txt|max:4096',
-            'file_type' => 'required|exists:document_types,id',
-        ]);
+        try {
+            $request->validate([
+                'files.*' => 'required|file|mimes:jpg,jpeg,png,pdf,docx,xlsx,pptx,csv,txt|max:5096',
+                'file_type' => 'required|exists:document_types,id',
+            ]);
 
-        // Find the requisition or fail
-        $requisition = Requistion::findOrFail($id);
-        $createdBy = auth()->user()->id;
-        $fileType = $request->input('file_type');
-        $uploadedFiles = [];
+            
+            // if ($request->hasFile('files')) { 
+            //     \Log::info($request->all());
+            //     die();
+            // }
 
-        // Check if files are provided
-        if ($request->hasFile('files')) {
-            foreach ($request->file('files') as $file) {
-                // Ensure the file is valid before proceeding
-                if ($file->isValid()) {
-                    // Generate a unique file name
-                    $fileName = 'file_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                    
-                    // Store the file on the 'public' disk
-                    $filePath = $file->storeAs("requisition_files/{$id}", $fileName, 'public');
+            $requisition = Requistion::findOrFail($id);
+            $createdBy = auth()->user()->id;
+            $fileType = $request->input('file_type');
+            $uploadedFiles = [];
 
-                    // Manually insert file record into the files table
-                    \DB::table('requisition_files')->insert([
-                        'requisition_id' => $id,  // Foreign key to the requisition
-                        'file_name' => $fileName,
-                        'file_type' => $fileType,
-                        'file_path' => $filePath,
-                        'created_by' => $createdBy,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
+            if ($request->hasFile('files')) {
+                foreach ($request->file('files') as $file) {
+                    if ($file->isValid()) {
 
-                    // Add to uploaded files list
-                    $uploadedFiles[] = $fileName;
+                        $fileName = 'file_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                        
+                        $filePath = $file->storeAs("requisition_files/{$id}", $fileName, 'public');
+
+                        \DB::table('requisition_files')->insert([
+                            'requisition_id' => $id, 
+                            'file_name' => $fileName,
+                            'file_type' => $fileType,
+                            'file_path' => $filePath,
+                            'created_by' => $createdBy,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                        $uploadedFiles[] = $fileName;
+                    }
                 }
             }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => __('Requisition files uploaded successfully'),
+                'uploaded_files' => $uploadedFiles,
+            ]);
+            
+        } catch (\Exception $e) {
+            // Rollback transaction in case of error
+            DB::rollBack();
+
+            // Return error response
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while uploading the files. Please try again later.',
+                'error_details' => $e->getMessage(),
+            ], 500);
         }
-
-        // Commit the transaction
-        DB::commit();
-
-        // Return success response
-        return response()->json([
-            'success' => true,
-            'message' => __('Requisition files uploaded successfully'),
-            'uploaded_files' => $uploadedFiles,
-        ]);
-        
-    } catch (\Exception $e) {
-        // Rollback transaction in case of error
-        DB::rollBack();
-
-        // Return error response
-        return response()->json([
-            'success' => false,
-            'message' => 'An error occurred while uploading the files. Please try again later.',
-            'error_details' => $e->getMessage(),
-        ], 500);
     }
-}
+
+
+    public function deleteFile(Request $request)
+    {
+        $request->validate([
+            'file_id' => 'required|exists:requisition_files,id',    
+            'file_location' => 'required|string',               
+            'requisition_id' => 'required|exists:requistions,id',  
+        ]);
+
+        try {
+            // Retrieve the file from the database using file_id
+            $file = RequisitionFiles::findOrFail($request->file_id);
+
+            // Get the file's location and generate the full file path within the storage directory
+            $fileLocation = $request->file_location; // This should include the file's relative path
+            $filePath = str_replace(asset('storage/'), '', $fileLocation); // Remove the public URL part
+
+            // Delete the file from the storage directory using the Storage facade
+            if (Storage::disk('public')->exists($filePath)) {
+                Storage::disk('public')->delete($filePath);  // Delete the file from the 'public' disk
+            }
+
+            // Now delete the file entry from the database
+            $file->delete();
+
+            return response()->json(['success' => true, 'message' => 'File deleted successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error deleting file', 'error' => $e->getMessage()]);
+        }
+    }
+
 
 
 }
