@@ -83,54 +83,6 @@
     </div>
 </div>
 
-<script>
-    // Delete button click handler
-    $(document).on('click', '.delete-file', function() {
-        var fileId = $(this).data('file-id');  // Get the file ID
-        var fileLocation = $(this).data('file-location');  // Get the file location
-        var requisitionId = $(this).data('requisition-id');  // Get the requisition ID
-        var fileItem = $('#file-' + fileId); 
-        
-
-        // Confirm the delete action with the user
-        Swal.fire({
-            title: 'Are you sure?',
-            text: 'You won\'t be able to revert this!',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'No, cancel!',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                fileItem.css('display', 'none');
-                $.ajax({
-                    url: '{{ route('requisition.deleteFile') }}', 
-                    type: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',       
-                        file_id: fileId,               // The ID of the file to delete
-                        file_location: fileLocation,   // The file location (path) to delete from storage
-                        requisition_id: requisitionId,       
-                    },
-                    success: function(response) {
-                        if(response.success) {
-                            Swal.fire('Deleted!', 'Your file has been deleted.', 'success');
-                        } else {
-                            Swal.fire('Error!', 'Something went wrong.', 'error');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        Swal.fire('Error!', 'There was an error processing your request.', 'error');
-                        fileItem.css('display', 'block');
-                    }
-                });
-            } else {
-                fileItem.css('display', 'block');
-            }
-        });
-    });
-
-</script>
 
 <script>
     function previewAndUploadImages(event, requisitionId, uploadRoute) {
@@ -203,4 +155,54 @@
 
         }
     }
+</script>
+
+
+<script>
+    // Delete button click handler
+    $(document).on('click', '.delete-file', function() {
+        var fileId = $(this).data('file-id');  // Get the file ID
+        var fileLocation = $(this).data('file-location');  // Get the file location
+        var requisitionId = $(this).data('requisition-id');  // Get the requisition ID
+        var fileItem = $('#file-' + fileId); 
+        
+
+        // Confirm the delete action with the user
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You won\'t be able to revert this!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fileItem.css('display', 'none');
+                $.ajax({
+                    url: '{{ route('requisition.deleteFile') }}', 
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',       
+                        file_id: fileId,               // The ID of the file to delete
+                        file_location: fileLocation,   // The file location (path) to delete from storage
+                        requisition_id: requisitionId,       
+                    },
+                    success: function(response) {
+                        if(response.success) {
+                            Swal.fire('Deleted!', 'Your file has been deleted.', 'success');
+                        } else {
+                            Swal.fire('Error!', 'Something went wrong.', 'error');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        Swal.fire('Error!', 'There was an error processing your request.', 'error');
+                        fileItem.css('display', 'block');
+                    }
+                });
+            } else {
+                fileItem.css('display', 'block');
+            }
+        });
+    });
+
 </script>
