@@ -15,6 +15,7 @@ use App\Http\Controllers\ProjectFileController;
 use App\Http\Controllers\Users\EmployeeController;
 use App\Http\Controllers\Users\RoleController;
 use App\Http\Controllers\Settings\SettingController;
+use App\Http\Controllers\Settings\GeneralReportsController;
 use App\Http\Controllers\Project\RequistionController;
 use App\Http\Controllers\ProjectInvoiceController;
 
@@ -63,6 +64,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/requisition-status/{id}', [RequistionController::class, 'changeRequisitionStatus'])->name('requistion.status');
     Route::post('/requisition-response/{id}', [RequistionController::class, 'changeRequisitionResponse'])->name('requistion.response');
     Route::post('/requisition.upload/{id}', [RequistionController::class, 'uploadRequisitionFile'])->name('requisition.upload');
+    Route::post('/requisition/delete-file', [RequistionController::class, 'deleteFile'])->name('requisition.deleteFile');
 
 
     // HR
@@ -117,6 +119,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/database/backup/{element}', [SettingController::class, 'backupOrRestore'])->name('database.backup');
     Route::post('/database/restore', [SettingController::class, 'restore'])->name('database.restore');
 
+    // General Reports
+    Route::get('/general-reports', [GeneralReportsController::class, 'index'])->name('report.index');
 
 });
 
