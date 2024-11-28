@@ -17,7 +17,7 @@ use App\Http\Controllers\Users\RoleController;
 use App\Http\Controllers\Settings\SettingController;
 use App\Http\Controllers\Settings\GeneralReportsController;
 use App\Http\Controllers\Project\RequistionController;
-
+use App\Http\Controllers\ProjectInvoiceController;
 
 Route::get('/', function () {
     return view('home.welcome');
@@ -88,6 +88,11 @@ Route::middleware('auth')->group(function () {
     //files
     Route::post('/files', [ProjectFileController::class, 'store'])->name('files.add');
     Route::delete('/files/{file}', [ProjectFileController::class, 'destroy'])->name('files.remove');
+
+    //invoices
+    Route::post('/invoices', [ProjectInvoiceController::class, 'store'])->name('invoices.add');
+    Route::delete('/invoices/{file}', [ProjectInvoiceController::class, 'destroy'])->name('invoices.remove');
+
 
 
 

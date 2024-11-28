@@ -21,6 +21,8 @@ return new class extends Migration
             $table->foreignId('projectCategoryId')->constrained('project_categories')->cascadeOnDelete();
             $table->foreignId('projectDepartmentId')->constrained('departments')->cascadeOnDelete();
             $table->foreignId('projectClientId')->constrained('clients')->cascadeOnDelete();
+            $table->decimal('projectCost', 15, 2);
+            $table->integer('isPaidOff')->enum(['1', '0'])->default(1);
             $table->decimal('projectBudget', 15, 2);
             $table->decimal('projectBudgetLimit', 15, 2);
             $table->foreignId('projectCurrencyId')->constrained('currencies')->cascadeOnDelete();

@@ -19,8 +19,4 @@ class Currency extends Model
     {
         return $this->belongsTo(User::class, 'created_by', 'id');
     }
-
-    public function projectInvoices(){
-        return $this->hasMany(ProjectInvoice::class,'currency_id');
-    }
 }
