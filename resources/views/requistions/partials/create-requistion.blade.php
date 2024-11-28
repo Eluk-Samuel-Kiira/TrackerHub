@@ -34,7 +34,7 @@
                                 <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
                                     <span class="required">Requisition Amount</span>
                                 </label>
-                                <input type="number" class="form-control form-control-solid" name="amount" />
+                                <input type="text" class="form-control form-control-solid" name="amount" />
                                 <div id="amount"></div>
                             </div>
                         </div>

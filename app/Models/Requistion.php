@@ -13,4 +13,10 @@ class Requistion extends Model
     {
         return $this->belongsTo(User::class, 'created_by', 'id');
     }
+
+    
+    public function requisitionProject()
+    {
+        return $this->belongsTo(Project::class, 'project_id', 'id');
+    }
 }
