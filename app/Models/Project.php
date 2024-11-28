@@ -19,6 +19,8 @@ class Project extends Model
         'projectCategoryId',
         'projectDepartmentId',
         'projectClientId',
+        'projectCost',
+        'isPaidOff',
         'projectBudget',
         'projectBudgetLimit',
         'projectCurrencyId',

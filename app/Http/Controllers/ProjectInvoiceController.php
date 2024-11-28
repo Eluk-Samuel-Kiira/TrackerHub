@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ProjectInvoice;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectInvoiceController extends Controller
 {
@@ -28,7 +29,40 @@ class ProjectInvoiceController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'projectId' => 'required',
+            'ClientId' => 'required',
+            'invoiceDescription' => 'required|string',
+            'invoiceAmount' => 'required|numeric',
+            'invoiceBilledDate' => 'required|date',
+            'invoiceDueDate' => 'required|date',
+        ]);
+
+        $projectInvoice = ProjectInvoice::create([
+            'project_id' => $request->projectId,
+            'client_id' => $request->ClientId,
+            'description' => $request->invoiceDescription,
+            'amount' => $request->invoiceAmount,
+            'billing_date' => $request->invoiceBilledDate,
+            'due_date' => $request->invoiceDueDate,
+            'createdBy' => Auth::user()->id
+        ]);
+
+        //send mail notificaton here
+
+        if($projectInvoice){
+            session()->flash('toast', [
+                'type' => 'success',
+                'message' => 'Project Invoice Added to project successfully.',
+            ]);
+        }else{
+            session()->flash('toast', [
+                'type' => 'error',
+                'message' => 'Failed to add the invoice to the project.',
+            ]);
+        }
+
+        return redirect(url('projects/'.$request->projectId.'#invoices'))->with('project', $request->projectId);
     }
 
     /**

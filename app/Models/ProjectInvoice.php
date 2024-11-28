@@ -11,7 +11,9 @@ class ProjectInvoice extends Model
         'project_id',
         'client_id',
         'amount',
-        'currency_id',
+        'description',
+        'billing_date',
+        'due_date',
         'isPaid',
         'reference_number',
         'createdBy',
@@ -27,15 +29,11 @@ class ProjectInvoice extends Model
         return $this->belongsTo(Client::class,'client_id');
     }
 
-    public function currency(){
-        return $this->belongsTo(Currency::class,'currency_id');
-    }
-
     public function paidBy(){
         return $this->belongsTo(User::class,'paidBy');
     }
 
-    public function createdBy(){
+    public function createdByUser(){
         return $this->belongsTo(User::class,'createdBy');
     }
 }

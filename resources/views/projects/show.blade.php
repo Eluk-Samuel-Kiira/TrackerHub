@@ -206,13 +206,17 @@
                                 <tbody>
                                     @foreach ($project->projectFiles as $projectFile)
                                         <tr>
-                                            <td>{{ $projectFile->document_name }}</td>
+                                            <td>
+                                                <a href="{{ asset('storage/'.$projectFile->document_path) }}" target="_blank" rel="noopener noreferrer">
+                                                    {{ $projectFile->document_name }}
+                                                </a>
+                                            </td>
                                             <td>{{ $projectFile->documentType->name }}</td>
                                             <td>{{ $projectFile->createdBy->first_name }} {{ $projectFile->createdBy->last_name }}</td>
                                             <td>{{ $projectFile->created_at }}</td>
-                                            <td>
+                                            {{-- <td>
                                                 <a href="{{ asset('storage/'.$projectFile->document_path) }}" target="_blank" rel="noopener noreferrer">View</a>
-                                            </td>
+                                            </td> --}}
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -226,10 +230,47 @@
                         <div class="d-flex align-items-center justify-content-between">
                             <h3 class="card-title text-gray-900 fw-bold fs-3">Invoices</h3>
                             <a href="#" class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#add_project_files_modal">
+                                data-bs-target="#add_project_invoices_modal">
                                 Add Invoice
                             </a>
                         </div>
+                        <table class="table table-bordered">
+                            <table class="table">
+                                <thead>
+                                    <tr class="fw-bold fs-6 text-gray-800">
+                                        <th>Description</th>
+                                        <th>Amount</th>
+                                        <th>Billed On</th>
+                                        <th>Due Date</th>
+                                        <th>Billed By</th>
+                                        <th>Is Paid</th>
+                                        <th>Paid On</th>
+                                        <th>Paid By</th>
+                                        <th>Reference Number</th>
+                                        <th class="w-auto"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($project->invoices as $invoice)
+                                        <tr>
+                                            <td>{{ $invoice->description }}</td>
+                                            <td>{{ $invoice->project->currency->name }} {{ number_format($invoice->amount,2) }}</td>
+                                            <td>{{ $invoice->billing_date }}</td>
+                                            <td>{{ $invoice->due_date ?? '' }}</td>
+                                            <td>{{ $invoice->createdByUser->first_name }} {{ $invoice->createdByUser->last_name }}</td>
+                                            <td>{{ $invoice->isPaid == 0 ? 'No' : 'Yes' }}</td>
+                                            <td>{{ $invoice->paid_date ?? '' }}</td>
+                                            <td>{{ $invoice->paidByUser->first_name ?? '' }} {{ $invoice->paidByUser->last_name ?? '' }}</td>
+                                            <td>{{ $invoice->reference_number ?? '' }}</td>
+                                            @if ($invoice->isPaid == 0)
+                                                <td>
+                                                    <a class="btn btn-sm btn-primary">Pay</a>
+                                                </td>
+                                            @endif
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                     </div>
                 </div>
             </div>
@@ -529,6 +570,66 @@
                             <div class="card-footer text-end" style="margin-top:-5rem;">
                                 <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
                                 <button type="submit" class="btn btn-primary">Add File</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal bg-body fade" tabindex="-1" id="add_project_invoices_modal">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content shadow-none">
+                <div class="modal-header">
+                    <h1>Add Project Invoice</h3>
+                        <!--begin::Close-->
+                        <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"
+                            aria-label="Close">
+                            <i class="ki-duotone ki-cross fs-2x"><span class="path1"></span><span
+                                    class="path2"></span></i>
+                        </div>
+                        <!--end::Close-->
+                </div>
+
+                <div class="modal-body">
+                    <div class="col-12">
+                        <form class="card" action="{{ route('invoices.add') }}"
+                            method="POST">
+                            @csrf
+                            <input type="hidden" name="projectId" value="{{ $project->id }}">
+                            <input type="hidden" name="ClientId" value="{{ $project->projectClientId }}">
+                            <div class="card-body shadow-none">
+                                <div class="row row-cards py-5">
+                                    <div class="col-md-12">
+                                        <div class="mb-10">
+                                            <label class="form-label">Description</label>
+                                            <input type="text" class="form-control" name="invoiceDescription" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-10">
+                                            <label class="form-label">Amount</label>
+                                            <input type="text" class="form-control" name="invoiceAmount" />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-md-4">
+                                        <div class="mb-10">
+                                            <label for="" class="form-label">Billed On</label>
+                                            <input class="form-control flatpickr-input" name="invoiceBilledDate" placeholder="Pick date" id="kt_datepicker_1" type="text" readonly="readonly">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-md-4">
+                                        <div class="mb-10">
+                                            <label for="" class="form-label">Invoice Due Date</label>
+                                            <input class="form-control flatpickr-input" name="invoiceDueDate" placeholder="Pick date" id="kt_datepicker_2" type="text" readonly="readonly">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-end" style="margin-top:-5rem;">
+                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Add Invoice</button>
                             </div>
                         </form>
                     </div>

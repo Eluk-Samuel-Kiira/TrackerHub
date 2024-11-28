@@ -15,12 +15,15 @@ return new class extends Migration
             $table->id();
             $table->foreignId('project_id')->constrained('projects')->cascadeOnDelete();
             $table->foreignId('client_id')->constrained('clients')->cascadeOnDelete();
+            $table->text('description');
             $table->string('amount');
-            $table->foreignId('currency_id')->constrained('currencies')->cascadeOnDelete();
+            $table->date('billing_date');
+            $table->date('due_date');
             $table->integer('isPaid')->enum(['1','0'])->default(0);
             $table->string('reference_number')->nullable()->unique();//may change to recieptId and upload images
-            $table->foreignId('createdBy')->constrained('users')->cascadeOnUpdate();
-            $table->foreignId('paidBy')->constrained('users')->cascadeOnUpdate();
+            $table->foreignId('createdBy')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('paidBy')->nullable()->constrained('users')->cascadeOnDelete();
+            $table->date('paidOn')->nullable();
             $table->integer('isActive')->enum(['1','0'])->default(1);
             $table->timestamps();
         });

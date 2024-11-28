@@ -190,21 +190,25 @@
                                             </div>
                                         </div>
                                     </div>
-
-
-                                    <div class="col-sm-6 col-md-4">
+                                    <div class="col-sm-6 col-md-3">
                                         <div class="mb-10">
                                             <label class="form-label">Budget</label>
                                             <input type="text" class="form-control" name="projectBudget" placeholder="Budget">
                                         </div>
                                     </div>
-                                    <div class="col-sm-6 col-md-4">
+                                    <div class="col-sm-6 col-md-3">
                                         <div class="mb-10">
                                             <label class="form-label">Budget Limit</label>
                                             <input type="text" class="form-control" name="projectBudgetLimit" placeholder="Budget Limit">
                                         </div>
                                     </div>
-                                    <div class="col-sm-6 col-md-4">
+                                    <div class="col-sm-6 col-md-3">
+                                        <div class="mb-10">
+                                            <label class="form-label">Project Cost</label>
+                                            <input type="text" class="form-control" name="projectCost" placeholder="Project Cost">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-md-3">
                                         <div class="mb-10">
                                             <label class="form-label">Currency</label>
                                             <div class="d-flex">
