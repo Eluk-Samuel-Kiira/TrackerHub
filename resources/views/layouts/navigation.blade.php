@@ -84,7 +84,7 @@
                 </div>
 
                 {{--Requistion Mgt --}}
-                <div data-kt-menu-trigger="click" class="menu-item here {{ is_tab_show(['requistion*']) }} menu-accordion">
+                <div data-kt-menu-trigger="click" class="menu-item here {{ is_tab_show(['requistion*','expense*']) }} menu-accordion">
                     <span class="menu-link">
                         <span class="menu-icon">
                             <i class="ki-duotone ki-color-swatch fs-2">
@@ -105,6 +105,16 @@
                                     <span class="bullet bullet-dot"></span>
                                 </span>
                                 <span class="menu-title">{{__('Requistion Index')}}</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="menu-sub menu-sub-accordion">
+                        <div class="menu-item">
+                            <a class="menu-link {{ is_route_active('expense.index') }}" href="{{ route('expense.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">{{__('Project Expenses')}}</span>
                             </a>
                         </div>
                     </div>

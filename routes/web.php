@@ -17,6 +17,7 @@ use App\Http\Controllers\Users\RoleController;
 use App\Http\Controllers\Settings\SettingController;
 use App\Http\Controllers\Settings\GeneralReportsController;
 use App\Http\Controllers\Project\RequistionController;
+use App\Http\Controllers\Project\ProjectExpenseController;
 use App\Http\Controllers\ProjectInvoiceController;
 
 Route::get('/', function () {
@@ -65,6 +66,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/requisition-response/{id}', [RequistionController::class, 'changeRequisitionResponse'])->name('requistion.response');
     Route::post('/requisition.upload/{id}', [RequistionController::class, 'uploadRequisitionFile'])->name('requisition.upload');
     Route::post('/requisition/delete-file', [RequistionController::class, 'deleteFile'])->name('requisition.deleteFile');
+    Route::get('/project-expenses', [ProjectExpenseController::class, 'index'])->name('expense.index');
 
 
     // HR
