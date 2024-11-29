@@ -359,6 +359,8 @@
                 $('#kt_datepicker_1').flatpickr();
                 $('#kt_datepicker_2').flatpickr();
                 $('#taskDeadlindDate').flatpickr();
+                $('#kt_datepicker_1edit').flatpickr();
+                $('#kt_datepicker_2edit').flatpickr();
                 ClassicEditor
                 .create(document.querySelector('#kt_docs_ckeditor_classic'))
                 .then(editor => {
@@ -441,6 +443,11 @@
                     // Select the newly added currency
                     document.getElementById('currency').value = data.currency.id;
 
+                    // document.getElementById('currency1').appendChild(option);
+
+                    // // Select the newly added currency
+                    // document.getElementById('currency1').value = data.currency.id;
+
                     // Clear the input field
                     document.getElementById('currency_code').value = '';
 
@@ -487,6 +494,15 @@
                     // Clear the input field
                     document.getElementById('project_category_name').value = '';
 
+
+                    // document.getElementById('project_category1').appendChild(option);
+
+                    // // Select the newly added currency
+                    // document.getElementById('project_category1').value = data.project_category.id;
+
+                    // Clear the input field
+                    document.getElementById('project_category_name').value = '';
+
                     // Close the modal
                     const addProjectCategoryModalElement = document.getElementById('add_project_category_modal');
                     const addProjectCategoryModal = bootstrap.Modal.getInstance(addProjectCategoryModalElement) || new bootstrap.Modal(addProjectCategoryModalElement);
@@ -525,6 +541,11 @@
 
                     // Select the newly added currency
                     document.getElementById('department').value = data.department.id;
+
+                    // document.getElementById('department1').appendChild(option);
+
+                    // // Select the newly added currency
+                    // document.getElementById('department1').value = data.department.id;
 
                     // Clear the input field
                     document.getElementById('department_name').value = '';
@@ -571,6 +592,11 @@
 
                     // Select the newly added currency
                     document.getElementById('client').value = data.client.id;
+
+                    // document.getElementById('client1').appendChild(option);
+
+                    // // Select the newly added currency
+                    // document.getElementById('client1').value = data.client.id;
 
                     // Clear the input field
                     document.getElementById('client_name').value = '';
@@ -622,6 +648,12 @@
                     // Get currently selected options and add the new user ID
                     let selectedOptions = $('#user').val() || []; // Retrieve current selection or an empty array if none
                     selectedOptions.push(data.user.id); // Add the new user to the selections
+
+                    // document.getElementById('user1').appendChild(option);
+
+                    // // Get currently selected options and add the new user ID
+                    // let selectedOptions1 = $('#user1').val() || []; // Retrieve current selection or an empty array if none
+                    // selectedOptions1.push(data.user.id); // Add the new user to the selections
 
                     // Clear the input field
                     document.getElementById('user_first_name').value = '';

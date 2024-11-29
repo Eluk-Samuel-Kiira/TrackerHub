@@ -85,6 +85,27 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <!--begin::Body-->
+                            <div class="card-body hover-elevate-up shadow-sm parent-hover">
+                                <!--begin::Content main-->
+                                <div class="mb-14">
+                                    <!--begin::Heading-->
+                                    <div class="mb-15">
+                                        <!--begin::Title-->
+                                        <h3 class="fs-2x text-gray-900 mb-6">Project description</h3>
+                                        <!--end::Title-->
+                                        <!--begin::Text-->
+                                        <div class="fs-5 text-gray-600 fw-semibold">{!! $project->projectDescription !!}</div>
+                                        <!--end::Text-->
+                                    </div>
+                                </div>
+                                <!--end::Content main-->
+                            </div>
+                            <!--end::Body-->
+                        </div>
+                    </div>
                 </div>
             </div>
 
