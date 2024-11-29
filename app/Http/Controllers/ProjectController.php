@@ -126,9 +126,58 @@ class ProjectController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Project $project)
+    public function update(Request $request,$id)
     {
-        //
+        $project = Project::find($id);
+
+        $request->validate([
+            "projectCode" => "required|string|unique:projects,projectCode",
+            "projectName" => "required|string|unique:projects,projectName",
+            "projectStartDate" => "required|date",
+            "projectDeadlineDate" => "required|date",
+            "projectDescription" => "required|string",
+            "projectCategoryId" => "required|exists:project_categories,id",
+            "projectDepartmentId" => "required|exists:departments,id",
+            "projectClientId" => "required|exists:clients,id",
+            "projectMemberIds" => "required",
+            "projectCost" => "required|numeric",
+            "projectBudget" => "required|numeric",
+            "projectBudgetLimit" => "required|numeric",
+            "projectCurrencyId" => "required|exists:currencies,id",
+        ]);
+
+        $project->update([
+            "projectCode" => $request->projectCode,
+            "projectName" => $request->projectName,
+            "projectStartDate" => $request->projectStartDate,
+            "projectDeadlineDate" => $request->projectDeadlineDate,
+            "projectDescription" => $request->projectDescription,
+            "projectCategoryId" => $request->projectCategoryId,
+            "projectDepartmentId" => $request->projectDepartmentId,
+            "projectClientId" => $request->projectClientId,
+            "projectCost" => $request->projectCost,
+            "projectBudget" => $request->projectBudget,
+            "projectBudgetLimit" => $request->projectBudgetLimit,
+            "projectCurrencyId" => $request->projectCurrencyId,
+        ]);
+
+        //user sync() when its update, attach() when its create
+        $project->users()->sync($request->projectMemberIds);
+
+        // Flash toast messages based on success or failure
+        if ($project->update()) {
+            session()->flash('toast', [
+                'type' => 'success',
+                'message' => 'Project updated successfully!',
+            ]);
+        } else {
+            session()->flash('toast', [
+                'type' => 'error',
+                'message' => 'Project update failed!',
+            ]);
+        }
+
+        return redirect()->route('projects.index');
     }
 
     /**
