@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\ProjectExpense;
 use App\Models\Project;
 use Illuminate\Support\Facades\DB;
+use App\Models\Requistion;
 
 class ProjectExpenseController extends Controller
 {
@@ -19,20 +20,25 @@ class ProjectExpenseController extends Controller
             ->get();
 
         $projects = Project::whereIn('id', $approvedRequisitions->pluck('project_id'))->get();
+        $project_requisitions = Requistion::whereIn('project_id', $approvedRequisitions->pluck('project_id'))->get();
 
-        // Combine the projects and approved requisitions for ease of use
-        $combinedData = $projects->map(function ($project) use ($approvedRequisitions) {
+        // Combine the projects, approved requisitions, and project requisitions for ease of use
+        $combinedData = $projects->map(function ($project) use ($approvedRequisitions, $project_requisitions) {
             $requisition = $approvedRequisitions->firstWhere('project_id', $project->id);
+
+            // Filter project-specific requisitions
+            $relatedRequisitions = $project_requisitions->where('project_id', $project->id);
 
             return [
                 'project' => $project,
                 'total_approved' => $requisition ? $requisition->total_approved : 0,
+                'requisitions' => $relatedRequisitions,
             ];
         });
 
         return view('requistions.expense-index', [
             'combinedData' => $combinedData,
         ]);
-
     }
+
 }
