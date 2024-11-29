@@ -57,9 +57,18 @@ class ProjectController extends Controller
             "projectMemberIds" => "required",
             "projectCost" => "required|numeric",
             "projectBudget" => "required|numeric",
-            "projectBudgetLimit" => "required|numeric",
+            "projectBudgetLimit" => [
+                "required",
+                "numeric",
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($value > $request->projectBudget) {
+                        $fail("The $attribute cannot be greater than the project budget.");
+                    }
+                },
+            ],
             "projectCurrencyId" => "required|exists:currencies,id",
         ]);
+        
 
         $project = Project::create([
             "projectCode" => $request->projectCode,
@@ -82,9 +91,14 @@ class ProjectController extends Controller
 
        // Flash toast messages based on success or failure
         if ($project) {
-            session()->flash('toast', [
-                'type' => 'success',
-                'message' => 'Project created successfully!',
+            // session()->flash('toast', [
+            //     'type' => 'success',
+            //     'message' => 'Project created successfully!',
+            // ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => __('Project Created Successfully'),
             ]);
         } else {
             session()->flash('toast', [

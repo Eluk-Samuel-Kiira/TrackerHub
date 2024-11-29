@@ -9,18 +9,21 @@
                 </th>
                 <th class="min-w-125px">{{__('Req-ID')}}</th>
                 <th class="min-w-125px">{{__('Title')}}</th>
+                <th class="min-w-125px">{{__('Project')}}</th>
                 <th class="min-w-125px">{{__('Amount')}}</th>
                 <th class="min-w-125px">{{__('Creator')}}</th>
                 <th class="min-w-125px">{{__('Created At')}}</th>
                 <th class="min-w-125px">{{__('Status')}}</th>
-                <th class="min-w-125px">{{__('Response')}}</th>
+                <th class="min-w-125px">{{__('Approval Status')}}</th>
                 <th class="text-end min-w-100px">{{__('Actions')}}</th>
             </tr>
         </thead>
         <tbody class="text-gray-600 fw-semibold">
             @if (!empty($requisitions) && $requisitions->count() > 0)
                 @foreach ($requisitions as $requisition)
-                    <tr data-role="{{ strtolower($requisition->name) }}">
+                    <tr data-role="{{ strtolower($requisition->name) }}"
+                        style="{{ $requisition->status === 'approved' ? 'background-color: #f8d7da;' : '' }}"
+                    >
                         <td>
                             <div class="form-check form-check-sm form-check-custom form-check-solid">
                                 <input class="form-check-input" type="checkbox" value="1" />
@@ -30,6 +33,7 @@
                             <div class="badge badge-light fw-bold">{{__('ID-')}}{{ $requisition->id }}</div>
                         </td>
                         <td>{{ $requisition->name }}</td>
+                        <td>{{ $requisition->requisitionProject->projectName ?? 'none' }}</td>
                         <td>{{ $requisition->amount }}</td>
                         <td>{{ $requisition->requisitionCreater->name ?? 'None' }}
                         </td>

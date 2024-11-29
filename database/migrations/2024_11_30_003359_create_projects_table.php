@@ -25,6 +25,7 @@ return new class extends Migration
             $table->integer('isPaidOff')->enum(['1', '0'])->default(1);
             $table->decimal('projectBudget', 15, 2);
             $table->decimal('projectBudgetLimit', 15, 2);
+            $table->enum('txn_status', ['pending','paid','incomplete'])->default('pending'); 
             $table->foreignId('projectCurrencyId')->constrained('currencies')->cascadeOnDelete();
             $table->integer('completionStatus')->enum(['0', '1'])->default(0);
             $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();

@@ -9,6 +9,7 @@ use App\Http\Requests\Project\UpdateRequistionRequest;
 use App\Models\Requistion;
 use App\Models\Project;
 use App\Models\DocumentType;
+use App\Models\ProjectExpense;
 use App\Models\RequisitionFiles;
 use DB;
 use Illuminate\Support\Facades\Storage;
@@ -103,6 +104,13 @@ class RequistionController extends Controller
             // \Log::info($request);
             $updated = $requistion->update($validatedData);
 
+            if ($requistion->status === 'approved') {
+                return response()->json([
+                    'success' => false,
+                    'message' => __('An approved requisition can not be edited.'),
+                ]);
+            }
+
             if ($updated) {
                 return response()->json([
                     'success' => true,
@@ -182,6 +190,12 @@ class RequistionController extends Controller
         $requisition = Requistion::find($id);
     
         if ($requisition) {
+            if ($requisition->status === 'approved') {
+                return response()->json([
+                    'success' => false,
+                    'message' => __('An approved requisition status can not be changed'),
+                ]);
+            }
             $requisition->isActive = $validated['status'];  
             if ($requisition->save()) {  
                 return response()->json([
@@ -218,29 +232,101 @@ class RequistionController extends Controller
                 ]);
             }
 
+            // Update the budget if status is approved
+            if ($validated['status'] === 'approved') {
+                $project = Project::findOrFail($requisition->project_id);
+                if ($project) {
+                    $budgetResult = $this->budgetDeductions($requisition, $project);
+                
+                    if (!$budgetResult['success']) {
+                        \Log::error($budgetResult['message']);
+                        return response()->json([
+                            'success' => false,
+                            'message' => $budgetResult['message'], 
+                        ]);
+                    }
+                
+                    // Proceed only if budget deductions were successful
+                    $requisition->isActive = 0;
+                    $requisition->status = 'approved';
+                    $requisition->save();
 
-            // Update the status
-            // if ($validated['status'] === 'approved') {
-            //     $requisition->isActive = 0;
-            // }
-            $requisition->status = $validated['status'];  
-            if ($requisition->save()) {  
-                return response()->json([
-                    'success' => true,
-                    'reload' => true,
-                    'refresh' => false,
-                    'componentId' => 'reloadRequisitionComponent',
-                    'message' => __('Requisition updated successfully'),
-                ]);
+                
+                    return response()->json([
+                        'success' => true,
+                        'reload' => true,
+                        'refresh' => false,
+                        'componentId' => 'reloadRequisitionComponent',
+                        'message' => __('Requisition updated successfully'),
+                    ]);
+                }
             }
         }
 
         // If requisition not found or status update failed
         return response()->json([
             'success' => false,
-            'message' => __('Requisition not found or status update failed!'),
+            'message' => __('Requisition not found or status update failed because it night have been approved!'),
         ]);
     }
+
+    
+    private function budgetDeductions($requisition, $project)
+    {
+        // Validate requisition amount
+        if (!isset($requisition->amount) || !is_numeric($requisition->amount) || $requisition->amount <= 0) {
+            \Log::error('Invalid requisition amount: ' . json_encode($requisition));
+            return [
+                'success' => false,
+                'message' => __('Invalid requisition amount.'),
+            ];
+        }
+
+        // Ensure project budget properties are valid
+        if (!isset($project->projectBudget, $project->projectBudgetLimit)) {
+            \Log::error('Invalid project properties: ' . json_encode($project));
+            return [
+                'success' => false,
+                'message' => __('Invalid project data.'),
+            ];
+        }
+
+        // Calculate the new budget
+        $newProjectBudget = $project->projectBudget - $requisition->amount;
+
+        // Check if the deduction exceeds the budget limit
+        if ($newProjectBudget < $project->projectBudgetLimit) {
+            // \Log::info('Budget limit exceeded. Requisition: ' . json_encode($requisition));
+            return [
+                'success' => false,
+                'message' => __('This requisition will surpass/exceed the budget limit.'),
+            ];
+        }
+
+        // Update the project budget
+        $project->update([
+            'projectBudget' => $newProjectBudget,
+        ]);
+
+        $project_expenses = ProjectExpense::create([
+            'project_id' => $project->id,
+            'requested_by' => $requisition->created_by,
+            'approved_amount' => $requisition->amount,
+        ]);
+
+        // \Log::info('Project budget updated successfully: ' . json_encode([
+        //     'project_id' => $project->id,
+        //     'old_budget' => $project->projectBudget + $requisition->amount,
+        //     'new_budget' => $newProjectBudget,
+        // ]));
+
+        return [
+            'success' => true,
+            'message' => __('Project budget updated successfully.'),
+        ];
+    }
+
+
 
     public function uploadRequisitionFile(Request $request, $id)
     {
