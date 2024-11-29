@@ -310,7 +310,7 @@ class RequistionController extends Controller
 
         $project_expenses = ProjectExpense::create([
             'project_id' => $project->id,
-            'requested_by' => $requisition->id,
+            'requested_by' => $requisition->created_by,
             'approved_amount' => $requisition->amount,
         ]);
 

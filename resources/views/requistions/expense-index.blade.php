@@ -39,7 +39,7 @@
                     
                     <!-- Search Bar -->
                     <div class="px-7 py-5">
-                        <input type="text" id="searchInput" class="form-control" placeholder="Search requistions...">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search projects...">
                     </div>
                 </div>
             </div>
