@@ -10,8 +10,8 @@
                 <th class="min-w-125px">{{ __('Project Code') }}</th>
                 <th class="min-w-125px">{{ __('Project Name') }}</th>
                 <th class="min-w-125px">{{ __('Budget Limit') }}</th>
-                <th class="min-w-125px">{{ __('Total Approved') }}</th>
-                <th class="min-w-125px">{{ __('Balance') }}</th>
+                <th class="min-w-125px">{{ __('Approved (Spent)') }}</th>
+                <th class="min-w-125px">{{ __('Limit Balance') }}</th>
                 <th class="min-w-125px">{{ __('Status') }}</th>
                 <th class="min-w-125px">{{ __('Action') }}</th>
             </tr>
@@ -28,10 +28,18 @@
                         $percentageSpent = $project->projectBudgetLimit > 0 ? ($totalApproved / $project->projectBudgetLimit) * 100 : 0;
 
                         // Additional Calculations
-                        $expectedProfit = $project->projectBudget - $project->projectCost;
-                        $actualProfit = $expectedProfit - $totalApproved;
-                        $profitMargin = $expectedProfit > 0 ? ($actualProfit / $expectedProfit) * 100 : 0;
+                        $expectedProfit = $project->projectCost - $project->projectBudget; 
+                        $actualProfit = $project->projectCost - $project->projectBudgetLimit;
+
+                        // Ensure calculations account for negative values
+                        $profitMargin = $expectedProfit != 0 
+                            ? ($actualProfit / abs($expectedProfit)) * 100 
+                            : 0;
+
+                        // If balance is negative, calculate the over-budget amount; otherwise, it's zero
+                        $balance = $project->projectBudget - $project->projectBudgetLimit;
                         $overBudgetAmount = $balance < 0 ? abs($balance) : 0;
+
                     @endphp
                     <tr>
                         <td>

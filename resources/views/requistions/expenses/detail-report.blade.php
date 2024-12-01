@@ -21,15 +21,15 @@
                         <p><strong>{{ __('Deadline:') }}</strong> {{ \Carbon\Carbon::parse($project->projectDeadlineDate)->format('d M Y') }}</p>
                     </div>
 
-                    <!-- Financial Summary -->
+                    <!-- Budget Expenditure Summary -->
                     <div class="report-section">
-                        <h4>{{ __('Financial Summary') }}</h4>
+                        <h4>{{ __(' Budget Expenditure Summary') }}</h4>
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
                                     <th>{{ __('Budget Limit') }}</th>
-                                    <th>{{ __('Total Approved') }}</th>
-                                    <th>{{ __('Balance') }}</th>
+                                    <th>{{ __('Total Expenditure') }}</th>
+                                    <th>{{ __('Budget Limit Balance') }}</th>
                                     <th>{{ __('% Spent') }}</th>
                                     <th>{{ __('Over Budget') }}</th>
                                 </tr>
@@ -41,6 +41,29 @@
                                     <td>{{ number_format($balance, 2) }}</td>
                                     <td>{{ number_format($percentageSpent, 2) }}%</td>
                                     <td>{{ number_format($overBudgetAmount, 2) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Project Cost Summary -->
+                    <div class="report-section">
+                        <h4>{{ __('Project Cost Summary') }}</h4>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>{{ __('Expected Cost') }}</th>
+                                    <th>{{ __('Actual Cost Paid') }}</th>
+                                    <th>{{ __('Balance') }}</th>
+                                    <th>{{ __('% Paid') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{{ number_format($project->projectCost, 2) }}</td><!-- Amount Expected to be Paid by Client -->
+                                    <td>{{ number_format($project->projectCost, 2) }}</td> <!-- Amount Paid by Client -->
+                                    <td>{{ number_format($balance, 2) }}</td><!-- Balance to be paid by Client -->
+                                    <td>{{ number_format($percentageSpent, 2) }}%</td> <!-- % Paid by Client -->
                                 </tr>
                             </tbody>
                         </table>

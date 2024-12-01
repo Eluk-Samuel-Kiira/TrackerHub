@@ -95,7 +95,7 @@
                     </div>
 
                     <div class="row mb-6">
-                        <label class="col-lg-4 col-form-label fw-semibold fs-6">Mail Username</label>
+                        <label class="col-lg-4 col-form-label fw-semibold fs-6">Mail Status</label>
                         <div class="col-lg-8">
                             <div class="row">
                                 <div class="col-lg-12 fv-row">

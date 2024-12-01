@@ -85,7 +85,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <div class="card">
                             <!--begin::Body-->
                             <div class="card-body hover-elevate-up shadow-sm parent-hover">

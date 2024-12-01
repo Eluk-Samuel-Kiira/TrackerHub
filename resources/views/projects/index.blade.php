@@ -33,39 +33,61 @@
         </div>
 
     </div>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($projects as $project)
-                                    <tr>
-                                        <td>{{ $project->projectCode }}</td>
-                                        <td>{{ $project->projectName }}</td>
-                                        <td>{{ $project->projectStartDate }}</td>
-                                        <td>{{ $project->projectDeadlineDate }}</td>
-                                        <td>{!! trim_description($project->projectDescription,5) !!}</td>
-                                        <td>{{ $project->projectCategory->name }}</td>
-                                        <td>{{ $project->department->name }}</td>
-                                        <td>{{ $project->client->name }}</td>
-                                        <td>
-                                            @foreach ($project->users as $index => $member)
-                                                {{ $member->first_name }} {{ $member->last_name }}@if($index < $project->users->count() - 1), @endif
-                                            @endforeach
-                                        </td>
-                                        <td>{{ $project->currency->name }} {{ number_format($project->projectBudget,2) }}</td>
-                                        <td>{{ $project->currency->name }} {{ number_format($project->projectBudgetLimit,2) }}</td>
-                                        <td><a href="{{route('projects.show', $project) }}">View</a></td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="12" class="text-center">No projects found</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="card-body py-4" id="">
+        <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_users">
+            <thead>
+                <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+                    <th class="w-10px pe-2">
+                        <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                            <input class="form-check-input" type="checkbox" data-kt-check="true" data-kt-check-target="#kt_table_users .form-check-input" value="1" />
+                        </div>
+                    </th>
+                    <th class="min-w-50px">Code</th>
+                    <th class="min-w-100px">Name</th>
+                    <th class="min-w-100px">Start Date</th>
+                    <th class="min-w-100px">Deadline</th>
+                    <!-- <th class="min-w-200px">Description</th> -->
+                    <th class="min-w-150px">Category</th>
+                    <th class="min-w-150px">Department</th>
+                    <th class="min-w-150px">Client</th>
+                    <th class="min-w-200px">Members</th>
+                    <th class="min-w-150px">Budget</th>
+                    <th class="min-w-150px">Budget Limit</th>
+                    <th class="w-auto"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($projects as $project)
+                    <tr>
+                        <td>
+                            <div class="form-check form-check-sm form-check-custom form-check-solid">
+                                <input class="form-check-input" type="checkbox" value="1" />
+                            </div>
+                        </td>
+                        <td>{{ $project->projectCode }}</td>
+                        <td>{{ $project->projectName }}</td>
+                        <td>{{ $project->projectStartDate }}</td>
+                        <td>{{ $project->projectDeadlineDate }}</td>
+                        <!-- <td>{!! trim_description($project->projectDescription,5) !!}</td> -->
+                        <td>{{ $project->projectCategory->name }}</td>
+                        <td>{{ $project->department->name }}</td>
+                        <td>{{ $project->client->name }}</td>
+                        <td>
+                            @foreach ($project->users as $index => $member)
+                                {{ $member->first_name }} {{ $member->last_name }}@if($index < $project->users->count() - 1), @endif
+                            @endforeach
+                        </td>
+                        <td>{{ $project->currency->name }} {{ number_format($project->projectBudget,2) }}</td>
+                        <td>{{ $project->currency->name }} {{ number_format($project->projectBudgetLimit,2) }}</td>
+                        <td><a href="{{route('projects.show', $project) }}">View</a></td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="12" class="text-center">No projects found</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 
     <div class="modal bg-body fade" tabindex="-1" id="edit_project_modal">

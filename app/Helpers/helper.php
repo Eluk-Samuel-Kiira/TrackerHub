@@ -98,4 +98,13 @@ if (!function_exists('getFaviconImage')) {
     }
 }
 
+function getMailOptions($option_key){
+    $app_details = Setting::first();
+    if ($option_key && isset($app_details[$option_key])) {
+        return $app_details[$option_key];
+    } else {
+        $default = '';
+        return $default;
+    }
+}
 

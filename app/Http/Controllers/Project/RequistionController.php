@@ -8,11 +8,15 @@ use App\Http\Requests\Project\StoreRequistionRequest;
 use App\Http\Requests\Project\UpdateRequistionRequest;
 use App\Models\Requistion;
 use App\Models\Project;
+use App\Models\Setting;
 use App\Models\DocumentType;
 use App\Models\ProjectExpense;
 use App\Models\RequisitionFiles;
+use App\Models\User;
 use DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\BudgetLimitMail;
 
 class RequistionController extends Controller
 {
@@ -297,6 +301,7 @@ class RequistionController extends Controller
         // Check if the deduction exceeds the budget limit
         if ($newProjectBudget < $project->projectBudgetLimit) {
             // \Log::info('Budget limit exceeded. Requisition: ' . json_encode($requisition));
+            $this->budgetLimitMail($requisition, $project);
             return [
                 'success' => false,
                 'message' => __('This requisition will surpass/exceed the budget limit.'),
@@ -324,6 +329,54 @@ class RequistionController extends Controller
             'success' => true,
             'message' => __('Project budget updated successfully.'),
         ];
+    }
+
+    
+    private function budgetLimitMail($requisition, $project)
+    {
+        if (getMailOptions('mail_status') === 'enabled') {
+            // Fetch the relevant users
+            $users = User::whereIn('role', ['director', 'project_manager'])->get();
+
+            // Define email content
+            $companyName = getMailOptions('app_name');
+            $subject = sprintf(
+                'Budget Limit Exceeded for %s Requisition, Amount: %s %s',
+                $requisition->name,
+                $requisition->amount,
+                $project->currency->name
+            );
+            $message = sprintf(
+                "Project '%s' has a budget limit of %s. However, the requisition '%s' exceeds this limit.\n\n".
+                "Details:\n".
+                "- Requisition Amount: %s %s\n".
+                "- Description: %s\n\n".
+                "Kindly review the requisition details to make an informed decision.",
+                $project->projectName,
+                $project->projectBudgetLimit,
+                $requisition->name,
+                $requisition->amount,
+                $project->currency->name,
+                $requisition->description
+            );
+
+            $content = [
+                'subject' => $subject,
+                'message' => $message,
+                'companyName' => $companyName,
+                'projectName' => $project->projectName,
+                'projectBudgetLimit' => $project->projectBudgetLimit,
+                'requisitionName' => $requisition->name,
+                'requisitionAmount' => $requisition->amount,
+                'currency' => $project->currency->name,
+                'description' => $requisition->description,
+            ];
+
+            // Send email to all relevant users
+            foreach ($users as $user) {
+                Mail::to($user->email)->send(new BudgetLimitMail($content));
+            }
+        }
     }
 
 

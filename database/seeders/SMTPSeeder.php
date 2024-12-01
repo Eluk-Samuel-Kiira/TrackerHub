@@ -17,9 +17,5 @@ class SMTPSeeder extends Seeder
         Setting::create([
             'app_name' => 'TrackHub',
         ]);
-
-        DocumentType::create([
-            'name' => 'pdf',
-        ]);
     }
 }
