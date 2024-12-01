@@ -26,7 +26,7 @@ class ProjectController extends Controller
         $departments = Department::where('isActive', 1)->get();
         $users = User::where('status', 'active')->get();
         $roles = Role::all()->pluck('name');
-        $projects = Project::with('projectCategory', 'department', 'client', 'currency', 'users')->paginate(10);
+        $projects = Project::with('projectCategory', 'department', 'client', 'currency', 'users')->get();
         return view('projects.index', compact('clients', 'projectCategories', 'currencies', 'departments', 'users', 'roles', 'projects'));
     }
 
@@ -55,7 +55,7 @@ class ProjectController extends Controller
             "projectDepartmentId" => "required|exists:departments,id",
             "projectClientId" => "required|exists:clients,id",
             "projectMemberIds" => "required",
-            "projectCost" => "required|numeric",
+            "projectCost" => "required|numeric|gte:projectBudget", // Ensure projectCost is greater than or equal to projectBudget
             "projectBudget" => "required|numeric",
             "projectBudgetLimit" => [
                 "required",
@@ -68,6 +68,7 @@ class ProjectController extends Controller
             ],
             "projectCurrencyId" => "required|exists:currencies,id",
         ]);
+        
         
 
         $project = Project::create([

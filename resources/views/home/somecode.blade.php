@@ -1,208 +1,198 @@
+@extends('layouts.app')
+@section('title', 'Projects')
 
-<div class="mb-10">
-    <label class="form-label fs-6 fw-semibold">Two Step Verification:</label>
-    <select class="form-select form-select-solid fw-bold" data-kt-select2="true" data-placeholder="Select option" data-allow-clear="true" data-kt-user-table-filter="two-step" data-hide-search="true">
-        <option></option>
-        <option value="Enabled">Enabled</option>
-    </select>
-</div>
+@section('content')
+    <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+        <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
+            <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+                <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">{{__('Projects Table')}}</h1>
+                <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+                    <li class="breadcrumb-item text-muted">
+                        @php
+                            $previousUrl = url()->previous();
+                            $previousRouteName = optional(app('router')->getRoutes()->match(request()->create($previousUrl)))->getName();
+                            $formattedRouteName = $previousRouteName 
+                                ? Str::of($previousRouteName)->replace('.', ' ')->title() 
+                                : __('Back');
+                        @endphp
+                        <a href="{{ $previousUrl }}" class="text-muted text-hover-primary">
+                            {{ $formattedRouteName }}
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <span class="bullet bg-gray-500 w-5px h-2px"></span>
+                    </li>
+                    <li class="breadcrumb-item text-muted">{{__('Projects')}}</li>
+                </ul>
+            </div>
+            <div class="d-flex align-items-center gap-2 gap-lg-3">
+                <button class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal" data-bs-target="#add_project_modal">Add Project</button>
+            </div>
+            @include('projects.projects.create-project')  
 
-
-<div class="d-flex flex-column scroll-y px-5 px-lg-10" id="kt_modal_add_user_scroll" data-kt-scroll="true" data-kt-scroll-activate="true" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_modal_add_user_header" data-kt-scroll-wrappers="#kt_modal_add_user_scroll" data-kt-scroll-offset="300px">
-    <!--begin::Input group-->
-    <div class="fv-row mb-7">
-        <!--begin::Label-->
-        <label class="d-block fw-semibold fs-6 mb-5">Avatar</label>
-        <!--end::Label-->
-        <!--begin::Image placeholder-->
-        <style>.image-input-placeholder { background-image: url('assets/media/svg/files/blank-image.svg'); } [data-bs-theme="dark"] .image-input-placeholder { background-image: url('assets/media/svg/files/blank-image-dark.svg'); }</style>
-        <!--end::Image placeholder-->
-        <!--begin::Image input-->
-        <div class="image-input image-input-outline image-input-placeholder" data-kt-image-input="true">
-            <!--begin::Preview existing avatar-->
-            <div class="image-input-wrapper w-125px h-125px" style="background-image: url(assets/media/avatars/300-6.jpg);"></div>
-            <!--end::Preview existing avatar-->
-            <!--begin::Label-->
-            <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Change avatar">
-                <i class="ki-duotone ki-pencil fs-7">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                </i>
-                <!--begin::Inputs-->
-                <input type="file" name="avatar" accept=".png, .jpg, .jpeg" />
-                <input type="hidden" name="avatar_remove" />
-                <!--end::Inputs-->
-            </label>
-            <!--end::Label-->
-            <!--begin::Cancel-->
-            <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="cancel" data-bs-toggle="tooltip" title="Cancel avatar">
-                <i class="ki-duotone ki-cross fs-2">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                </i>
-            </span>
-            <!--end::Cancel-->
-            <!--begin::Remove-->
-            <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Remove avatar">
-                <i class="ki-duotone ki-cross fs-2">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                </i>
-            </span>
-            <!--end::Remove-->
         </div>
-        <!--end::Image input-->
-        <!--begin::Hint-->
-        <div class="form-text">Allowed file types: png, jpg, jpeg.</div>
-        <!--end::Hint-->
+
     </div>
-    <!--end::Input group-->
-    <!--begin::Input group-->
-    <div class="fv-row mb-7">
-        <!--begin::Label-->
-        <label class="required fw-semibold fs-6 mb-2">Full Name</label>
-        <!--end::Label-->
-        <!--begin::Input-->
-        <input type="text" name="user_name" class="form-control form-control-solid mb-3 mb-lg-0" placeholder="Full name" value="Emma Smith" />
-        <!--end::Input-->
-    </div>
-    <!--end::Input group-->
-    <!--begin::Input group-->
-    <div class="fv-row mb-7">
-        <!--begin::Label-->
-        <label class="required fw-semibold fs-6 mb-2">Email</label>
-        <!--end::Label-->
-        <!--begin::Input-->
-        <input type="email" name="user_email" class="form-control form-control-solid mb-3 mb-lg-0" placeholder="example@domain.com" value="smith@kpmg.com" />
-        <!--end::Input-->
-    </div>
-    <!--end::Input group-->
-    <!--begin::Input group-->
-    <div class="mb-5">
-        <!--begin::Label-->
-        <label class="required fw-semibold fs-6 mb-5">Role</label>
-        <!--end::Label-->
-        <!--begin::Roles-->
-        <!--begin::Input row-->
-        <div class="d-flex fv-row">
-            <!--begin::Radio-->
-            <div class="form-check form-check-custom form-check-solid">
-                <!--begin::Input-->
-                <input class="form-check-input me-3" name="user_role" type="radio" value="0" id="kt_modal_update_role_option_0" checked='checked' />
-                <!--end::Input-->
-                <!--begin::Label-->
-                <label class="form-check-label" for="kt_modal_update_role_option_0">
-                    <div class="fw-bold text-gray-800">Administrator</div>
-                    <div class="text-gray-600">Best for business owners and company administrators</div>
-                </label>
-                <!--end::Label-->
-            </div>
-            <!--end::Radio-->
-        </div>
-        <!--end::Input row-->
-        <div class='separator separator-dashed my-5'></div>
-        <!--begin::Input row-->
-        <div class="d-flex fv-row">
-            <!--begin::Radio-->
-            <div class="form-check form-check-custom form-check-solid">
-                <!--begin::Input-->
-                <input class="form-check-input me-3" name="user_role" type="radio" value="1" id="kt_modal_update_role_option_1" />
-                <!--end::Input-->
-                <!--begin::Label-->
-                <label class="form-check-label" for="kt_modal_update_role_option_1">
-                    <div class="fw-bold text-gray-800">Developer</div>
-                    <div class="text-gray-600">Best for developers or people primarily using the API</div>
-                </label>
-                <!--end::Label-->
-            </div>
-            <!--end::Radio-->
-        </div>
-        <!--end::Input row-->
-        <div class='separator separator-dashed my-5'></div>
-        <!--begin::Input row-->
-        <div class="d-flex fv-row">
-            <!--begin::Radio-->
-            <div class="form-check form-check-custom form-check-solid">
-                <!--begin::Input-->
-                <input class="form-check-input me-3" name="user_role" type="radio" value="2" id="kt_modal_update_role_option_2" />
-                <!--end::Input-->
-                <!--begin::Label-->
-                <label class="form-check-label" for="kt_modal_update_role_option_2">
-                    <div class="fw-bold text-gray-800">Analyst</div>
-                    <div class="text-gray-600">Best for people who need full access to analytics data, but don't need to update business settings</div>
-                </label>
-                <!--end::Label-->
-            </div>
-            <!--end::Radio-->
-        </div>
-        <!--end::Input row-->
-        <div class='separator separator-dashed my-5'></div>
-        <!--begin::Input row-->
-        <div class="d-flex fv-row">
-            <!--begin::Radio-->
-            <div class="form-check form-check-custom form-check-solid">
-                <!--begin::Input-->
-                <input class="form-check-input me-3" name="user_role" type="radio" value="3" id="kt_modal_update_role_option_3" />
-                <!--end::Input-->
-                <!--begin::Label-->
-                <label class="form-check-label" for="kt_modal_update_role_option_3">
-                    <div class="fw-bold text-gray-800">Support</div>
-                    <div class="text-gray-600">Best for employees who regularly refund payments and respond to disputes</div>
-                </label>
-                <!--end::Label-->
-            </div>
-            <!--end::Radio-->
-        </div>
-        <!--end::Input row-->
-        <div class='separator separator-dashed my-5'></div>
-        <!--begin::Input row-->
-        <div class="d-flex fv-row">
-            <!--begin::Radio-->
-            <div class="form-check form-check-custom form-check-solid">
-                <!--begin::Input-->
-                <input class="form-check-input me-3" name="user_role" type="radio" value="4" id="kt_modal_update_role_option_4" />
-                <!--end::Input-->
-                <!--begin::Label-->
-                <label class="form-check-label" for="kt_modal_update_role_option_4">
-                    <div class="fw-bold text-gray-800">Trial</div>
-                    <div class="text-gray-600">Best for people who need to preview content data, but don't need to make any updates</div>
-                </label>
-                <!--end::Label-->
-            </div>
-            <!--end::Radio-->
-        </div>
-        <!--end::Input row-->
-        <!--end::Roles-->
-    </div>
-    <!--end::Input group-->
-</div>
-
-
-
-<x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Profile') }}
-        </h2>
-    </x-slot>
-
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-profile-information-form')
-                </div>
-            </div>
-
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-password-form')
-                </div>
-            </div>
-
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.delete-user-form')
+    <div class="container">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="my-5">
+                    <div class="table-responsive">
+                        <table class="table table-striped gy-7 gs-7">
+                            <thead>
+                                <tr class="fw-semibold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+                                    <th class="min-w-50px">Code</th>
+                                    <th class="min-w-100px">Name</th>
+                                    <th class="min-w-100px">Start Date</th>
+                                    <th class="min-w-100px">Deadline</th>
+                                    <th class="min-w-200px">Description</th>
+                                    <th class="min-w-150px">Category</th>
+                                    <th class="min-w-150px">Department</th>
+                                    <th class="min-w-150px">Client</th>
+                                    <th class="min-w-200px">Members</th>
+                                    <th class="min-w-150px">Budget</th>
+                                    <th class="min-w-150px">Budget Limit</th>
+                                    <th class="w-auto"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($projects as $project)
+                                    <tr>
+                                        <td>{{ $project->projectCode }}</td>
+                                        <td>{{ $project->projectName }}</td>
+                                        <td>{{ $project->projectStartDate }}</td>
+                                        <td>{{ $project->projectDeadlineDate }}</td>
+                                        <td>{!! trim_description($project->projectDescription,5) !!}</td>
+                                        <td>{{ $project->projectCategory->name }}</td>
+                                        <td>{{ $project->department->name }}</td>
+                                        <td>{{ $project->client->name }}</td>
+                                        <td>
+                                            @foreach ($project->users as $index => $member)
+                                                {{ $member->first_name }} {{ $member->last_name }}@if($index < $project->users->count() - 1), @endif
+                                            @endforeach
+                                        </td>
+                                        <td>{{ $project->currency->name }} {{ number_format($project->projectBudget,2) }}</td>
+                                        <td>{{ $project->currency->name }} {{ number_format($project->projectBudgetLimit,2) }}</td>
+                                        <td><a href="{{route('projects.show', $project) }}">View</a></td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="12" class="text-center">No projects found</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!--begin::Modal - New Target-->
+    <div class="modal fade" id="add_users_modal" tabindex="-1" aria-hidden="true">
+        <!--begin::Modal dialog-->
+        <div class="modal-dialog modal-dialog-centered mw-650px">
+            <!--begin::Modal content-->
+            <div class="modal-content rounded">
+                <!--begin::Modal header-->
+                <div class="modal-header pb-0 border-0 justify-content-end">
+                    <!--begin::Close-->
+                    <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                        <i class="ki-duotone ki-cross fs-1">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+                    </div>
+                    <!--end::Close-->
+                </div>
+                <!--begin::Modal header-->
+                <!--begin::Modal body-->
+                <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
+                    <!--begin:Form-->
+                    <form id="add_users_modal_form">
+                        @csrf
+                        <!--begin::Heading-->
+                        <div class="mb-13 text-center">
+                            <!--begin::Title-->
+                            <h1 class="mb-3">Add User</h1>
+                            <!--end::Title-->
+                        </div>
+                        <!--end::Heading-->
+                        <!--begin::Input group-->
+                        <div class="row g-9 mb-8">
+
+                            <div class="d-flex flex-column mb-8 fv-row col-md-6">
+                                <!--begin::Label-->
+                                <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+                                    <span class="required">First Name</span>
+                                </label>
+                                <!--end::Label-->
+                                <input type="text" id="user_first_name" class="form-control form-control-solid" name="user_first_name" />
+                            </div>
+                            <div class="d-flex flex-column mb-8 fv-row col-md-6">
+                                <!--begin::Label-->
+                                <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+                                    <span class="required">Last Name</span>
+                                </label>
+                                <!--end::Label-->
+                                <input type="text" id="user_last_name" class="form-control form-control-solid" name="user_last_name" />
+                            </div>
+                        </div>
+                        <div class="row g-9 mb-8">
+
+                            <div class="d-flex flex-column mb-8 fv-row col-md-6">
+                                <!--begin::Label-->
+                                <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+                                        <span class="required">User Email</span>
+                                </label>
+                                <!--end::Label-->
+                                    <input type="text" id="user_email" class="form-control form-control-solid" name="user_email" />
+                            </div>
+                        </div>
+                        <div class="row g-9 mb-8">
+                            <div class="d-flex flex-column mb-8 fv-row col-md-6">
+                                <!--begin::Label-->
+                                <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+                                        <span class="required">Role</span>
+                                </label>
+                                <!--end::Label-->
+                                <select id="user_role" name="user_role" class="form-select form-select" data-control="select2" data-close-on-select="false" data-placeholder="Select an option" data-allow-clear="true">
+                                    <option></option>
+                                    @foreach ($roles as $role)
+                                        <option value="{{ $role }}">{{ $role }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="d-flex flex-column mb-8 fv-row col-md-6">
+                                <!--begin::Label-->
+                                <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+                                    <span class="required">User Department</span>
+                                </label>
+                                <!--end::Label-->
+                                <select id="user_department" name="user_department" class="form-select form-select" data-control="select2" data-close-on-select="false" data-placeholder="Select an option" data-allow-clear="true">
+                                    <option></option>
+                                    @foreach ($departments as $department)
+                                        <option value="{{ $department->id }}">{{ $department->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <!--end::Input group-->
+                        <div class="text-center">
+                            <button class="btn btn-light me-3" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">
+                                <span class="indicator-label">Add</span>
+                            </button>
+                        </div>
+                    </form>
+                    <!--end:Form-->
+                </div>
+                <!--end::Modal body-->
+            </div>
+            <!--end::Modal content-->
+        </div>
+        <!--end::Modal dialog-->
+    </div>
+    <!--end::Modal - New Target-->
+
+@endsection
