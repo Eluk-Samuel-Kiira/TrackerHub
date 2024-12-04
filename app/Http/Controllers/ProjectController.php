@@ -125,9 +125,10 @@ class ProjectController extends Controller
         ->get();
 
         $roles = Role::all()->pluck('name');
+        $clients = Client::where('isActive', 1)->get();
         $departments = Department::where('isActive', 1)->get();
         $documentTypes = DocumentType::where('isActive', 1)->get();
-        return view('projects.show', compact('project','users', 'roles', 'departments', 'documentTypes'));
+        return view('projects.show', compact('clients', 'project','users', 'roles', 'departments', 'documentTypes'));
     }
 
     /**

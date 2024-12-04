@@ -21,15 +21,41 @@
                 @foreach ($combinedData as $data)
                     @php
                         $project = $data['project'];
+                        $client_payments = $data['client_payments'];
                         $totalApproved = $data['total_approved'];
                         $requisitions = $data['requisitions'];
+                        $invoices = $data['invoices'];
 
-                        $balance = $project->projectBudgetLimit - $totalApproved;
+                        $limitBalance = $project->projectBudgetLimit - $totalApproved;
                         $percentageSpent = $project->projectBudgetLimit > 0 ? ($totalApproved / $project->projectBudgetLimit) * 100 : 0;
 
+                        // Calculate overall cost
+                        $payments_received = $client_payments->sum('amount');
+
+                        // Calculate client balance
+                        $client_balance = $project->projectCost - $payments_received;
+
+                        // Handle cases where projectCost or client_balance is negative
+                        if ($project->projectCost != 0) {
+                            $percentage_left = ($client_balance / abs($project->projectCost)) * 100;
+                        } else {
+                            $percentage_left = 0;
+                        }
+
+                        // Explanation of client balance
+                        $balance_type = '';
+                        if ($client_balance == 0) {
+                            $balance_type = 'Fully Paid';
+                        } else {
+                            $balance_type = $client_balance < 0 ? 'Overpaid' : 'Pending';
+                        }
+
+
+
                         // Additional Calculations
-                        $expectedProfit = $project->projectCost - $project->projectBudget; 
-                        $actualProfit = $project->projectCost - $project->projectBudgetLimit;
+                        $expectedProfit = $project->projectCost - $project->projectBudget;
+                        // actual profit is the amount the client has paid minus what we have spent already 
+                        $actualProfit = $payments_received - $totalApproved;
 
                         // Ensure calculations account for negative values
                         $profitMargin = $expectedProfit != 0 
@@ -39,6 +65,17 @@
                         // If balance is negative, calculate the over-budget amount; otherwise, it's zero
                         $balance = $project->projectBudget - $project->projectBudgetLimit;
                         $overBudgetAmount = $balance < 0 ? abs($balance) : 0;
+
+                        // Calculate the budget difference
+                        $isWithInBudget = $project->projectBudget - $project->projectBudgetLimit;
+
+                        // Handle negative and positive cases
+                        if ($isWithInBudget >= 0) {
+                            $budget_status = 'Within Budget';
+                        } else {
+                            $budget_status = 'Over Budget';
+                        }
+
 
                     @endphp
                     <tr>
@@ -51,7 +88,7 @@
                         <td>{{ $project->projectName }}</td>
                         <td>{{ number_format($project->projectBudgetLimit, 2) }}</td>
                         <td>{{ number_format($totalApproved, 2) }}</td>
-                        <td>{{ number_format($balance, 2) }}</td>
+                        <td>{{ number_format($limitBalance, 2) }}</td>
                         <td>
                             @if ($balance < 0)
                                 <span class="badge badge-danger">{{ __('Over Budget') }}</span>
@@ -72,8 +109,15 @@
                                 data-bs-target="#viewRequisition{{ $project->id }}">
                                 <i class="bi bi-bar-chart-line fs-2"></i>
                             </button>
+                            <button 
+                                class="btn btn-sm btn-icon btn-bg-light btn-active-color-success w-30px h-30px" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#viewInvoices{{ $project->id }}">
+                                <i class="bi bi-receipt fs-2"></i>
+                            </button>
                             @include('requistions.expenses.detail-report')
                             @include('requistions.expenses.requisition-details')
+                            @include('requistions.expenses.invoices-paid')
                         </td>
                     </tr>
                 @endforeach

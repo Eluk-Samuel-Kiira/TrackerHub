@@ -93,6 +93,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/files/{file}', [ProjectFileController::class, 'destroy'])->name('files.remove');
 
     //invoices
+    Route::resource('invoice', ProjectInvoiceController::class);
+
     Route::post('/invoices', [ProjectInvoiceController::class, 'store'])->name('invoices.add');
     Route::delete('/invoices/{file}', [ProjectInvoiceController::class, 'destroy'])->name('invoices.remove');
 

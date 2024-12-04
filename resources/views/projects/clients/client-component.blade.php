@@ -46,7 +46,7 @@
                         </td>
                         <td>
                             <!-- Edit User Button -->
-                             <button 
+                            <button 
                                 class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" 
                                 data-bs-toggle="modal" 
                                 data-bs-target="#editClient{{$client->id}}">

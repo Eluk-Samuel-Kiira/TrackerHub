@@ -49,7 +49,7 @@
 
                     <div class="menu-sub menu-sub-accordion">
                         <div class="menu-item">
-                            <a class="menu-link {{ is_route_active('projects.index') }}" href="{{ route('projects.index') }}">
+                            <a class="menu-link {{ is_route_active('projects*') }}" href="{{ route('projects.index') }}">
                                 <span class="menu-bullet">
                                     <span class="bullet bullet-dot"></span>
                                 </span>
