@@ -18,6 +18,7 @@ class ProjectInvoice extends Model
         'reference_number',
         'createdBy',
         'paidBy',
+        'paidOn',
         'isActive',
     ];
 
@@ -29,8 +30,8 @@ class ProjectInvoice extends Model
         return $this->belongsTo(Client::class,'client_id');
     }
 
-    public function paidBy(){
-        return $this->belongsTo(User::class,'paidBy');
+    public function ClientPayer(){
+        return $this->belongsTo(Client::class,'paidBy', 'id');
     }
 
     public function createdByUser(){

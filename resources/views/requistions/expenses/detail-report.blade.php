@@ -38,7 +38,7 @@
                                 <tr>
                                     <td>{{ number_format($project->projectBudgetLimit, 2) }}</td>
                                     <td>{{ number_format($totalApproved, 2) }}</td>
-                                    <td>{{ number_format($balance, 2) }}</td>
+                                    <td>{{ number_format($limitBalance, 2) }}</td>
                                     <td>{{ number_format($percentageSpent, 2) }}%</td>
                                     <td>{{ number_format($overBudgetAmount, 2) }}</td>
                                 </tr>
@@ -55,15 +55,17 @@
                                     <th>{{ __('Expected Cost') }}</th>
                                     <th>{{ __('Actual Cost Paid') }}</th>
                                     <th>{{ __('Balance') }}</th>
-                                    <th>{{ __('% Paid') }}</th>
+                                    <th>{{ __('% Balance') }}</th>
+                                    <th>{{ __('Balance Status') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td>{{ number_format($project->projectCost, 2) }}</td><!-- Amount Expected to be Paid by Client -->
-                                    <td>{{ number_format($project->projectCost, 2) }}</td> <!-- Amount Paid by Client -->
-                                    <td>{{ number_format($balance, 2) }}</td><!-- Balance to be paid by Client -->
-                                    <td>{{ number_format($percentageSpent, 2) }}%</td> <!-- % Paid by Client -->
+                                    <td>{{ number_format($payments_received, 2) }}</td> <!-- Amount Paid by Client -->
+                                    <td>{{ number_format($client_balance, 2) }}</td><!-- Balance to be paid by Client -->
+                                    <td>{{ number_format($percentage_left, 2) }}%</td> <!-- % Paid by Client -->
+                                    <td>{{ $balance_type }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -100,9 +102,7 @@
                     <div class="report-section">
                         <h4>{{ __('Project Status') }}</h4>
                         <p>
-                            {{ $balance < 0 
-                                ? __('Status: Over Budget') 
-                                : __('Status: Within Budget') }}
+                            {{ $budget_status }}
                         </p>
                     </div>
                 </div>
