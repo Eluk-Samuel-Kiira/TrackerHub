@@ -32,23 +32,25 @@
         <div id="kt_app_content_container" class="app-container container-xxl">
             <div class="card mb-5 mb-xl-10">
                 <div class="card-body pt-9 pb-0">
-                    <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bold" id="account_tabs">
-                        <li class="nav-item mt-2">
-                            <a class="nav-link text-active-primary ms-0 me-10 py-5 active" id="logo_favicon-tab" data-bs-toggle="tab" href="#logo-favicon">Logo & Favicon</a>
-                        </li>
-                        <li class="nav-item mt-2">
-                            <a class="nav-link text-active-primary ms-0 me-10 py-5" id="app-informaton-tab" data-bs-toggle="tab" href="#app-informaton"> Application Info</a>
-                        </li>
-                        <li class="nav-item mt-2">
-                            <a class="nav-link text-active-primary ms-0 me-10 py-5" id="smtp-informaton-tab" data-bs-toggle="tab" href="#smtp-information">SMTP Info</a>
-                        </li>
-                        <li class="nav-item mt-2">
-                            <a class="nav-link text-active-primary ms-0 me-10 py-5" id="deactivate-tab" data-bs-toggle="tab" href="#meta-information">Meta Info</a>
-                        </li>
-                        <li class="nav-item mt-2">
-                            <a class="nav-link text-active-primary ms-0 me-10 py-5" id="database-tab" data-bs-toggle="tab" href="#database-mgt">Database</a>
-                        </li>
-                    </ul>
+                    @can('admin only')
+                        <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bold" id="account_tabs">
+                            <li class="nav-item mt-2">
+                                <a class="nav-link text-active-primary ms-0 me-10 py-5 active" id="logo_favicon-tab" data-bs-toggle="tab" href="#logo-favicon">Logo & Favicon</a>
+                            </li>
+                            <li class="nav-item mt-2">
+                                <a class="nav-link text-active-primary ms-0 me-10 py-5" id="app-informaton-tab" data-bs-toggle="tab" href="#app-informaton"> Application Info</a>
+                            </li>
+                            <li class="nav-item mt-2">
+                                <a class="nav-link text-active-primary ms-0 me-10 py-5" id="smtp-informaton-tab" data-bs-toggle="tab" href="#smtp-information">SMTP Info</a>
+                            </li>
+                            <li class="nav-item mt-2">
+                                <a class="nav-link text-active-primary ms-0 me-10 py-5" id="deactivate-tab" data-bs-toggle="tab" href="#meta-information">Meta Info</a>
+                            </li>
+                            <li class="nav-item mt-2">
+                                <a class="nav-link text-active-primary ms-0 me-10 py-5" id="database-tab" data-bs-toggle="tab" href="#database-mgt">Database</a>
+                            </li>
+                        </ul>
+                    @endcan
                 </div>
             </div>
 

@@ -52,26 +52,29 @@
                         <td>{{ ucwords(str_replace('_', ' ', $employee->departmentName->name)) }}</td>
                         <td>{{ $employee->created_at->format('d M Y, h:i a') }}</td>
                         <td>
-                            <select name="status" class="form-select form-select-solid form-select-sm" onchange="updateStatus({{ $employee->id }}, this.value)">
+                            <select name="status" class="form-select form-select-solid form-select-sm" onchange="updateStatus({{ $employee->id }}, this.value)"
+                            @cannot('update user') disabled @endcannot>
                                 <option value="active" {{ $employee->status === 'active' ? 'selected' : '' }}><span>{{__('Active')}}</option>
                                 <option value="inactive" {{ $employee->status === 'inactive' ? 'selected' : '' }}>{{__('Inactive')}}</option>
                             </select>
                         </td>
                         <td>
-                            <!-- Edit User Button -->
+                            @can('edit user')
                              <button 
                                 class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" 
                                 data-bs-toggle="modal" 
                                 data-bs-target="#editUserModal{{$employee->id}}">
                                 <i class="bi bi-pencil-square fs-2"></i>
                             </button>
-                            <!-- Delete User Button -->
-                            <button type="button" 
-                                class="btn btn-sm btn-icon btn-bg-light btn-active-color-danger w-30px h-30px" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#deleteUserModal{{$employee->id}}">
-                                <i class="bi bi-trash fs-2"></i>
-                            </button>
+                            @endcan
+                            @can('delete user')
+                                <button type="button" 
+                                    class="btn btn-sm btn-icon btn-bg-light btn-active-color-danger w-30px h-30px" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#deleteUserModal{{$employee->id}}">
+                                    <i class="bi bi-trash fs-2"></i>
+                                </button>
+                            @endcan
 
                             <!-- Delete User Modal -->
                             <div class="modal fade" id="deleteUserModal{{$employee->id}}" tabindex="-1" aria-hidden="true">

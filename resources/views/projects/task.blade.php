@@ -4,10 +4,12 @@
         <div class="card-body">
             <div class="d-flex align-items-center justify-content-between">
                 <h3 class="card-title text-gray-900 fw-bold fs-3">Tasks</h3>
-                <a href="#" class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal"
-                    data-bs-target="#add_project_tasks_modal">
-                    Add Task
-                </a>
+                @can('create task')
+                    <a href="#" class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#add_project_tasks_modal">
+                        Add Task
+                    </a>
+                @endcan
             </div>
             <table class="table table-bordered">
                 <thead>
@@ -36,12 +38,14 @@
                             </td>
                             <td>
                                 <div class="d-flex gap-2">
-                                    <button 
-                                        class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" 
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#completeTaskModal{{$task->id}}">
-                                        <i class="bi bi-infinity fs-2"></i>
-                                    </button>
+                                    @can('update task')
+                                        <button 
+                                            class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#completeTaskModal{{$task->id}}">
+                                            <i class="bi bi-infinity fs-2"></i>
+                                        </button>
+                                    @endcan
 
                                     
                                     <div class="modal fade" id="completeTaskModal{{$task->id}}" tabindex="-1" aria-hidden="true">
@@ -80,14 +84,16 @@
                                         </div>
                                     </div>
 
-                                    <form action="{{ route('tasks.remove', $task) }}" method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button 
-                                            class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px">
-                                            <i class="bi bi-trash fs-2"></i>
-                                        </button>
-                                    </form>
+                                    @can('delete task')
+                                        <form action="{{ route('tasks.remove', $task) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button 
+                                                class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px">
+                                                <i class="bi bi-trash fs-2"></i>
+                                            </button>
+                                        </form>
+                                    @endcan
                                 </div>
                             </td>
                         </tr>

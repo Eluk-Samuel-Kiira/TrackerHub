@@ -33,26 +33,29 @@
                         </td>
                         <td>{{ $department->created_at->format('d M Y, h:i a') }}</td>
                         <td>
-                            <select name="status" class="form-select form-select-solid form-select-sm" onchange="updateStatus({{ $department->id }}, this.value)">
+                            <select name="status" class="form-select form-select-solid form-select-sm" onchange="updateStatus({{ $department->id }}, this.value)"
+                            @cannot('update department') disabled @endcannot>
                                 <option value="1" {{ $department->isActive == 1 ? 'selected' : '' }}><span>{{__('Active')}}</option>
                                 <option value="0" {{ $department->isActive == 0 ? 'selected' : '' }}>{{__('Inactive')}}</option>
                             </select>
                         </td>
                         <td>
-                            <!-- Edit User Button -->
-                             <button 
-                                class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#editDepartment{{$department->id}}">
-                                <i class="bi bi-pencil-square fs-2"></i>
-                            </button>
-                            <!-- Delete User Button -->
-                            <button type="button" 
-                                class="btn btn-sm btn-icon btn-bg-light btn-active-color-danger w-30px h-30px" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#deleteUserModal{{$department->id}}">
-                                <i class="bi bi-trash fs-2"></i>
-                            </button>
+                            @can('edit department')
+                                <button 
+                                    class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#editDepartment{{$department->id}}">
+                                    <i class="bi bi-pencil-square fs-2"></i>
+                                </button>
+                            @endcan
+                            @can('delete department')
+                                <button type="button" 
+                                    class="btn btn-sm btn-icon btn-bg-light btn-active-color-danger w-30px h-30px" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#deleteUserModal{{$department->id}}">
+                                    <i class="bi bi-trash fs-2"></i>
+                                </button>
+                            @endcan
 
                             <!-- Delete User Modal -->
                             <div class="modal fade" id="deleteUserModal{{$department->id}}" tabindex="-1" aria-hidden="true">

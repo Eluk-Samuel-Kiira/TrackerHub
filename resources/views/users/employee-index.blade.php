@@ -25,6 +25,7 @@
                     <li class="breadcrumb-item text-muted">{{__('Employees')}}</li>
                 </ul>
             </div>
+
             <div class="d-flex align-items-center gap-2 gap-lg-3">
                 <button type="button" class="btn btn-sm btn-light-primary me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
                 <i class="ki-duotone ki-filter fs-2">
@@ -54,8 +55,10 @@
                     </div>
                 </div>
 
-                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_employee">
-                <i class="ki-duotone ki-plus fs-2"></i>{{__('Add Employee')}}</button>
+                @can('create user')
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_employee">
+                    <i class="ki-duotone ki-plus fs-2"></i>{{__('Add Employee')}}</button>
+                @endcan
                 @include('users.employee.create-user')    
             </div>
         </div>

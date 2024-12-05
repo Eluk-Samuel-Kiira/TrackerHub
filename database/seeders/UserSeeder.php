@@ -39,6 +39,28 @@ class UserSeeder extends Seeder
             'delete project',
             'update project',
             'assign team members',
+
+            // category Management
+            'create category',
+            'view category',
+            'edit category',
+            'delete category',
+            'update category',
+
+            // requistions Management
+            'create requisitions',
+            'view requisitions',
+            'edit requisitions',
+            'delete requisitions',
+            'update requisitions',
+            'approve requisitions',
+            'upload requisitions',
+
+            // projuect expenses
+            'view expenses',
+            'view report',
+            'view invoice',
+            'view files',
         
             // Task Management
             'create task',
@@ -46,10 +68,22 @@ class UserSeeder extends Seeder
             'edit task',
             'delete task',
             'update task',
-            'assign tasks',
+        
+            // Invoice Management
+            'create invoice',
+            'edit invoice',
+            'delete invoice',
+            'update invoice',
+            'send invoice',
+
+            // User Management
+            'create user',
+            'view user',
+            'edit user',
+            'delete user',
+            'update user',
         
             // Financial Management
-            'create invoice',
             'view financial reports',
             'manage project budget',
             'approve expenses',
@@ -60,31 +94,39 @@ class UserSeeder extends Seeder
             'view client',
             'edit client',
             'delete client',
-            'manage client communications',
+            'update client',
         
-            // Resource Management
-            'view resources',
-            'allocate resources',
-            'manage resource inventory',
+            // Members Management
+            'create members',
+            'view members',
+            'edit members',
+            'delete members',
+            'update members',
+
+            // Department Management
+            'create department',
+            'view department',
+            'edit department',
+            'delete department',
+            'update department',
+
+            // Documents Management
+            'create documents',
+            'view documents',
+            'edit documents',
+            'delete documents',
+            'update documents',
+            
         
-            // Team Management
-            'add team member',
-            'view team members',
-            'edit team member details',
-            'remove team member',
-        
-            // Quality Assurance
-            'conduct quality checks',
-            'approve deliverables',
-        
-            // System Administration
-            'view system logs',
-            'audit actions',
-        
-            // Director Permissions
-            'view project portfolio',
-            'approve project milestones',
-            'oversee strategic decisions',
+            // Admin Management
+            'admin only',
+            'create role',
+            'edit role',
+            'delete role',
+            'update role',
+            'update permission',
+            'update settings',
+            
         ];
         
         foreach ($permissions as $permission) {

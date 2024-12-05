@@ -47,38 +47,44 @@
                         <span class="menu-arrow"></span>
                     </span>
 
-                    <div class="menu-sub menu-sub-accordion">
-                        <div class="menu-item">
-                            <a class="menu-link {{ is_route_active('projects*') }}" href="{{ route('projects.index') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">{{__('Projects Index')}}</span>
-                            </a>
+                    @can('view project')
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ is_route_active('projects*') }}" href="{{ route('projects.index') }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">{{__('Projects Index')}}</span>
+                                </a>
+                            </div>
                         </div>
-                    </div>
+                    @endcan
 
-                    <div class="menu-sub menu-sub-accordion">
-                        <div class="menu-item">
-                            <a class="menu-link {{ is_route_active('project_categories.index') }}" href="{{ route('project_categories.index') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">{{__('Categories')}}</span>
-                            </a>
+                    @can('view category')
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ is_route_active('project_categories.index') }}" href="{{ route('project_categories.index') }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">{{__('Categories')}}</span>
+                                </a>
+                            </div>
                         </div>
-                    </div>
+                    @endcan
 
-                    <div class="menu-sub menu-sub-accordion">
-                        <div class="menu-item">
-                            <a class="menu-link {{ is_route_active('clients.index') }}" href="{{ route('clients.index') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">{{__('Clients')}}</span>
-                            </a>
+                    @can('view client')
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ is_route_active('clients.index') }}" href="{{ route('clients.index') }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">{{__('Clients')}}</span>
+                                </a>
+                            </div>
                         </div>
-                    </div>
+                    @endcan
 
 
                 </div>
@@ -98,26 +104,31 @@
                         <span class="menu-arrow"></span>
                     </span>
 
-                    <div class="menu-sub menu-sub-accordion">
-                        <div class="menu-item">
-                            <a class="menu-link {{ is_route_active('requistion.index') }}" href="{{ route('requistion.index') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">{{__('Requistion Index')}}</span>
-                            </a>
+                    @can('view requisitions')
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ is_route_active('requistion.index') }}" href="{{ route('requistion.index') }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">{{__('Requistion Index')}}</span>
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                    <div class="menu-sub menu-sub-accordion">
-                        <div class="menu-item">
-                            <a class="menu-link {{ is_route_active('expense.index') }}" href="{{ route('expense.index') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">{{__('Project Expenses')}}</span>
-                            </a>
+                    @endcan
+
+                    @can('view expenses')
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ is_route_active('expense.index') }}" href="{{ route('expense.index') }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">{{__('Project Expenses')}}</span>
+                                </a>
+                            </div>
                         </div>
-                    </div>
+                    @endcan
 
                 </div>
 
@@ -137,38 +148,42 @@
                         <span class="menu-arrow"></span>
                     </span>
 
-                    <div class="menu-sub menu-sub-accordion">
-                        <div class="menu-item">
-                            <a class="menu-link {{ is_route_active('employee.index') }}" href="{{ route('employee.index') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">{{__('User List')}}</span>
-                            </a>
+                    @can('view user')
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ is_route_active('employee.index') }}" href="{{ route('employee.index') }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">{{__('User List')}}</span>
+                                </a>
+                            </div>
                         </div>
-                    </div>
+                    @endcan
 
-                    <div class="menu-sub menu-sub-accordion">
-                        <div class="menu-item">
-                            <a class="menu-link {{ is_route_active('role.index') }}" href="{{ route('role.index') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">{{__('Roles')}}</span>
-                            </a>
+                    @can('admin only')
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ is_route_active('role.index') }}" href="{{ route('role.index') }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">{{__('Roles')}}</span>
+                                </a>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="menu-sub menu-sub-accordion">
-                        <div class="menu-item">
-                            <a class="menu-link {{ is_route_active('permission.index') }}" href="{{ route('permission.index') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">{{__('Permissions')}}</span>
-                            </a>
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ is_route_active('permission.index') }}" href="{{ route('permission.index') }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">{{__('Permissions')}}</span>
+                                </a>
+                            </div>
                         </div>
-                    </div>
+                    @endcan
 
                 </div>
 
@@ -217,46 +232,55 @@
                         <span class="menu-arrow"></span>
                     </span>
 
-                    <div class="menu-sub menu-sub-accordion">
-                        <div class="menu-item">
-                            <a class="menu-link {{ is_route_active('setting.index') }}" href="{{ route('setting.index') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">{{__('Basic Settings')}}</span>
-                            </a>
+                    @can('admin only')
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ is_route_active('setting.index') }}" href="{{ route('setting.index') }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">{{__('Basic Settings')}}</span>
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                    <div class="menu-sub menu-sub-accordion">
-                        <div class="menu-item">
-                            <a class="menu-link {{ is_route_active('currencies.index') }}" href="{{ route('currencies.index') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">{{__('Currencies')}}</span>
-                            </a>
+
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ is_route_active('currencies.index') }}" href="{{ route('currencies.index') }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">{{__('Currencies')}}</span>
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                    <div class="menu-sub menu-sub-accordion">
-                        <div class="menu-item">
-                            <a class="menu-link {{ is_route_active('departments.index') }}" href="{{ route('departments.index') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">{{__('Departments')}}</span>
-                            </a>
+                    @endcan
+
+                    @can('view department')
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ is_route_active('departments.index') }}" href="{{ route('departments.index') }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">{{__('Departments')}}</span>
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                    <div class="menu-sub menu-sub-accordion">
-                        <div class="menu-item">
-                            <a class="menu-link {{ is_route_active('document.index') }}" href="{{ route('document.index') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">{{__('Document Types')}}</span>
-                            </a>
+                    @endcan
+
+                    @can('view documents')
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ is_route_active('document.index') }}" href="{{ route('document.index') }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">{{__('Document Types')}}</span>
+                                </a>
+                            </div>
                         </div>
-                    </div>
+                    @endcan
 
 
                 </div>

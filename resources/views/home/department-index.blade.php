@@ -42,9 +42,11 @@
                         <input type="text" id="searchInput" class="form-control" placeholder="Search department...">
                     </div>
                 </div>
+                @can('create department')
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_department">
+                    <i class="ki-duotone ki-plus fs-2"></i>{{__('Add Department')}}</button>
+                @endcan
 
-                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_department">
-                <i class="ki-duotone ki-plus fs-2"></i>{{__('Add Department')}}</button>
                 @include('home.department.create-department')    
             </div>
         </div>

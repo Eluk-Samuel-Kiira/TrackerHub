@@ -29,18 +29,26 @@
                         <li class="nav-item">
                             <a class="nav-link active" data-bs-toggle="tab" href="#overview">Overview</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="tab" href="#members">Members</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="tab" href="#tasks">Tasks</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="tab" href="#files">Files</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="tab" href="#invoices">Invoices</a>
-                        </li>
+                        @can('view members')
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#members">Members</a>
+                            </li>
+                        @endcan
+                        @can('view task')
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#tasks">Tasks</a>
+                            </li>
+                        @endcan
+                        @can('view files')
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#files">Files</a>
+                            </li>
+                        @endcan
+                        @can('view invoice')
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#invoices">Invoices</a>
+                            </li>
+                        @endcan
                     </ul>
                 </div>
             </div>
@@ -155,10 +163,12 @@
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between">
                             <h3 class="card-title text-gray-900 fw-bold fs-3">Members</h3>
-                            <a href="#" class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#add_project_users_modal">
-                                Add Members
-                            </a>
+                            @can('create members')
+                                <a href="#" class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#add_project_users_modal">
+                                    Add Members
+                                </a>
+                            @endcan
                         </div>
                         <table class="table table-bordered">
                             <table class="table">
@@ -179,6 +189,7 @@
                                             <td>{{ $user->departmentName->name }}</td>
                                             <td>{{ $user->role }}</td>
                                             <td>
+                                                @can('delete members')
                                                 <form
                                                     action="{{ route('projects.users.remove', ['project' => $project->id, 'user' => $user->id]) }}"
                                                     method="POST">
@@ -186,6 +197,7 @@
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-danger btn-sm">Remove</button>
                                                 </form>
+                                                @endcan
                                             </td>
                                         </tr>
                                     @endforeach
@@ -202,10 +214,12 @@
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between">
                             <h3 class="card-title text-gray-900 fw-bold fs-3">Files</h3>
-                            <a href="#" class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#add_project_files_modal">
-                                Add File
-                            </a>
+                            @can('create documents')
+                                <a href="#" class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#add_project_files_modal">
+                                    Add File
+                                </a>
+                            @endcan
                         </div>
                         <table class="table table-bordered">
                             <table class="table">
@@ -222,7 +236,7 @@
                                     @foreach ($project->projectFiles as $projectFile)
                                         <tr>
                                             <td>
-                                                <a href="{{ asset('storage/'.$projectFile->document_path) }}" target="_blank" rel="noopener noreferrer">
+                                                <a href="{{ asset('storage/'.$projectFile->document_path) }}" target="_blank" rel="noopener noreferrer" download>
                                                     {{ $projectFile->document_name }}
                                                 </a>
                                             </td>
@@ -251,10 +265,12 @@
                             <p class="mb-4 text-muted">
                                 Balance: {{ $project->projectCost - $project->invoices->where('isPaid', 1)->sum('amount') ?? 0 }}
                             </p>
-                            <a href="#" class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#add_project_invoices_modal">
-                                Add Invoice
-                            </a>
+                            @can('create invoice')
+                                <a href="#" class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#add_project_invoices_modal">
+                                    Add Invoice
+                                </a>
+                            @endcan
                             @include('projects.invoices.create-invoice')
                         </div>
                         @include('projects.invoices.invoice-component')

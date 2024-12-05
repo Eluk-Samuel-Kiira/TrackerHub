@@ -53,8 +53,9 @@
                         </div>
                     </div>
                 </div>
-
-                <a href="#" class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal" data-bs-target="#create_new_role">Create</a> 
+                @can('create role')
+                <a href="#" class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal" data-bs-target="#create_new_role">Create Role</a> 
+                @endcan
                 @include('users.roles.create-role')
             </div>
         </div>

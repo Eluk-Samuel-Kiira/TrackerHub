@@ -42,9 +42,11 @@
                         <input type="text" id="searchInput" class="form-control" placeholder="Search document...">
                     </div>
                 </div>
+                @can('create documents')
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_doc_type">
+                    <i class="ki-duotone ki-plus fs-2"></i>{{__('Add Document Type')}}</button>
+                @endcan
 
-                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_doc_type">
-                <i class="ki-duotone ki-plus fs-2"></i>{{__('Add Document Type')}}</button>
                 @include('home.documents.create-document')    
             </div>
         </div>

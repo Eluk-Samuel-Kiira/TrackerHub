@@ -32,26 +32,32 @@
                         @if ($invoice->isPaid == 0)
                             <td >
                                 <div class="d-flex gap-2">
-                                    <button 
-                                        class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" 
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#payInvoiceModal{{$invoice->id}}">
-                                        <i class="bi bi-credit-card-2-back fs-2"></i>
-                                    </button>
+                                    @can('update invoice')
+                                        <button 
+                                            class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#payInvoiceModal{{$invoice->id}}">
+                                            <i class="bi bi-credit-card-2-back fs-2"></i>
+                                        </button>
+                                    @endcan
 
-                                    <button 
-                                        class="btn btn-sm btn-icon btn-bg-light btn-active-color-success w-30px h-30px" 
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#sendInvoiceMail{{$invoice->id}}">
-                                        <i class="bi bi-send-check fs-2"></i>
-                                    </button>
+                                    @can('send invoice')
+                                        <button 
+                                            class="btn btn-sm btn-icon btn-bg-light btn-active-color-success w-30px h-30px" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#sendInvoiceMail{{$invoice->id}}">
+                                            <i class="bi bi-send-check fs-2"></i>
+                                        </button>
+                                    @endcan
 
-                                    <button 
-                                        class="btn btn-sm btn-icon btn-bg-light btn-active-color-danger w-30px h-30px" 
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#deleteInvoiceModal{{$invoice->id}}">
-                                        <i class="bi bi-trash fs-2"></i>
-                                    </button>
+                                    @can('delete invoice')
+                                        <button 
+                                            class="btn btn-sm btn-icon btn-bg-light btn-active-color-danger w-30px h-30px" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#deleteInvoiceModal{{$invoice->id}}">
+                                            <i class="bi bi-trash fs-2"></i>
+                                        </button>
+                                    @endcan
 
                                     
                                     <!-- Delete Invoce Modal -->
