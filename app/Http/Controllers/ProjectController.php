@@ -28,9 +28,18 @@ class ProjectController extends Controller
         $departments = Department::where('isActive', 1)->get();
         $users = User::where('status', 'active')->get();
         $roles = Role::all()->pluck('name');
-        $projects = Project::with('projectCategory', 'department', 'client', 'currency', 'users')->latest()->get();
+        $projects = Project::with('projectCategory', 'department', 'client', 'currency', 'users', 'tasks')->latest()->get();
+
+        // Calculate percentage completion for each project
+        $projects->each(function ($project) {
+            $totalTasks = $project->tasks->count();
+            $completedTasks = $project->tasks->whereNotNull('completionDate')->count();
+            $project->percentageCompletion = $totalTasks > 0 ? ($completedTasks / $totalTasks) * 100 : 0;
+        });
+
         return view('projects.index', compact('clients', 'projectCategories', 'currencies', 'departments', 'users', 'roles', 'projects'));
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -126,11 +135,19 @@ class ProjectController extends Controller
         })
         ->get();
 
+        
+        $completedTasks = $project->tasks->whereNotNull('completionDate');
+
+        $totalTasks = $project->tasks->count();
+        $completedCount = $completedTasks->count();
+
+        $percentageCompletion = $totalTasks > 0 ? ($completedCount / $totalTasks) * 100 : 0;
+
         $roles = Role::all()->pluck('name');
         $clients = Client::where('isActive', 1)->get();
         $departments = Department::where('isActive', 1)->get();
         $documentTypes = DocumentType::where('isActive', 1)->get();
-        return view('projects.show', compact('clients', 'project','users', 'roles', 'departments', 'documentTypes'));
+        return view('projects.show', compact('percentageCompletion', 'clients', 'project','users', 'roles', 'departments', 'documentTypes'));
     }
 
     /**

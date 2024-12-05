@@ -55,8 +55,14 @@
                                     <div class="col">
                                         <h3 class="card-title text-gray-900 fw-bold fs-3">Project Progress</h3>
                                         <div class="progress">
-                                            <div class="progress-bar progress-bar-striped bg-primary" role="progressbar"
-                                                style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+                                            <div 
+                                                class="progress-bar progress-bar-striped bg-primary" 
+                                                role="progressbar"
+                                                style="width: {{ number_format($percentageCompletion, 2) }}%" 
+                                                aria-valuenow="{{ number_format($percentageCompletion, 2) }}" 
+                                                aria-valuemin="0" 
+                                                aria-valuemax="100">
+                                                {{ number_format($percentageCompletion, 2) }}% <!-- Show percentage inside the progress bar -->
                                             </div>
                                         </div>
                                     </div>
@@ -188,56 +194,9 @@
                     </div>
                 </div>
             </div>
-            <div class="tab-pane fade" id="tasks" role="tabpanel">
-                <div class="card my-5">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <h3 class="card-title text-gray-900 fw-bold fs-3">Tasks</h3>
-                            <a href="#" class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#add_project_tasks_modal">
-                                Add Task
-                            </a>
-                        </div>
-                        <table class="table table-bordered">
-                            <table class="table">
-                                <thead>
-                                    <tr class="fw-bold fs-6 text-gray-800">
-                                        <th>Task Code</th>
-                                        <th>Task</th>
-                                        <th>Start Date</th>
-                                        <th>Deadline</th>
-                                        <th>Assigned To</th>
-                                        <th>Completed On</th>
-                                        <th>Status</th>
-                                        <th class="w-auto"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($project->tasks as $task)
-                                        <tr>
-                                            <td>{{ $task->taskCode }}</td>
-                                            <td>{{ $task->description }}</td>
-                                            <td>{{ $task->startDate ?? '-' }}</td>
-                                            <td>{{ $task->dueDate ?? '-' }}</td>
-                                            <td>{{ $task->user->first_name }} {{ $task->user->last_name }}</td>
-                                            <td>{{ $task->completionDate ?? '-' }}</td>
-                                            <td>
-                                                {{ $task->status == '0' ? 'Not Started' : ($task->status == '1' ? 'Doing' : 'Completed') }}
-                                            </td>
-                                            <td>
-                                                <form action="{{ route('tasks.remove', $task) }}" method="POST">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm">Remove</button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                    </div>
-                </div>
-            </div>
+            
+            @include('projects.task')
+
             <div class="tab-pane fade" id="files" role="tabpanel">
                 <div class="card my-5">
                     <div class="card-body">
@@ -280,6 +239,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="tab-pane fade" id="invoices" role="tabpanel">
                 <div class="card my-5">
                     <div class="card-body">
@@ -471,88 +431,17 @@
     </div>
     <!--end::Modal - New Target-->
 
-    <div class="modal bg-body fade" tabindex="-1" id="add_project_tasks_modal">
-        <div class="modal-dialog modal-fullscreen">
-            <div class="modal-content shadow-none">
-                <div class="modal-header">
-                    <h1>Add Project Task</h3>
-                        <!--begin::Close-->
-                        <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"
-                            aria-label="Close">
-                            <i class="ki-duotone ki-cross fs-2x"><span class="path1"></span><span
-                                    class="path2"></span></i>
-                        </div>
-                        <!--end::Close-->
-                </div>
-
-                <div class="modal-body">
-                    <div class="col-12">
-                        <form class="card" action="{{ route('tasks.add') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="projectId" value="{{ $project->id }}">
-                            <div class="card-body shadow-none">
-                                <div class="row row-cards py-5">
-                                    <div class="col-md-6">
-                                        <div class="mb-10">
-                                            <label class="form-label">Task Code</label>
-                                            <input type="text" class="form-control" name="taskCode" />
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-10">
-                                            <label class="form-label">Task</label>
-                                            <input type="text" class="form-control" name="task" />
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="mb-10">
-                                            <label class="form-label">Deadline</label>
-                                            <input class="form-control flatpickr-input" name="taskDeadlineDate"
-                                                placeholder="Pick date" id="taskDeadlindDate" type="text"
-                                                readonly="readonly">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="mb-10">
-                                            <label class="form-label">Assign To</label>
-                                            <select class="form-select form-select" name="projectMemberId"
-                                                data-control="select2" data-allow-clear="true"
-                                                data-close-on-select="false" data-placeholder="Select an option"
-                                                data-allow-clear="true">
-                                                <option></option>
-                                                @foreach ($project->users as $user)
-                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-footer text-end" style="margin-top:-5rem;">
-                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary">Add Task</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <div class="modal bg-body fade" tabindex="-1" id="add_project_files_modal">
         <div class="modal-dialog modal-fullscreen">
             <div class="modal-content shadow-none">
                 <div class="modal-header">
                     <h1>Add Project File</h3>
-                        <!--begin::Close-->
-                        <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"
-                            aria-label="Close">
-                            <i class="ki-duotone ki-cross fs-2x"><span class="path1"></span><span
-                                    class="path2"></span></i>
-                        </div>
-                        <!--end::Close-->
+                    <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"
+                        aria-label="Close">
+                        <i class="ki-duotone ki-cross fs-2x"><span class="path1"></span><span
+                                class="path2"></span></i>
+                    </div>
                 </div>
 
                 <div class="modal-body">

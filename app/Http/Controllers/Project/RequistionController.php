@@ -252,8 +252,8 @@ class RequistionController extends Controller
             }
 
             // Update the budget if status is approved
+            $project = Project::findOrFail($requisition->project_id);
             if ($validated['status'] === 'approved') {
-                $project = Project::findOrFail($requisition->project_id);
                 if ($project) {
                     $budgetResult = $this->budgetDeductions($requisition, $project);
                 
@@ -270,13 +270,13 @@ class RequistionController extends Controller
                     $requisition->status = 'approved';
                     $requisition->save();
 
-                    requisitionStatusMail($project, $requisition, 'approved');
+                    $this->requisitionStatusMail($project, $requisition, 'approved');
                 
                 }
             } else {
                 $requisition->status = $validated['status'];
                 $requisition->save();
-                requisitionStatusMail($project, $requisition, $validated['status']);
+                $this->requisitionStatusMail($project, $requisition, $validated['status']);
 
             }
             return response()->json([
@@ -295,7 +295,6 @@ class RequistionController extends Controller
         ]);
     }
 
-    
     private function requisitionStatusMail($project, $requisition, $action)
     {
         if (getMailOptions('mail_status') === 'enabled') {
@@ -303,17 +302,53 @@ class RequistionController extends Controller
             $user = User::findOrFail($requisition->created_by);
             $companyName = getMailOptions('app_name');
             $subject = sprintf(
-                'Update on Requistion %s for %s Project',
+                'Update on Requisition %s for %s Project',
                 $requisition->name,
-                $project->projectName,
+                $project->projectName
             );
-            $emailMessage = sprintf(
-                "Hello %s,\nThis is to inform or remind you that the requistions you made on the above project has been %s.\n".
-                "You are adviced to take the necessary guidelines.\n\nThank you,\n%s",
-                $user->name,
-                $action,
-                $companyName,
-            );
+
+            // Customize message based on action
+            switch ($action) {
+                case 'approved':
+                    $emailMessage = sprintf(
+                        "Hello %s,\n\nGood news! Your requisition for the project '%s' has been approved.\n".
+                        "You can proceed with the next steps as outlined in the project guidelines.\n\nThank you,\n%s",
+                        $user->name,
+                        $project->projectName,
+                        $companyName
+                    );
+                    break;
+
+                case 'pending':
+                    $emailMessage = sprintf(
+                        "Hello %s,\n\nYour requisition for the project '%s' is currently pending review.\n".
+                        "You will be notified once the status is updated. Please ensure all necessary details are provided to avoid delays.\n\nThank you,\n%s",
+                        $user->name,
+                        $project->projectName,
+                        $companyName
+                    );
+                    break;
+
+                case 'denied':
+                    $emailMessage = sprintf(
+                        "Hello %s,\n\nUnfortunately, your requisition for the project '%s' has been denied.\n".
+                        "Kindly review the feedback provided and make adjustments if necessary. For further clarification, feel free to reach out.\n\nThank you,\n%s",
+                        $user->name,
+                        $project->projectName,
+                        $companyName
+                    );
+                    break;
+
+                default:
+                    $emailMessage = sprintf(
+                        "Hello %s,\n\nThis is an update regarding your requisition for the project '%s'.\n".
+                        "Please contact the project team for more details.\n\nThank you,\n%s",
+                        $user->name,
+                        $project->projectName,
+                        $companyName
+                    );
+                    break;
+            }
 
             $content = [
                 'subject' => $subject,

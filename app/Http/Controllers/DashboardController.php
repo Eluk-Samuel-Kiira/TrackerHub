@@ -136,5 +136,23 @@ class DashboardController extends Controller
 
     }
 
+    public function getProjectProgressData()
+    {
+        $projects = Project::with('tasks')->latest()->take(10)->get();
+        
+        $progressData = $projects->map(function ($project) {
+            $totalTasks = $project->tasks->count();
+            $completedTasks = $project->tasks->whereNotNull('completionDate')->count();
+            $percentageCompletion = $totalTasks > 0 ? round(($completedTasks / $totalTasks) * 100, 2) : 0;
+
+            return [
+                'projectName' => $project->projectName,
+                'percentageCompletion' => $percentageCompletion,
+            ];
+        });
+
+        return response()->json($progressData);
+    }
+
 
 }
