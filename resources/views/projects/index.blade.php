@@ -2,7 +2,8 @@
 @section('title', 'Projects')
 
 @section('content')
-    <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+
+<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
         <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
             <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
                 <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">{{__('Projects Table')}}</h1>
@@ -26,13 +27,30 @@
                 </ul>
             </div>
             <div class="d-flex align-items-center gap-2 gap-lg-3">
+                <button type="button" class="btn btn-sm btn-light-primary me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                <i class="ki-duotone ki-filter fs-2">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                </i>{{__('Filter')}}</button>
+                <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true">
+                    <div class="px-7 py-5">
+                        <div class="fs-5 text-gray-900 fw-bold">Filter Options</div>
+                    </div>
+                    <div class="separator border-gray-200"></div>
+                    
+                    <!-- Search Bar -->
+                    <div class="px-7 py-5">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search Projects...">
+                    </div>
+                </div>
+
                 <button class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal" data-bs-target="#add_project_modal">Add Project</button>
+                
+                @include('projects.projects.create-project')   
             </div>
-            @include('projects.projects.create-project')  
-
         </div>
-
     </div>
+    
     <div class="card-body py-4" id="">
         <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_users">
             <thead>
@@ -44,16 +62,18 @@
                     </th>
                     <th class="min-w-50px">Code</th>
                     <th class="min-w-100px">Name</th>
-                    <th class="min-w-100px">Start Date</th>
+                    <!-- <th class="min-w-100px">Start Date</th> -->
                     <th class="min-w-100px">Deadline</th>
                     <!-- <th class="min-w-200px">Description</th> -->
                     <th class="min-w-150px">Category</th>
-                    <th class="min-w-150px">Department</th>
+                    <!-- <th class="min-w-150px">Department</th> -->
                     <th class="min-w-150px">Client</th>
-                    <th class="min-w-200px">Members</th>
-                    <th class="min-w-150px">Budget</th>
-                    <th class="min-w-150px">Budget Limit</th>
-                    <th class="w-auto"></th>
+                    <!-- <th class="min-w-200px">Members</th> -->
+                    <th class="min-w-150px">Project Cost</th>
+                    <!-- <th class="min-w-150px">Budget</th>
+                    <th class="min-w-150px">Budget Limit</th> -->
+                    <th class="min-w-150px">Progress</th>
+                    <th class="w-auto">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -66,20 +86,42 @@
                         </td>
                         <td>{{ $project->projectCode }}</td>
                         <td>{{ $project->projectName }}</td>
-                        <td>{{ $project->projectStartDate }}</td>
+                        <!-- <td>{{ $project->projectStartDate }}</td> -->
                         <td>{{ $project->projectDeadlineDate }}</td>
                         <!-- <td>{!! trim_description($project->projectDescription,5) !!}</td> -->
                         <td>{{ $project->projectCategory->name }}</td>
-                        <td>{{ $project->department->name }}</td>
+                        <!-- <td>{{ $project->department->name }}</td> -->
                         <td>{{ $project->client->name }}</td>
-                        <td>
+                        <!-- <td>
                             @foreach ($project->users as $index => $member)
                                 {{ $member->first_name }} {{ $member->last_name }}@if($index < $project->users->count() - 1), @endif
                             @endforeach
+                        </td> -->
+                        <td>{{ $project->currency->name }} {{ number_format($project->projectCost,2) }}</td>
+                        <td>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped bg-primary" role="progressbar"
+                                    style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+                                </div>
+                            </div>
                         </td>
-                        <td>{{ $project->currency->name }} {{ number_format($project->projectBudget,2) }}</td>
-                        <td>{{ $project->currency->name }} {{ number_format($project->projectBudgetLimit,2) }}</td>
-                        <td><a href="{{route('projects.show', $project) }}">View</a></td>
+                        <!-- <td>{{ $project->currency->name }} {{ number_format($project->projectBudgetLimit,2) }}</td> -->
+                        <td class="d-flex align-items-center justify-content-start">
+                            <a href="{{route('projects.show', $project) }}" class="btn btn-sm btn-icon btn-bg-light btn-active-color-success w-30px h-30px" >
+                            <i class="bi bi-eye fs-2"></i></a>
+                            <button 
+                                class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#editClient{{$project->id}}">
+                                <i class="bi bi-pencil-square fs-2"></i>
+                            </button>
+                            <button 
+                                class="btn btn-sm btn-icon btn-bg-light btn-active-color-danger w-30px h-30px" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#deleteProject{{$project->id}}">
+                                <i class="bi bi-trash fs-2"></i>
+                            </button>
+                        </td>
                     </tr>
                 @empty
                     <tr>
@@ -352,7 +394,18 @@
     </div>
     <!--end::Modal - New Target-->
 
-
+<script>
+    
+    function setupTableSearch(inputId, tableId) {
+        LiveBlade.searchTableItems(inputId, tableId)
+    }
+    
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        setupTableSearch('searchInput', 'kt_table_users');
+        
+    });
+</script>
 
 @endsection
 @push('scripts')

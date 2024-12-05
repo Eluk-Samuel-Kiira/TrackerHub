@@ -17,6 +17,7 @@ use DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\BudgetLimitMail;
+use App\Mail\removeOrAddUserMail;
 
 class RequistionController extends Controller
 {
@@ -25,12 +26,26 @@ class RequistionController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-    {        
-        $projects = Project::latest()->get();
-        $requisitions = Requistion::latest()->get();
-        $document_types = DocumentType::latest()->get();
-        $requistion_files = RequisitionFiles::latest()->get();
+    {    
+        if (in_array(auth()->user()->role, ['director', 'project_manager', 'accountant'])) {
+            $requisitions = Requistion::latest()->get();
+            $projects = Project::latest()->get();
+            $document_types = DocumentType::latest()->get();
+            $requistion_files = RequisitionFiles::latest()->get();
+        } else {
+            $requisitions = Requistion::where('created_by', auth()->user()->id)->latest()->get();
+            
+            // Get project IDs associated with the user
+            $project_ids = DB::table('project_user')
+                            ->where('user_id', auth()->user()->id)
+                            ->pluck('project_id'); // Fetch only project IDs
         
+            $projects = Project::whereIn('id', $project_ids)->latest()->get();
+            $document_types = DocumentType::latest()->get();
+            $requistion_files = RequisitionFiles::where('created_by', auth()->user()->id)->latest()->get();
+        }
+    
+
         $bladeToReload = $request->query('bladeFileToReload');
         switch ($bladeToReload) {
             case 'reloadRequisitionComponent':
@@ -255,16 +270,22 @@ class RequistionController extends Controller
                     $requisition->status = 'approved';
                     $requisition->save();
 
+                    requisitionStatusMail($project, $requisition, 'approved');
                 
-                    return response()->json([
-                        'success' => true,
-                        'reload' => true,
-                        'refresh' => false,
-                        'componentId' => 'reloadRequisitionComponent',
-                        'message' => __('Requisition updated successfully'),
-                    ]);
                 }
+            } else {
+                $requisition->status = $validated['status'];
+                $requisition->save();
+                requisitionStatusMail($project, $requisition, $validated['status']);
+
             }
+            return response()->json([
+                'success' => true,
+                'reload' => true,
+                'refresh' => false,
+                'componentId' => 'reloadRequisitionComponent',
+                'message' => __('Requisition updated successfully'),
+            ]);
         }
 
         // If requisition not found or status update failed
@@ -273,6 +294,40 @@ class RequistionController extends Controller
             'message' => __('Requisition not found or status update failed because it night have been approved!'),
         ]);
     }
+
+    
+    private function requisitionStatusMail($project, $requisition, $action)
+    {
+        if (getMailOptions('mail_status') === 'enabled') {
+            // Define email content
+            $user = User::findOrFail($requisition->created_by);
+            $companyName = getMailOptions('app_name');
+            $subject = sprintf(
+                'Update on Requistion %s for %s Project',
+                $requisition->name,
+                $project->projectName,
+            );
+            $emailMessage = sprintf(
+                "Hello %s,\nThis is to inform or remind you that the requistions you made on the above project has been %s.\n".
+                "You are adviced to take the necessary guidelines.\n\nThank you,\n%s",
+                $user->name,
+                $action,
+                $companyName,
+            );
+
+            $content = [
+                'subject' => $subject,
+                'emailMessage' => $emailMessage, // Use this key
+                'companyName' => $companyName,
+                'username' => $user->name,
+                'projectName' => $project->projectName,
+            ];
+
+            // Send email to the user
+            Mail::to($user->email)->send(new removeOrAddUserMail($content));
+        }
+    }
+
 
     
     private function budgetDeductions($requisition, $project)
@@ -298,13 +353,18 @@ class RequistionController extends Controller
         // Calculate the new budget
         $newProjectBudget = $project->projectBudget - $requisition->amount;
 
-        // Check if the deduction exceeds the budget limit
-        if ($newProjectBudget < $project->projectBudgetLimit) {
+
+        // Check if the expenditure exceeds the budget limit
+        $project_expenditure = ProjectExpense::where('project_id', $project->id)->sum('approved_amount');
+        
+        $expected_expenditure = $project_expenditure + $requisition->amount;
+        \Log::info($expected_expenditure);
+        if ($expected_expenditure > $project->projectBudgetLimit) {
             // \Log::info('Budget limit exceeded. Requisition: ' . json_encode($requisition));
             $this->budgetLimitMail($requisition, $project);
             return [
                 'success' => false,
-                'message' => __('This requisition will surpass/exceed the budget limit.'),
+                'message' => __('The approval of this requisition will surpass/exceed the budget limit.'),
             ];
         }
 
@@ -330,6 +390,7 @@ class RequistionController extends Controller
             'message' => __('Project budget updated successfully.'),
         ];
     }
+
 
     
     private function budgetLimitMail($requisition, $project)

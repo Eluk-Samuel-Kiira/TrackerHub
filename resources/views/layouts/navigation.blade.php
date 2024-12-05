@@ -94,7 +94,7 @@
                                 <span class="path4"></span>
                             </i>
                         </span>
-                        <span class="menu-title">{{__('Requistion Module')}}</span>
+                        <span class="menu-title">{{__('Funds Requistion')}}</span>
                         <span class="menu-arrow"></span>
                     </span>
 
