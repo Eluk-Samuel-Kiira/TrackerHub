@@ -42,9 +42,10 @@
                         <input type="text" id="searchInput" class="form-control" placeholder="Search requistions...">
                     </div>
                 </div>
-
-                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_requistion">
-                <i class="ki-duotone ki-plus fs-2"></i>{{__('Add Requistion')}}</button>
+                @can('create requisitions')
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_requistion">
+                    <i class="ki-duotone ki-plus fs-2"></i>{{__('Add Requistion')}}</button>
+                @endcan
                 @include('requistions.partials.create-requistion')    
             </div>
         </div>

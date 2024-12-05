@@ -3,7 +3,7 @@
 
 @section('content')
 
-<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+    <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
         <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
             <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
                 <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">{{__('Projects Table')}}</h1>
@@ -44,8 +44,9 @@
                     </div>
                 </div>
 
-                <button class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal" data-bs-target="#add_project_modal">Add Project</button>
-                
+                @can('create project')
+                    <button class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal" data-bs-target="#add_project_modal">Add Project</button>
+                @endcan
                 @include('projects.projects.create-project')   
             </div>
         </div>
@@ -113,20 +114,27 @@
                         </td>
                         <!-- <td>{{ $project->currency->name }} {{ number_format($project->projectBudgetLimit,2) }}</td> -->
                         <td class="d-flex align-items-center justify-content-start">
-                            <a href="{{route('projects.show', $project) }}" class="btn btn-sm btn-icon btn-bg-light btn-active-color-success w-30px h-30px" >
-                            <i class="bi bi-eye fs-2"></i></a>
-                            <button 
-                                class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#editClient{{$project->id}}">
-                                <i class="bi bi-pencil-square fs-2"></i>
+                            @can('view project')
+                                <a href="{{route('projects.show', $project) }}" class="btn btn-sm btn-icon btn-bg-light btn-active-color-success w-30px h-30px" >
+                                <i class="bi bi-eye fs-2"></i></a>
+                            @endcan
+                            @can('edit project')
+                                    
+                                <button 
+                                    class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#editClient{{$project->id}}">
+                                    <i class="bi bi-pencil-square fs-2"></i>
                             </button>
-                            <button 
-                                class="btn btn-sm btn-icon btn-bg-light btn-active-color-danger w-30px h-30px" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#deleteProject{{$project->id}}">
-                                <i class="bi bi-trash fs-2"></i>
-                            </button>
+                            @endcan
+                            @can('edit project')
+                                <button 
+                                    class="btn btn-sm btn-icon btn-bg-light btn-active-color-danger w-30px h-30px" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#deleteProject{{$project->id}}">
+                                    <i class="bi bi-trash fs-2"></i>
+                                </button>
+                            @endcan
                         </td>
                     </tr>
                 @empty

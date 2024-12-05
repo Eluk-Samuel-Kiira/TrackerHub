@@ -42,9 +42,10 @@
                         <input type="text" id="searchInput" class="form-control" placeholder="Search clients...">
                     </div>
                 </div>
-
-                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_client">
-                <i class="ki-duotone ki-plus fs-2"></i>{{__('Add Client')}}</button>
+                @can('create client')
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_client">
+                    <i class="ki-duotone ki-plus fs-2"></i>{{__('Add Client')}}</button>
+                @endcan
                 @include('projects.clients.create-client')    
             </div>
         </div>

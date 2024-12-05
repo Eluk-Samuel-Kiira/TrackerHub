@@ -43,8 +43,10 @@
                     </div>
                 </div>
 
-                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_category">
-                <i class="ki-duotone ki-plus fs-2"></i>{{__('Add Category')}}</button>
+                @can('create category')
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_category">
+                    <i class="ki-duotone ki-plus fs-2"></i>{{__('Add Category')}}</button>
+                @endcan
                 @include('projects.categories.create-category')    
             </div>
         </div>

@@ -28,9 +28,11 @@
                     </div>
                 </div>
                 <div class="card-footer flex-wrap pt-0">
-                    <button type="button" class="btn btn-light btn-active-light-primary my-1" data-bs-toggle="modal" data-bs-target="#direct_permissions{{ $user->id }}"  onclick="initializeModalOnClick({{ $user->id }})">
-                        {{__('Grant/Revoke')}}
-                    </button>
+                    @can('update permission')
+                        <button type="button" class="btn btn-light btn-active-light-primary my-1" data-bs-toggle="modal" data-bs-target="#direct_permissions{{ $user->id }}"  onclick="initializeModalOnClick({{ $user->id }})">
+                            {{__('Grant/Revoke')}}
+                        </button>
+                    @endcan
                     @include('users.permissions.direct-permissions')
                 </div>
             </div>

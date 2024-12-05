@@ -97,24 +97,33 @@
                             @endif
                         </td>
                         <td>
-                            <button 
-                                class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#viewReport{{ $project->id }}">
-                                <i class="bi bi-printer fs-2"></i>
-                            </button>
-                            <button 
-                                class="btn btn-sm btn-icon btn-bg-light btn-active-color-success w-30px h-30px" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#viewRequisition{{ $project->id }}">
-                                <i class="bi bi-bar-chart-line fs-2"></i>
-                            </button>
-                            <button 
-                                class="btn btn-sm btn-icon btn-bg-light btn-active-color-success w-30px h-30px" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#viewInvoices{{ $project->id }}">
-                                <i class="bi bi-receipt fs-2"></i>
-                            </button>
+                            @can('view report')
+                                <button 
+                                    class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#viewReport{{ $project->id }}">
+                                    <i class="bi bi-printer fs-2"></i>
+                                </button>
+                            @endcan
+
+                            @can('view requisitions')
+                                <button 
+                                    class="btn btn-sm btn-icon btn-bg-light btn-active-color-success w-30px h-30px" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#viewRequisition{{ $project->id }}">
+                                    <i class="bi bi-bar-chart-line fs-2"></i>
+                                </button>
+                            @endcan
+                            
+                            @can('view invoice')
+                                <button 
+                                    class="btn btn-sm btn-icon btn-bg-light btn-active-color-success w-30px h-30px" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#viewInvoices{{ $project->id }}">
+                                    <i class="bi bi-receipt fs-2"></i>
+                                </button>
+                            @endcan
+                            
                             @include('requistions.expenses.detail-report')
                             @include('requistions.expenses.requisition-details')
                             @include('requistions.expenses.invoices-paid')

@@ -43,7 +43,7 @@
                         <td>
                             <select name="status" class="form-select form-select-solid form-select-sm"
                             style="appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: none; padding-right: 10px;" 
-                                 onchange="updateStatus({{ $requisition->id }}, this.value)">
+                                 onchange="updateStatus({{ $requisition->id }}, this.value)" @cannot('update requisitions') disabled @endcannot>
                                 <option value="1" {{ $requisition->isActive == 1 ? 'selected' : '' }}><span>{{__('Active')}}</option>
                                 <option value="0" {{ $requisition->isActive == 0 ? 'selected' : '' }}>{{__('Inactive')}}</option>
                             </select>
@@ -53,7 +53,7 @@
                             name="response" 
                             class="form-select form-select-solid form-select-sm" 
                             style="appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: none; padding-right: 10px;" 
-                            onchange="updateResponse({{ $requisition->id }}, this.value)">
+                            onchange="updateResponse({{ $requisition->id }}, this.value)" @cannot('approve requisitions') disabled @endcannot>
                             <option value="pending" {{ $requisition->status == 'pending' ? 'selected' : '' }}>
                                 {{__('Pending')}}
                             </option>
@@ -66,28 +66,32 @@
                         </select>
                         </td>
                         <td>
+                            @can('edit requisitions')
+                                <button 
+                                    class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#editRequisition{{$requisition->id}}"
+                                    onclick="initializeCKEditor('kt_docs_ckeditor_classic_{{$requisition->id}}')">
+                                    <i class="bi bi-pencil-square fs-2"></i>
+                                </button>
+                            @endcan
                             
-                            <button 
-                                class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#editRequisition{{$requisition->id}}"
-                                onclick="initializeCKEditor('kt_docs_ckeditor_classic_{{$requisition->id}}')">
-                                <i class="bi bi-pencil-square fs-2"></i>
-                            </button>
-                            
-                            <button 
-                                class="btn btn-sm btn-icon btn-bg-light btn-active-color-success w-30px h-30px" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#attachDocuments{{$requisition->id}}">
-                                <i class="bi bi-folder-symlink fs-2"></i>
-                            </button>
-                            
-                            <button type="button" 
-                                class="btn btn-sm btn-icon btn-bg-light btn-active-color-danger w-30px h-30px" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#deleteRequisitionModal{{$requisition->id}}">
-                                <i class="bi bi-trash fs-2"></i>
-                            </button>
+                            @can('upload requisitions')
+                                <button 
+                                    class="btn btn-sm btn-icon btn-bg-light btn-active-color-success w-30px h-30px" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#attachDocuments{{$requisition->id}}">
+                                    <i class="bi bi-folder-symlink fs-2"></i>
+                                </button>
+                            @endcan
+                            @can('delete requisitions')
+                                <button type="button" 
+                                    class="btn btn-sm btn-icon btn-bg-light btn-active-color-danger w-30px h-30px" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#deleteRequisitionModal{{$requisition->id}}">
+                                    <i class="bi bi-trash fs-2"></i>
+                                </button>
+                            @endcan
 
                             <div class="modal fade" id="deleteRequisitionModal{{$requisition->id}}" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered">

@@ -108,3 +108,20 @@ function getMailOptions($option_key){
     }
 }
 
+
+if (!function_exists('appDefaultName')) {
+    function appDefaultName()
+    {
+        $setting = Setting::find(1);
+        
+        if ($setting && !empty($setting->app_name)) {
+            // Extract the first word from the app_name
+            $firstWord = explode(' ', trim($setting->app_name))[0];
+            return $firstWord;
+        }
+
+        return 'Stardena';
+    }
+}
+
+

@@ -28,13 +28,18 @@
                     </div>
                 </div>
                 <div class="card-footer flex-wrap pt-0">
+                    @can('edit role')
                     <button type="button" class="btn btn-light btn-active-light-primary my-1" data-bs-toggle="modal" data-bs-target="#edit_role{{ $role->id }}" onclick="initializeModalOnClick({{ $role->id }})">
                         {{__('Edit')}}
                     </button>
+                    @endcan
                     @include('users.roles.edit-role')
-                    <button type="button" class="btn btn-light btn-active-light-danger my-1" data-bs-toggle="modal" data-bs-target="#delete_role{{ $role->id }}">
-                        {{ __('Delete') }}
-                    </button>
+
+                    @can('delete role')
+                        <button type="button" class="btn btn-light btn-active-light-danger my-1" data-bs-toggle="modal" data-bs-target="#delete_role{{ $role->id }}">
+                            {{ __('Delete') }}
+                        </button>
+                    @endcan
                     @include('users.roles.delete')
                 </div>
             </div>

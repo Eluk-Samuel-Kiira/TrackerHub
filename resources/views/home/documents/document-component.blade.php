@@ -33,26 +33,29 @@
                         </td>
                         <td>{{ $document_type->created_at->format('d M Y, h:i a') }}</td>
                         <td>
-                            <select name="status" class="form-select form-select-solid form-select-sm" onchange="updateStatus({{ $document_type->id }}, this.value)">
+                            <select name="status" class="form-select form-select-solid form-select-sm" onchange="updateStatus({{ $document_type->id }}, this.value)"
+                            @cannot('update documents') disabled @endcannot>
                                 <option value="1" {{ $document_type->isActive == 1 ? 'selected' : '' }}><span>{{__('Active')}}</option>
                                 <option value="0" {{ $document_type->isActive == 0 ? 'selected' : '' }}>{{__('Inactive')}}</option>
                             </select>
                         </td>
                         <td>
-                            <!-- Edit User Button -->
-                             <button 
-                                class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#editDocument{{$document_type->id}}">
-                                <i class="bi bi-pencil-square fs-2"></i>
-                            </button>
-                            <!-- Delete User Button -->
-                            <button type="button" 
-                                class="btn btn-sm btn-icon btn-bg-light btn-active-color-danger w-30px h-30px" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#deleteUserModal{{$document_type->id}}">
-                                <i class="bi bi-trash fs-2"></i>
-                            </button>
+                            @can('edit documents')
+                                <button 
+                                    class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#editDocument{{$document_type->id}}">
+                                    <i class="bi bi-pencil-square fs-2"></i>
+                                </button>
+                            @endcan
+                            @can('delete documents')
+                                <button type="button" 
+                                    class="btn btn-sm btn-icon btn-bg-light btn-active-color-danger w-30px h-30px" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#deleteUserModal{{$document_type->id}}">
+                                    <i class="bi bi-trash fs-2"></i>
+                                </button>
+                            @endcan
 
                             <!-- Delete User Modal -->
                             <div class="modal fade" id="deleteUserModal{{$document_type->id}}" tabindex="-1" aria-hidden="true">
