@@ -35,9 +35,7 @@
         <div id="kt_app_content" class="app-content flex-column-fluid">
             <div id="kt_app_content_container" class="app-container container-xxl">
                 <div id="status"></div>
-                <div class="card">
-                    
-                    
+
                 <div class="row gx-5 gx-xl-10">
                         <div class="col-xxl-6 mb-5 mb-xl-10">
                             <div class="card card-flush h-xl-100">
@@ -209,44 +207,52 @@
                     </div>
 
                 </div>
+
             </div>
         </div>
     </div>
     
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const ctx = document.getElementById('performanceChart').getContext('2d');
-            const performanceChart = new Chart(ctx, {
-                type: 'line', // Chart type
-                data: {
-                    labels: ['Social Campaigns', 'Google Ads', 'Email Newsletter', 'Courses', 'TV Campaign', 'Radio'], // Categories
-                    datasets: [
-                        {
-                            label: 'Month - Average Cost Per Interaction ($8.55)',
-                            data: [8.55, 7.2, 8.0, 8.3, 7.8, 8.1], // Example monthly data for categories
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 1,
+            fetch('/get-project-progress-data') // Adjust the endpoint URL as needed
+                .then(response => response.json())
+                .then(data => {
+                    // Extract labels and data for the chart
+                    const labels = data.map(project => project.projectName);
+                    const percentages = data.map(project => project.percentageCompletion);
+
+                    
+
+                    // Create the chart
+                    const ctx = document.getElementById('performanceChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar', // Change to 'bar' for better representation
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                {
+                                    label: 'Percentage Completion (%)',
+                                    data: percentages,
+                                    backgroundColor: 'rgba(54, 162, 235, 0.2)', // Light blue
+                                    borderColor: 'rgba(54, 162, 235, 1)', // Blue
+                                    borderWidth: 1,
+                                },
+                            ],
                         },
-                        {
-                            label: 'Week - Average Cost Per Interaction ($18.89)',
-                            data: [18.89, 17.8, 18.4, 18.7, 18.2, 18.5], // Example weekly data for categories
-                            backgroundColor: 'rgba(255, 159, 64, 0.2)',
-                            borderColor: 'rgba(255, 159, 64, 1)',
-                            borderWidth: 1,
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: 100, 
+                                },
+                            },
                         },
-                    ],
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true, // Start y-axis at 0
-                        },
-                    },
-                },
-            });
+                    });
+                })
+                .catch(error => console.error('Error fetching project progress data:', error));
         });
     </script>
+
     @endsection
 </x-app-layout>

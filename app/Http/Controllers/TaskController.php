@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
+use App\Models\Project;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\removeOrAddUserMail; 
 
 class TaskController extends Controller
 {
@@ -30,11 +34,12 @@ class TaskController extends Controller
     {
         $request->validate([
             'projectId' => 'required',
-            'taskCode' => 'required|unique:tasks,taskCode', // Use taskCode as per the input name
+            'taskCode' => 'required|unique:tasks', 
             'task' => 'required|string',
             'taskDeadlineDate' => 'required|date',
-            'projectMemberId' => 'required', // This matches the name of the select input
+            'projectMemberId' => 'required',
         ]);
+        
 
         $task = Task::create([
             'taskCode' => $request->taskCode,
@@ -45,10 +50,21 @@ class TaskController extends Controller
         ]);
 
         if ($task) {
-            session()->flash('toast', [
-                'type' => 'success',
-                'message' => 'Task Added to project successfully.',
+
+            $project = Project::findOrFail($task->project_id);
+            $user = User::find($task->user_id);
+
+            $this->taskAssignmentMail($project, $task, $user);
+
+            return response()->json([
+                'success' => true,
+                'message' => __('Task Created Successfully'),
             ]);
+
+            // session()->flash('toast', [
+            //     'type' => 'success',
+            //     'message' => 'Task Added to project successfully.',
+            // ]);
         }else{
             session()->flash('toast', [
                 'type' => 'error',
@@ -80,7 +96,30 @@ class TaskController extends Controller
      */
     public function update(Request $request, Task $task)
     {
-        //
+        $request->validate([
+            'task_id' => 'required|numeric',
+            'completionDate' => 'required|date',
+        ]);
+
+        $task = Task::find($request->task_id);
+
+        if (!$task) {
+            return response()->json([
+                'success' => false,
+                'message' => __('Task not found'),
+            ], 404);
+        }
+
+        $task->update([
+            'completionDate' => $request->completionDate,
+            'status' => 1,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => __('Task Paid Successfully'),
+        ]);
+
     }
 
     /**
@@ -102,4 +141,39 @@ class TaskController extends Controller
 
         return redirect(url('projects/'.$task->project->id.'#tasks'))->with('project', $task->project->id);
     }
+
+
+    private function taskAssignmentMail($project, $task, $user)
+    {
+        
+        if (getMailOptions('mail_status') === 'enabled') {
+            $companyName = getMailOptions('app_name');
+            $subject = sprintf(
+                'Task Assignment for the %s Project',
+                $project->projectName
+            );
+
+            $emailMessage = sprintf(
+                "Hello %s,\n\nYou have been assigned a new task: '%s'.\n".
+                "Please ensure this task is completed by %s. We encourage you to give it your best effort and accomplish it before the deadline.\n\nThank you,\n%s",
+                $user->name,
+                $task->description,
+                $task->dueDate,
+                $companyName
+            );
+
+            $content = [
+                'subject' => $subject,
+                'emailMessage' => $emailMessage, // Use this key
+                'companyName' => $companyName,
+                'username' => $user->name,
+                'projectName' => $project->projectName,
+            ];
+
+            // Send email to the user
+            Mail::to($user->email)->send(new removeOrAddUserMail($content));
+        }
+    }
+
+
 }
