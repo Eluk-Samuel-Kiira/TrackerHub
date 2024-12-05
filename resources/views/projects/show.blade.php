@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Projects')
+@section('title', __($project->projectName))
 
 @section('content')
     <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
@@ -65,6 +65,7 @@
                         </div>
 
                     </div>
+
                     <div class="col-md-6 my-5">
                         <div class="card hover-elevate-up shadow-sm parent-hover">
                             <div class="card-body">
@@ -73,6 +74,23 @@
                                         <h3 class="card-title text-gray-900 fw-bold fs-3">Client</h3>
                                         {{ $project->client->name }}
                                     </div>
+                                    <div class="col-md-4 text start">
+                                        <h5 class="card-title text-gray-900 fw-bold fs-3">Category</h5>
+                                        {{ $project->projectCategory->name }}
+                                    </div>
+                                    <div class="col-md-4 text-center">
+                                        <h5 class="card-title text-gray-900 fw-bold fs-3">Department</h5>
+                                        {{ $project->department->name  }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 my-5">
+                        <div class="card hover-elevate-up shadow-sm parent-hover">
+                            <div class="card-body">
+                                <div class="row d-flex justify-content-between align-items-center">
                                     <div class="col-md-4 text-center">
                                         <p>Start Date</p>
                                         {{ $project->projectStartDate }}
@@ -81,29 +99,46 @@
                                         <p>Deadline</p>
                                         {{ $project->projectDeadlineDate }}
                                     </div>
+                                    <div class="col-md-4 text-end">
+                                        <p>Created On</p>
+                                        {{ $project->created_at->format('d M Y, h:i a') }}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-12">
-                        <div class="card">
-                            <!--begin::Body-->
-                            <div class="card-body hover-elevate-up shadow-sm parent-hover">
-                                <!--begin::Content main-->
-                                <div class="mb-14">
-                                    <!--begin::Heading-->
-                                    <div class="mb-15">
-                                        <!--begin::Title-->
-                                        <h3 class="fs-2x text-gray-900 mb-6">Project description</h3>
-                                        <!--end::Title-->
-                                        <!--begin::Text-->
-                                        <div class="fs-5 text-gray-600 fw-semibold">{!! $project->projectDescription !!}</div>
-                                        <!--end::Text-->
+
+                    <div class="col-md-6 my-5">
+                        <div class="card hover-elevate-up shadow-sm parent-hover">
+                            <div class="card-body">
+                                <div class="row d-flex justify-content-between align-items-center">
+                                    <div class="col-md-4 text-center">
+                                        <h4>Project Cost</h4>
+                                        {{ $project->currency->name }} {{ number_format($project->projectCost,2) }}
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <h4>Project Budget</h4>
+                                        {{ $project->currency->name }} {{ number_format($project->projectBudget,2) }}
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <h4>Budget Limit</h4>
+                                        {{ $project->currency->name }} {{ number_format($project->projectBudgetLimit,2) }}
                                     </div>
                                 </div>
-                                <!--end::Content main-->
                             </div>
-                            <!--end::Body-->
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-body hover-elevate-up shadow-sm parent-hover">
+                                <div class="mb-14">
+                                    <div class="mb-15">
+                                        <h3 class="fs-2x text-gray-900 mb-6">Project description</h3>
+                                        <div class="fs-5 text-gray-600 fw-semibold">{!! $project->projectDescription !!}</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

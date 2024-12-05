@@ -12,6 +12,8 @@ use App\Models\DocumentType;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\removeOrAddUserMail;
 
 class ProjectController extends Controller
 {
@@ -26,7 +28,7 @@ class ProjectController extends Controller
         $departments = Department::where('isActive', 1)->get();
         $users = User::where('status', 'active')->get();
         $roles = Role::all()->pluck('name');
-        $projects = Project::with('projectCategory', 'department', 'client', 'currency', 'users')->get();
+        $projects = Project::with('projectCategory', 'department', 'client', 'currency', 'users')->latest()->get();
         return view('projects.index', compact('clients', 'projectCategories', 'currencies', 'departments', 'users', 'roles', 'projects'));
     }
 
@@ -216,6 +218,10 @@ class ProjectController extends Controller
 
         // Detach the user from the project (if many-to-many relationship)
         if ($project->users()->detach($user)) {
+            // \Log::info($project);
+            $action = 'remove_user';
+            $this->removeOrAddUserToProjectMail($project, $user, $action);
+
             session()->flash('toast', [
                 'type' => 'success',
                 'message' => 'User removed from the project successfully.',
@@ -229,13 +235,63 @@ class ProjectController extends Controller
         return redirect(url('projects/'.$project->id.'#members'));
     }
 
+    
+    private function removeOrAddUserToProjectMail($project, $user, $action)
+    {
+        if (getMailOptions('mail_status') === 'enabled') {
+            // Define email content
+            $companyName = getMailOptions('app_name');
+            if ($action == 'remove_user') {
+                $subject = sprintf(
+                    'Notice of removal from %s Project',
+                    $project->projectName,
+                );
+                $emailMessage = sprintf(
+                    "Hello %s,\nThis is to inform or remind you that you have been removed/detached from the above project.\n".
+                    "You'll either wait for new allocations or be shifted to another project.\n\nThank you,\n%s",
+                    $user->name,
+                    $companyName,
+                );
+            } elseif ($action == 'add_user') {
+                $subject = sprintf(
+                    'Notice of Addition to %s Project',
+                    $project->projectName,
+                );
+                $emailMessage = sprintf(
+                    "Hello %s,\nThis is to inform or remind you that you have been allocated/attached to the above project.\n".
+                    "You are required to start accomplishing the assigned tasks with deadlines in mind.\n\nThank you,\n%s",
+                    $user->name,
+                    $companyName,
+                );
+            }
+
+            $content = [
+                'subject' => $subject,
+                'emailMessage' => $emailMessage, // Use this key
+                'companyName' => $companyName,
+                'username' => $user->name,
+                'projectName' => $project->projectName,
+            ];
+
+            // Send email to the user
+            Mail::to($user->email)->send(new removeOrAddUserMail($content));
+        }
+    }
+
+
     public function addUsers(Project $project, Request $request){
         $request->validate([
             'projectMemberIds' => 'required',
         ]);
-
+        $users = User::whereIn('id', $request->projectMemberIds)->get();
+        
         // Attach the user to the project (if many-to-many relationship)
         if ($project->users()->syncWithoutDetaching($request->projectMemberIds)) {
+            $action = 'add_user';
+            foreach ($users as $user) {
+                $this->removeOrAddUserToProjectMail($project, $user, $action);
+            }
+
             session()->flash('toast', [
                 'type' => 'success',
                 'message' => 'Users added to the project successfully.',

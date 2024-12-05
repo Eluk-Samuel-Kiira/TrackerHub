@@ -122,7 +122,7 @@ class UserSeeder extends Seeder
             'department_id' => 1,
             'role' => 'director',
             'status' => 'active',
-            'email' => 'lodi.dannie@gmail.com',
+            'email' => 'lodidannie@gmail.com',
             'password' => bcrypt('1234567890')
         ]);
         $directorUser->assignRole('director');
