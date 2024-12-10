@@ -43,7 +43,7 @@
                             <img alt="Logo" src="{{ asset('assets/media/logos/custom-1.png') }}" class="h-60px h-lg-75px" />
                         </a> --}}
                         <a href="{{ Route::currentRouteName() }}" style="display: flex; flex-direction: column; align-items: center; text-decoration: none; color: white;">
-                            <img alt="Logo" src="{{ getLogoImage() }}" style="height: 25px; display: inline-block;" class="app-sidebar-logo-default" />
+                            <img src="{{ getLogoImage() }}" style="height: 25px; display: inline-block;" class="app-sidebar-logo-default" />
                             <span style="font-weight: bold; font-size: 3rem; line-height: 1.2; margin-top: 8px; white-space: nowrap; color: white;">
                                 {{ appDefaultName() }}
                             </span>

@@ -75,7 +75,7 @@ if (!function_exists('getLogoImage')) {
         }
 
         // Return the default logo if not found in the database or does not exist
-        return asset('assets/media/logos/default-dark.svg'); // Default logo path
+        // return asset('assets/media/logos/default-dark.svg'); // Default logo path
     }
 }
 

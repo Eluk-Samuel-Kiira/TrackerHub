@@ -57,7 +57,7 @@
                         data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
                         <div class="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
                             <a href="/dashboard" style="display: flex; align-items: center; text-decoration: none;">
-                                <img alt="Logo" src="{{ getLogoImage() }}" style="height: 25px; display: inline-block;" class="app-sidebar-logo-default" />
+                                <img src="{{ getLogoImage() }}" style="height: 25px; display: inline-block;" class="app-sidebar-logo-default" />
                                 <span style="font-weight: bold; font-size: 3rem; line-height: 25px; margin-left: 8px; white-space: nowrap;">
                                     {{ appDefaultName() }}
                                 </span>

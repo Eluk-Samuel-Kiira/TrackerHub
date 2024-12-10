@@ -124,7 +124,7 @@
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
                                     </span>
-                                    <span class="menu-title">{{__('Project Expenses')}}</span>
+                                    <span class="menu-title">{{__('Accounting Sheet')}}</span>
                                 </a>
                             </div>
                         </div>
