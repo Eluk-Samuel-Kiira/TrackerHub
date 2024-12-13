@@ -88,7 +88,7 @@
 
                                 <div class="col-sm-6 col-md-4">
                                     <div class="mb-10">
-                                        <label class="form-label">Client</label>
+                                        <label class="form-label">Client/Company</label>
                                         <div class="d-flex">
                                             <select id="client" class="form-select me-2" name="projectClientId" data-dropdown-parent="#add_project_modal" data-control="select2" data-allow-clear="true" data-placeholder="Select a client">
                                                 <option></option>
@@ -102,7 +102,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-sm-6 col-md-12">
+                                <div class="col-sm-6 col-md-6">
                                     <div class="mb-10">
                                         <label class="form-label">Project Members</label>
                                         <div class="d-flex">
@@ -117,6 +117,15 @@
                                         <div id="projectMemberIds"></div>
                                     </div>
                                 </div>
+
+                                <div class="col-sm-6 col-md-6">
+                                    <div class="mb-10">
+                                        <label class="form-label" for="meetingDate">Schedule Meeting</label><br>
+                                        <input id="meetingDate" name="meetingDate" class="form-control" type="text" placeholder="Select a date and time" />
+                                    </div>
+                                    <div id="meetingDate"></div>
+                                </div>
+
                                 <div class="col-sm-6 col-md-3">
                                     <div class="mb-10">
                                         <label class="form-label">Budget</label>
@@ -221,5 +230,15 @@
     };
 
     submitFormEntities('kt_modal_add_project_form', 'submitProjectButton', '{{ route('projects.store') }}');
+</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+    // Initialize Flatpickr on the input field
+    flatpickr("#meetingDate", {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+    });
 </script>
 

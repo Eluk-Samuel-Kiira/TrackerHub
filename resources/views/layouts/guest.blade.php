@@ -43,14 +43,15 @@
                             <img alt="Logo" src="{{ asset('assets/media/logos/custom-1.png') }}" class="h-60px h-lg-75px" />
                         </a> --}}
                         <a href="{{ Route::currentRouteName() }}" style="display: flex; flex-direction: column; align-items: center; text-decoration: none; color: white;">
-                            <img src="{{ getLogoImage() }}" style="height: 25px; display: inline-block;" class="app-sidebar-logo-default" />
+                            {{--<img src="{{ getLogoImage() }}" style="height: 25px; display: inline-block;" class="app-sidebar-logo-default" /> --}}
                             <span style="font-weight: bold; font-size: 3rem; line-height: 1.2; margin-top: 8px; white-space: nowrap; color: white;">
-                                {{ appDefaultName() }}
+                                {{-- appDefaultName() --}}
+                                {{__('Bamzee Project')}}
                             </span>
                         </a>
 
                         <img class="d-none d-lg-block mx-auto w-275px w-md-50 w-xl-500px mb-10 mb-lg-20" src="{{ asset('assets/media/misc/auth-screens.png') }}" alt="" />
-                        <h1 class="d-none d-lg-block text-white fs-2qx fw-bolder text-center mb-7">{{__('Speed, Efficiency and Productivity')}}</h1>
+                        <h1 class="d-none d-lg-block text-white fs-2qx fw-bolder text-center mb-7">{{__('Management System')}}</h1>
                     </div>
                 </div>
             </div>

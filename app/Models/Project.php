@@ -64,4 +64,9 @@ class Project extends Model
     public function invoices(){
         return $this->hasMany(ProjectInvoice::class,'project_id');
     }
+
+    
+    public function meetings(){
+        return $this->hasMany(ProjectMeeting::class);
+    }
 }

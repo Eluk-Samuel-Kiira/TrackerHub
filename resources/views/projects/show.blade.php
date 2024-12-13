@@ -33,6 +33,9 @@
                             <li class="nav-item">
                                 <a class="nav-link" data-bs-toggle="tab" href="#members">Members</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#meetings">Meetings</a>
+                            </li>
                         @endcan
                         @can('view task')
                             <li class="nav-item">
@@ -203,6 +206,24 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="tab-pane fade" id="meetings" role="tabpanel">
+                <div class="card my-5">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h3 class="card-title text-gray-900 fw-bold fs-3">Meetings</h3>
+                            @can('create members')
+                                <a href="#" class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#add_project_meetings_modal">
+                                    Schedule Meetings
+                                </a>
+                            @endcan
+                        </div>
+                        @include('projects.meetings')
                     </div>
                 </div>
             </div>

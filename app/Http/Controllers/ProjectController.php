@@ -8,12 +8,15 @@ use App\Models\ProjectCategory;
 use App\Models\Currency;
 use App\Models\Department;
 use App\Models\User;
+use App\Models\ProjectMeeting;
 use App\Models\DocumentType;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\removeOrAddUserMail;
+use Illuminate\Support\Facades\DB;
+
 
 class ProjectController extends Controller
 {
@@ -62,6 +65,7 @@ class ProjectController extends Controller
             "projectStartDate" => "required|date",
             "projectDeadlineDate" => "required|date",
             "projectDescription" => "required|string",
+            'meetingDate' => 'required|date|after:now',
             "projectCategoryId" => "required|exists:project_categories,id",
             "projectDepartmentId" => "required|exists:departments,id",
             "projectClientId" => "required|exists:clients,id",
@@ -103,6 +107,16 @@ class ProjectController extends Controller
 
        // Flash toast messages based on success or failure
         if ($project) {
+
+            $projectMeeting = DB::table('project_meetings')->insert([
+                'project_id' => $project->id,
+                'meetingDate' => $request->meetingDate,
+                'status' => 0,
+                'created_at' => now(), 
+                'updated_at' => now(),
+            ]);
+
+
             // session()->flash('toast', [
             //     'type' => 'success',
             //     'message' => 'Project created successfully!',
@@ -320,5 +334,73 @@ class ProjectController extends Controller
             ]);
         }
         return redirect(url('projects/'.$project->id.'#members'));
+    }
+
+    public function meetingDestroy($id)
+    {
+        $meeting = ProjectMeeting::findOrFail($id);
+
+        if ($meeting->status == 0 && \Carbon\Carbon::parse($meeting->meetingDate)->isFuture()) {
+            $meeting->delete();
+
+            session()->flash('toast', [
+                'type' => 'success',
+                'message' => 'Meeting deleted successfully.',
+            ]);
+            return redirect(url('projects/'.$meeting->project_id.'#meetings'));
+        }
+        session()->flash('toast', [
+            'type' => 'error',
+            'message' => 'Cannot delete a meeting that has already occurred and is not marked as done..',
+        ]);
+
+        return redirect(url('projects/'.$meeting->project_id.'#meetings'));
+    }
+
+
+    
+    public function storeMeeting(Request $request) 
+    {
+        
+        $request->validate([
+            "projectId" => "required|numeric",
+            'meetingDate' => 'required|date|after:now',
+        ]);
+
+        
+        $projectMeeting = DB::table('project_meetings')->insert([
+            'project_id' => $request->projectId,
+            'meetingDate' => $request->meetingDate,
+            'status' => 0,
+            'created_at' => now(), 
+            'updated_at' => now(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => __('Project Meeting Created Successfully'),
+        ]);
+
+    }
+
+    public function updateMeeting(Request $request, $id)
+    {
+        $request->validate([
+            'meetingDescription' => 'required|string',
+        ]);
+
+        $meeting = ProjectMeeting::findOrFail($id);
+
+        if ($meeting) {
+            $meeting->update([
+                'description' => $request->meetingDescription,
+                'status' => 1,
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => __('Project Meeting Updated Successfully'),
+        ]);
     }
 }

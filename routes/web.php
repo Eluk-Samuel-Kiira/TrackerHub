@@ -83,6 +83,11 @@ Route::middleware('auth')->group(function () {
     Route::put('/projects/{id}', [ProjectController::class, 'update'])->name('projects.update');
     Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
 
+    // meeting
+    Route::delete('/meetings/{id}', [ProjectController::class, 'meetingDestroy'])->name('meeting.destroy');
+    Route::post('/store-meeting', [ProjectController::class, 'storeMeeting'])->name('meeting.store');
+    Route::put('/update-meeting/{meeting}', [ProjectController::class, 'updateMeeting'])->name('meeting.update');
+
     Route::delete('/projects/{project}/users/{user}', [ProjectController::class, 'removeUser'])->name('projects.users.remove');
     Route::post('/projects/{project}', [ProjectController::class, 'addUsers'])->name('projects.users.add');
     Route::post('/projects/{project}', [ProjectController::class, 'addUsers'])->name('projects.users.add');

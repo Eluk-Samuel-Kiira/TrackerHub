@@ -3,7 +3,7 @@
     <div class="card my-5">
         <div class="card-body">
             <div class="d-flex align-items-center justify-content-between">
-                <h3 class="card-title text-gray-900 fw-bold fs-3">Tasks</h3>
+                <h3 class="card-title text-gray-900 fw-bold fs-3">Tasks</h3><div id="status"></div>
                 @can('create task')
                     <a href="#" class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal"
                         data-bs-target="#add_project_tasks_modal">
@@ -209,7 +209,7 @@
                     if (closeButton) {
                         closeButton.click();
                     }
-                    window.location.reload();
+
                 }
                 })
                 .catch(error => {
