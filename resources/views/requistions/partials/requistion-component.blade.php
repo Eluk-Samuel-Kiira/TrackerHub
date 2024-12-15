@@ -22,7 +22,7 @@
             @if (!empty($requisitions) && $requisitions->count() > 0)
                 @foreach ($requisitions as $requisition)
                     <tr data-role="{{ strtolower($requisition->name) }}"
-                        style="{{ $requisition->status === 'approved' ? 'background-color: #f8d7da;' : '' }}"
+                        style="{{ $requisition->isActive == 0 ? 'background-color: #f8d7da;' : '' }}"
                     >
                         <td>
                             <div class="form-check form-check-sm form-check-custom form-check-solid">
@@ -43,9 +43,9 @@
                         <td>
                             <select name="status" class="form-select form-select-solid form-select-sm"
                             style="appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: none; padding-right: 10px;" 
-                                 onchange="updateStatus({{ $requisition->id }}, this.value)" @cannot('update requisitions') disabled @endcannot>
-                                <option value="1" {{ $requisition->isActive == 1 ? 'selected' : '' }}><span>{{__('Active')}}</option>
-                                <option value="0" {{ $requisition->isActive == 0 ? 'selected' : '' }}>{{__('Inactive')}}</option>
+                                 onchange="updateStatus({{ $requisition->id }}, this.value)" @if(!auth()->user()->hasRole('accountant')) disabled @endif>
+                                <option value="1" {{ $requisition->isActive == 1 ? 'selected' : '' }}><span>{{__('Upaid')}}</option>
+                                <option value="0" {{ $requisition->isActive == 0 ? 'selected' : '' }}>{{__('Paid')}}</option>
                             </select>
                         </td>
                         <td>
@@ -53,7 +53,7 @@
                             name="response" 
                             class="form-select form-select-solid form-select-sm" 
                             style="appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: none; padding-right: 10px;" 
-                            onchange="updateResponse({{ $requisition->id }}, this.value)" @cannot('approve requisitions') disabled @endcannot>
+                            onchange="updateResponse({{ $requisition->id }}, this.value)" @if(!auth()->user()->hasRole('director')) disabled @endif>
                             <option value="pending" {{ $requisition->status == 'pending' ? 'selected' : '' }}>
                                 {{__('Pending')}}
                             </option>

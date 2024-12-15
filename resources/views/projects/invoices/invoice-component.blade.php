@@ -69,7 +69,7 @@
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <p>{{ __('Are you sure you want to delete this user/Employee?') }}</p>
+                                                    <p>{{ __('Are you sure you want to delete this Invoice?') }}</p>
                                                     <p>{{ __('This action cannot be undone.') }}</p>
                                                 </div>
                                                 <div class="modal-footer">
@@ -80,6 +80,34 @@
                                                         data-item-url="{{ route('invoice.destroy', $invoice->id) }}" 
                                                         data-item-id="{{ $invoice->id }}"
                                                         onclick="deleteItem(this)">
+                                                        <span class="indicator-label">{{ __('Confirm') }}</span>
+                                                        <span class="indicator-progress" style="display: none;">
+                                                            {{ __('Please wait...') }}
+                                                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                                        </span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Resend Invoce Modal -->
+                                    <div class="modal fade" id="sendInvoiceMail{{$invoice->id}}" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">{{ __('Resend Invoice') }}</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>{{ __('Are you sure you want to resend this Invoice?') }}</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <!-- Discard Button -->
+                                                    <button type="button" id="closeInvoiceModal{{$invoice->id}}" class="btn btn-light me-3" data-bs-dismiss="modal">{{ __('Discard') }}</button>
+                                                    <!-- Confirm Button -->
+                                                    <button type="button" id="invoiceButton{{$invoice->id}}" class="btn btn-success" 
+                                                        onclick="resendInvoiceMail({{ $invoice->id }})">
                                                         <span class="indicator-label">{{ __('Confirm') }}</span>
                                                         <span class="indicator-progress" style="display: none;">
                                                             {{ __('Please wait...') }}
@@ -158,6 +186,56 @@
         </table>
     </div>
 </div>
+
+
+<script>
+    function resendInvoiceMail(invoiceId) {
+        const submitButton = document.getElementById(`invoiceButton${invoiceId}`);
+
+        LiveBlade.toggleButtonLoading(submitButton, true);
+
+        // Construct the dynamic URL for the specific invoice
+        const actionUrl = `/invoice/resend/${invoiceId}`;
+
+        // Send the request to the backend
+        LiveBlade.actionDriven(actionUrl)
+            .then(noErrors => {
+                if (noErrors) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: `Invoice ${invoiceId} email was resent successfully.`,
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
+                    
+                    var closeButton = document.getElementById('closeInvoiceModal' + invoiceId);
+                    if (closeButton) {
+                        closeButton.click();
+                    }
+                
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'Error',
+                    text: `Failed to resend invoice ${invoiceId}. Please try again later.`,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                console.error(`Error resending invoice ${invoiceId}:`, error);
+            })
+            .finally(() => {
+                // Disable loading state for the button
+                LiveBlade.toggleButtonLoading(submitButton, false);
+            });
+    }
+
+    function resendInvoicesBatch(invoiceIds) {
+        invoiceIds.forEach(invoiceId => {
+            resendInvoiceMail(invoiceId);
+        });
+    }
+</script>
 
 
 

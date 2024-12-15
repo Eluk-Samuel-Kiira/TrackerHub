@@ -31,7 +31,18 @@ class ProjectController extends Controller
         $departments = Department::where('isActive', 1)->get();
         $users = User::where('status', 'active')->get();
         $roles = Role::all()->pluck('name');
-        $projects = Project::with('projectCategory', 'department', 'client', 'currency', 'users', 'tasks')->latest()->get();
+        
+        if (in_array(auth()->user()->role, ['director', 'project_manager', 'accountant'])) {
+            $projects = Project::with('projectCategory', 'department', 'client', 'currency', 'users', 'tasks')->latest()->get();
+        } else {
+            
+            // Get project IDs associated with the user
+            $project_ids = DB::table('project_user')
+                            ->where('user_id', auth()->user()->id)
+                            ->pluck('project_id'); // Fetch only project IDs
+
+            $projects = Project::whereIn('id', $project_ids)->with('projectCategory', 'department', 'client', 'currency', 'users', 'tasks')->latest()->get();
+        }
 
         // Calculate percentage completion for each project
         $projects->each(function ($project) {
@@ -115,6 +126,14 @@ class ProjectController extends Controller
                 'created_at' => now(), 
                 'updated_at' => now(),
             ]);
+
+            
+            $users = User::whereIn('id', $request->projectMemberIds)->get();
+            
+            $action = 'add_user';
+            foreach ($users as $user) {
+                $this->removeOrAddUserToProjectMail($request, $user, $action);
+            }
 
 
             // session()->flash('toast', [
@@ -289,9 +308,28 @@ class ProjectController extends Controller
                     $project->projectName,
                 );
                 $emailMessage = sprintf(
-                    "Hello %s,\nThis is to inform or remind you that you have been allocated/attached to the above project.\n".
-                    "You are required to start accomplishing the assigned tasks with deadlines in mind.\n\nThank you,\n%s",
+                    "Hello %s,\n\nThis is to inform or remind you that you have been allocated/attached to the above project.\n" .
+                    "The first meeting is scheduled on %s.\n\n" .
+                    "You are required to start accomplishing the assigned tasks with deadlines in mind.\n\n" .
+                    "Thank you,\n%s",
                     $user->name,
+                    \Carbon\Carbon::parse($project->meetingDate)->format('F j, Y g:i A'),
+                    $companyName
+                );                
+            } elseif ($action['type'] === 'send_reminder') {
+                $subject = sprintf(
+                    'Notice of Next Scheduled Meeting for %s Project',
+                    $project->projectName
+                );
+        
+                $emailMessage = sprintf(
+                    "Hello %s,\n\nThis is to inform or remind you that there is a scheduled meeting to the '%s' project.\n" .
+                    "The next meeting is scheduled on %s.\n\n" .
+                    "You are required to start accomplishing the assigned tasks with deadlines in mind.\n\n" .
+                    "Thank you,\n%s",
+                    $user->name,
+                    $project->projectName,
+                    \Carbon\Carbon::parse($action['meetingDate'])->format('F j, Y g:i A'),
                     $companyName,
                 );
             }
@@ -356,8 +394,6 @@ class ProjectController extends Controller
 
         return redirect(url('projects/'.$meeting->project_id.'#meetings'));
     }
-
-
     
     public function storeMeeting(Request $request) 
     {
@@ -375,6 +411,22 @@ class ProjectController extends Controller
             'created_at' => now(), 
             'updated_at' => now(),
         ]);
+
+        $project = Project::findOrFail($request->projectId);
+
+        $projectMembersIds = DB::table('project_user')
+            ->where('project_id', $request->projectId)
+            ->pluck('user_id');
+        
+        $users = User::whereIn('id', $projectMembersIds)->get();
+
+        $action = [
+            'type' => 'send_reminder',
+            'meetingDate' => $request['meetingDate'], 
+        ];
+        foreach ($users as $user) {
+            $this->removeOrAddUserToProjectMail($project, $user, $action);
+        }
 
         return response()->json([
             'success' => true,

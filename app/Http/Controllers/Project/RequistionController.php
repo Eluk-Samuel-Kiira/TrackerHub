@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\BudgetLimitMail;
 use App\Mail\removeOrAddUserMail;
+use App\Mail\RequisitionProcessedMail;
+use Illuminate\Support\Facades\Auth;
 
 class RequistionController extends Controller
 {
@@ -27,11 +29,19 @@ class RequistionController extends Controller
      */
     public function index(Request $request)
     {    
-        if (in_array(auth()->user()->role, ['director', 'project_manager', 'accountant'])) {
+        if (in_array(auth()->user()->role, ['director', 'project_manager'])) {
             $requisitions = Requistion::latest()->get();
             $projects = Project::latest()->get();
             $document_types = DocumentType::latest()->get();
             $requistion_files = RequisitionFiles::latest()->get();
+
+        } elseif (auth()->user()->role === 'accountant') {
+            // Accountant sees only approved requisitions
+            $requisitions = Requistion::where('status', 'approved')->latest()->get();
+            $projects = Project::latest()->get();
+            $document_types = DocumentType::latest()->get();
+            $requistion_files = RequisitionFiles::latest()->get();
+        
         } else {
             $requisitions = Requistion::where('created_by', auth()->user()->id)->latest()->get();
             
@@ -199,35 +209,69 @@ class RequistionController extends Controller
         }
     }
 
-    
     public function changeRequisitionStatus(Request $request, $id) 
     {
         $validated = $request->validate([
-            'status' => 'required|in:1,0', 
+            'status' => 'required|in:1,0', // 1 = Active (Unpaid), 0 = Inactive (Paid)
         ]);
-    
+        
         $requisition = Requistion::find($id);
-    
+        
         if ($requisition) {
-            if ($requisition->status === 'approved') {
+            /**  
+             * Hey developer
+             * Active stands for unpaid requisitions
+             * Inactive stands for paid
+            */
+
+            if ($requisition->status !== 'approved') {
                 return response()->json([
                     'success' => false,
-                    'message' => __('An approved requisition status can not be changed'),
+                    'message' => __('You cannot make the payment for this requisition unless the Managing Director approves it.'),
                 ]);
             }
-            $requisition->isActive = $validated['status'];  
-            if ($requisition->save()) {  
+
+            // Prevent changing "Inactive" (Paid) requisitions back to "Active" (Unpaid)
+            if ($requisition->isActive == 0) {
                 return response()->json([
-                    'success' => true,
-                    'reload' => true,
-                    'refresh' => false,
-                    'componentId' => 'reloadRequisitionComponent',
-                    'message' => __('Requisition updated successfully'),
+                    'success' => false,
+                    'message' => __('A paid requisition cannot be marked as unpaid.'),
                 ]);
             }
+
+            $project = Project::findOrFail($requisition->project_id);
+            if ($project) {
+                $budgetResult = $this->budgetDeductions($requisition, $project);
+            
+                if (!$budgetResult['success']) {
+                    // \Log::error($budgetResult['message']);
+                    return response()->json([
+                        'success' => false,
+                        'message' => $budgetResult['message'], 
+                    ]);
+                }
+
+                $requisition->isActive = $validated['status'];
+            
+                if ($requisition->save()) {
+                    return response()->json([
+                        'success' => true,
+                        'reload' => true,
+                        'refresh' => false,
+                        'componentId' => 'reloadRequisitionComponent',
+                        'message' => __('Requisition Payment Processed and Paid Successfully.'),
+                    ]);
+                }
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => __('Project Not Found!'),
+                ]);
+            }
+                
         }
-    
-        // If user not found or status update failed
+
+        // If requisition not found or status update failed
         return response()->json([
             'success' => false,
             'message' => __('Requisition not found or status update failed!'),
@@ -244,10 +288,10 @@ class RequistionController extends Controller
 
         if ($requisition) {
             // Check if the requisition is already approved
-            if ($requisition->status === 'approved') {
+            if ($requisition->isActive == 0) {
                 return response()->json([
                     'success' => false,
-                    'message' => __('An approved requisition cannot be reverted to pending or denied.'),
+                    'message' => __('A paid requisition cannot be reverted to pending or denied.'),
                 ]);
             }
 
@@ -256,17 +300,16 @@ class RequistionController extends Controller
             if ($validated['status'] === 'approved') {
                 if ($project) {
                     $budgetResult = $this->budgetDeductions($requisition, $project);
-                
+            
                     if (!$budgetResult['success']) {
-                        \Log::error($budgetResult['message']);
+                        // \Log::error($budgetResult['message']);
                         return response()->json([
                             'success' => false,
                             'message' => $budgetResult['message'], 
                         ]);
                     }
-                
+
                     // Proceed only if budget deductions were successful
-                    $requisition->isActive = 0;
                     $requisition->status = 'approved';
                     $requisition->save();
 
@@ -312,7 +355,7 @@ class RequistionController extends Controller
                 case 'approved':
                     $emailMessage = sprintf(
                         "Hello %s,\n\nGood news! Your requisition for the project '%s' has been approved.\n".
-                        "You can proceed with the next steps as outlined in the project guidelines.\n\nThank you,\n%s",
+                        "You can proceed with the next steps i.e. Request the accountant to make payments to you as outlined in the project guidelines.\n\nThank you,\n%s",
                         $user->name,
                         $project->projectName,
                         $companyName
@@ -348,7 +391,30 @@ class RequistionController extends Controller
                         $companyName
                     );
                     break;
+                    
             }
+
+            $accountants = User::role('accountant')->get();  // Get all users with the accountant role
+            if ($accountants) {
+                $accountantEmailMessage = sprintf(
+                    "Hello,\n\nThe requisition for the project '%s' has been approved and is requesting payment.\n".
+                    "Please proceed with the payment steps outlined in the project guidelines.\n\nThank you,\n%s",
+                    $project->projectName,
+                    $companyName
+                );
+    
+                foreach ($accountants as $accountant) {
+                    // Send email to each accountant
+                    Mail::to($accountant->email)->send(new removeOrAddUserMail([
+                        'subject' => $subject,
+                        'emailMessage' => $accountantEmailMessage,
+                        'companyName' => $companyName,
+                        'username' => $accountant->name,
+                        'projectName' => $project->projectName,
+                    ]));
+                }
+            }
+
 
             $content = [
                 'subject' => $subject,
@@ -362,8 +428,6 @@ class RequistionController extends Controller
             Mail::to($user->email)->send(new removeOrAddUserMail($content));
         }
     }
-
-
     
     private function budgetDeductions($requisition, $project)
     {
@@ -403,16 +467,38 @@ class RequistionController extends Controller
             ];
         }
 
-        // Update the project budget
-        $project->update([
-            'projectBudget' => $newProjectBudget,
-        ]);
 
-        $project_expenses = ProjectExpense::create([
-            'project_id' => $project->id,
-            'requested_by' => $requisition->created_by,
-            'approved_amount' => $requisition->amount,
-        ]);
+        // Only account can cashout
+        if (Auth::user()->hasRole('accountant')) {
+            // Update the project budget
+            $project->update([
+                'projectBudget' => $newProjectBudget,
+            ]);
+
+            $project_expenses = ProjectExpense::create([
+                'project_id' => $project->id,
+                'requested_by' => $requisition->created_by,
+                'approved_amount' => $requisition->amount,
+            ]);
+
+            // Send mail to project manager and director
+            $accountantName = Auth::user()->name;
+            $recipients = User::whereIn('role', ['project_manager', 'director'])->pluck('email');
+
+            foreach ($recipients as $email) {
+                Mail::to($email)->send(new RequisitionProcessedMail([
+                    'projectName' => $project->projectName,
+                    'requisitionName' => $requisition->name,
+                    'accountantName' => $accountantName,
+                    'approvedAmount' => $requisition->amount,
+                ]));
+            }
+            
+            return [
+                'success' => true,
+                'message' => __('Project budget updated successfully.'),
+            ];
+        }
 
         // \Log::info('Project budget updated successfully: ' . json_encode([
         //     'project_id' => $project->id,
@@ -422,11 +508,9 @@ class RequistionController extends Controller
 
         return [
             'success' => true,
-            'message' => __('Project budget updated successfully.'),
+            'message' => __('Requisition status approved successfully.'),
         ];
     }
-
-
     
     private function budgetLimitMail($requisition, $project)
     {
@@ -482,6 +566,7 @@ class RequistionController extends Controller
         DB::beginTransaction(); 
 
         try {
+
             $request->validate([
                 'files.*' => 'required|file|mimes:jpg,jpeg,png,pdf,docx,xlsx,pptx,csv,txt|max:5096',
                 'file_type' => 'required|exists:document_types,id',

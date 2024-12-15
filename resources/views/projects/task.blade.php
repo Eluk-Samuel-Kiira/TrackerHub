@@ -229,43 +229,6 @@
 
 <script>
 
-    const submitFormEntities = (formId, submitButtonId, url, method = 'POST') => {
-        document.getElementById(formId).addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            // Collect form data and add additional fields
-            const formData = Object.fromEntries(new FormData(this));
-            formData._method = method;
-            formData.routeName = url;
-
-            // Reference the submit button and reloading
-            const submitButton = document.getElementById(submitButtonId);
-            LiveBlade.toggleButtonLoading(submitButton, true);
-
-            // Submit form data asynchronously
-            LiveBlade.submitFormItems(formData)
-                .then(noErrors => {
-                    console.log(noErrors);
-                    
-                    if (noErrors) {
-                        // Close the modal if no errors
-                        const closeModal = () => {
-                            document.getElementById('discardTaskButton').click();
-                        };
-                        closeModal();
-                    }
-                })
-                .catch(error => {
-                    console.error('An unexpected error occurred:', error);
-                })
-                .finally(() => {
-                    LiveBlade.toggleButtonLoading(submitButton, false);
-                });
-
-                
-        });
-    };
-
     submitFormEntities('kt_modal_add_task_form', 'submitTaskButton', '{{ route('tasks.add') }}');
 </script>
 

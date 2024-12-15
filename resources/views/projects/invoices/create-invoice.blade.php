@@ -69,7 +69,7 @@
 
 
 <script>
-    const submitFormEntities = (formId, submitButtonId, url, method = 'POST') => {
+    const submitFormEntitiesInvoice = (formId, submitButtonId, url, method = 'POST') => {
         document.getElementById(formId).addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -107,5 +107,5 @@
         });
     };
 
-    submitFormEntities('kt_modal_add_invoice_form', 'submitInvoiceButton', '{{ route('invoices.add') }}');
+    submitFormEntitiesInvoice('kt_modal_add_invoice_form', 'submitInvoiceButton', '{{ route('invoices.add') }}');
 </script>

@@ -3,8 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProjectInvoice;
+use App\Models\Project;
+use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\removeOrAddUserMail; 
+
 
 class ProjectInvoiceController extends Controller
 {
@@ -54,6 +59,7 @@ class ProjectInvoiceController extends Controller
         //send mail notificaton here
 
         if($projectInvoice){
+            $this->resend($projectInvoice->id);
             // session()->flash('toast', [
             //     'type' => 'success',
             //     'message' => 'Project Invoice Added to project successfully.',
@@ -147,6 +153,66 @@ class ProjectInvoiceController extends Controller
             'success' => true,
             'message' => __('Invoice deleted successfully.'),
         ]);
+    }
+
+
+    public function resend($id)
+    {
+        try {
+            $invoice = ProjectInvoice::findOrFail($id);
+
+            $project = Project::findOrFail($invoice->project_id);
+            $user = Client::findOrFail($invoice->client_id);
+            $this->invoiceMail($project, $invoice, $user);
+
+            return response()->json([
+                'success' => true,
+                'message' => __('Invoice sent successfully.'),
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => __('Invoice Mail Fail.'),
+            ]);
+        }
+    }
+
+    
+    private function invoiceMail($project, $invoice, $user)
+    {
+        if (getMailOptions('mail_status') === 'enabled') {
+            $companyName = getMailOptions('app_name');
+            $subject = sprintf(
+                'Invoice for %s Project',
+                $project->projectName
+            );
+
+            $emailMessage = sprintf(
+                "Hello %s,\n\nThis is a reminder that the invoice for the '%s' project is available. Please find the details below:\n\n".
+                "Invoice ID: %s\n".
+                "Amount: $%s\n".
+                "Due Date: %s\n\n".
+                "If you have any questions or concerns, please feel free to contact us.\n\nThank you,\n%s",
+                $user->name,
+                $project->projectName,
+                $invoice->id,
+                $invoice->amount,
+                \Carbon\Carbon::parse($invoice->due_date)->format('F j, Y'),
+                $companyName
+            );
+
+            $content = [
+                'subject' => $subject,
+                'emailMessage' => $emailMessage,
+                'companyName' => $companyName,
+                'username' => $user->name,
+                'projectName' => $project->projectName,
+            ];
+
+            // Send the email using the Mailable class
+            Mail::to($user->email)->send(new removeOrAddUserMail($content));
+        }
     }
 
 }

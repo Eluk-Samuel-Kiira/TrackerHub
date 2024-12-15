@@ -103,6 +103,7 @@ Route::middleware('auth')->group(function () {
 
     //invoices
     Route::resource('invoice', ProjectInvoiceController::class);
+    Route::get('/invoice/resend/{id}', [ProjectInvoiceController::class, 'resend'])->name('invoice.resend');
 
     Route::post('/invoices', [ProjectInvoiceController::class, 'store'])->name('invoices.add');
     Route::delete('/invoices/{file}', [ProjectInvoiceController::class, 'destroy'])->name('invoices.remove');
