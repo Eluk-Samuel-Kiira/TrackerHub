@@ -174,7 +174,7 @@ class RoleController extends Controller
 
         // Check if the role is deletable (i.e., not a special role like 'director', 'developer', etc.)
         $deletableRole = Role::where('id', $id)
-            ->whereNotIn('name', ['director', 'developer', 'resource_manager', 'project_manager'])
+            ->whereNotIn('name', ['director', 'developer', 'resource_manager', 'project_manager', 'accountant'])
             ->first();
 
         // If the role is deletable, delete it and return a success response
