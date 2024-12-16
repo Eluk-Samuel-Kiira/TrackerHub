@@ -18,6 +18,9 @@
             <strong>Approved Amount:</strong> <span style="color: #27ae60;">{{ number_format($details['approvedAmount'], 2) }}</span>
         </p>
         <p style="font-size: 16px; margin: 10px 0;">
+            <strong>Payment Voucher:</strong> <span style="color: #27ae60;">{{ $details['voucher_number'] }}</span>
+        </p>
+        <p style="font-size: 16px; margin: 10px 0;">
             Please reach out if you have any questions.
         </p>
         <p style="font-size: 16px; margin: 20px 0; text-align: center;">

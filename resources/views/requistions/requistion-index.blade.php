@@ -64,9 +64,26 @@
 
     <script>
         function updateStatus(uniqueId, selectedStatus) {
-            // console.log(" ID:", uniqueId, "Selected status:", selectedStatus);
             const updateRoute = '/requisition-status/' + uniqueId;
-            LiveBlade.loopUpdateStatus(updateRoute, selectedStatus);
+
+            // SweetAlert confirmation
+            Swal.fire({
+                title: 'Are you sure?',
+                text: `You are about to change the status to 'Paid'. This action may be irreversible.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, proceed!',
+                cancelButtonText: 'Cancel',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Proceed with status update
+                    LiveBlade.loopUpdateStatus(updateRoute, selectedStatus);
+                } else {
+                    console.log('Status update cancelled.');
+                }
+            });
         }
 
         function updateResponse(uniqueId, selectedStatus) {
@@ -84,14 +101,92 @@
                 cancelButtonText: 'Cancel',
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Proceed with submission
-                    LiveBlade.loopUpdateStatus(updateRoute, selectedStatus);
+                    // Open a modal for entering the reason
+                    Swal.fire({
+                        title: `Enter reason for ${selectedStatus}`,
+                        input: 'textarea',
+                        inputPlaceholder: 'Provide a reason...',
+                        inputAttributes: {
+                            'aria-label': 'Provide a reason'
+                        },
+                        showCancelButton: true,
+                        confirmButtonText: 'Submit',
+                        cancelButtonText: 'Cancel',
+                        inputValidator: (value) => {
+                            if (!value) {
+                                return 'A reason is required!';
+                            }
+                        }
+                    }).then((reasonResult) => {
+                        if (reasonResult.isConfirmed) {
+                            const reason = reasonResult.value;
+                            const payload = {
+                                status: selectedStatus,
+                                reasons: reason
+                            };
+
+                            fetch(updateRoute, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'), // Add CSRF token if using Laravel
+                                },
+                                body: JSON.stringify(payload), 
+                            })
+                                .then((response) => {
+                                    // Parse the JSON response
+                                    return response.json();
+                                })
+                                .then((data) => {
+                                    // Check the success key in the response
+                                    if (data.success) {
+                                        // Show success toast
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Success!',
+                                            text: data.message || 'Requisition response updated successfully.',
+                                            toast: true,
+                                            position: 'top-right',
+                                            showConfirmButton: false,
+                                            timer: 3000,
+                                        });
+                                    } else {
+                                        // Show error toast
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error!',
+                                            text: data.message || 'Something went wrong.',
+                                            toast: true,
+                                            position: 'top-right',
+                                            showConfirmButton: false,
+                                            timer: 3000,
+                                        });
+                                    }
+                                })
+                                .catch((error) => {
+                                    // Handle unexpected errors (e.g., network issues)
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error!',
+                                        text: 'An unexpected error occurred. Please try again.',
+                                        toast: true,
+                                        position: 'top-right',
+                                        showConfirmButton: false,
+                                        timer: 3000,
+                                    });
+                                    console.error('Error:', error);
+                                });
+
+                        } else {
+                            console.log('Action cancelled by user.');
+                        }
+                    });
                 } else {
-                    // Optional: Handle cancellation
                     console.log('Action cancelled by user.');
                 }
             });
         }
+
 
     </script>   
         

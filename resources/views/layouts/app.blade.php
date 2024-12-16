@@ -47,7 +47,7 @@
 				@include('layouts.header')
 				<div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
                     <div id="kt_app_sidebar" class="app-sidebar flex-column" 
-                        style="background-color: #001F54;" 
+                        style="background-color: #006400;" 
                         data-kt-drawer="true" 
                         data-kt-drawer-name="app-sidebar" 
                         data-kt-drawer-activate="{default: true, lg: false}" 
@@ -55,17 +55,23 @@
                         data-kt-drawer-width="225px" 
                         data-kt-drawer-direction="start" 
                         data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
-                        <div class="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
-                            <a href="/dashboard" style="display: flex; align-items: center; text-decoration: none;">
-                                <img src="{{ getLogoImage() }}" style="height: 25px; display: inline-block;" class="app-sidebar-logo-default" />
-                                <span style="font-weight: bold; font-size: 3rem; line-height: 25px; margin-left: 8px; white-space: nowrap;">
-                                    {{ appDefaultName() }}
-                                </span>
-                                {{--<img alt="Logo" src="{{ getLogoImage() }}" style="height: 20px; display: inline-block; margin-left: 8px;" class="app-sidebar-logo-minimize" /> --}}
-                            </a>
-                            <div id="kt_app_sidebar_toggle" class="app-sidebar-toggle btn btn-icon btn-shadow btn-sm btn-color-muted btn-active-color-primary h-30px w-30px position-absolute top-50 start-100 translate-middle rotate" data-kt-toggle="true" data-kt-toggle-state="active" data-kt-toggle-target="body" data-kt-toggle-name="app-sidebar-minimize">
-                                <i class="ki-duotone ki-black-left-line fs-3 rotate-180"><span class="path1"></span><span class="path2"></span></i>
-                            </div>
+                        <div style="text-align: center; color: white; padding: 20px;">
+                            <h1 style="font-size: 2.5rem; margin: 0; color: white;">Bamzee</h1>
+                            <h6 style="font-size: 1rem; margin: 10px 0 0; color: white;">Project Management System</h6>
+
+                            {{-- 
+                                <a href="/dashboard" style="display: flex; align-items: center; text-decoration: none;">
+                                    <img src="{{ getLogoImage() }}" style="height: 25px; display: inline-block;" class="app-sidebar-logo-default" /> 
+                                    <span style="font-weight: bold; font-size: 3rem; line-height: 25px; margin-left: 8px; white-space: nowrap;">
+                                        {{ appDefaultName() }}
+                                    </span>
+                                    <img alt="Logo" src="{{ getLogoImage() }}" style="height: 20px; display: inline-block; margin-left: 8px;" class="app-sidebar-logo-minimize" /> 
+                                </a>
+                                <div id="kt_app_sidebar_toggle" class="app-sidebar-toggle btn btn-icon btn-shadow btn-sm btn-color-muted btn-active-color-primary h-30px w-30px position-absolute top-50 start-100 translate-middle rotate" data-kt-toggle="true" data-kt-toggle-state="active" data-kt-toggle-target="body" data-kt-toggle-name="app-sidebar-minimize">
+                                    <i class="ki-duotone ki-black-left-line fs-3 rotate-180"><span class="path1"></span><span class="path2"></span></i>
+                                </div>
+                            --}}
+
                         </div>
                         @include('layouts.navigation')
                     </div>

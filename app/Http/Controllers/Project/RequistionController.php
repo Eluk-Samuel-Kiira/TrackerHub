@@ -20,6 +20,7 @@ use App\Mail\BudgetLimitMail;
 use App\Mail\removeOrAddUserMail;
 use App\Mail\RequisitionProcessedMail;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class RequistionController extends Controller
 {
@@ -140,6 +141,13 @@ class RequistionController extends Controller
                 ]);
             }
 
+            if ($requistion->isPaid === 1) {
+                return response()->json([
+                    'success' => false,
+                    'message' => __('A requisition paid for can not be edited.'),
+                ]);
+            }
+
             if ($updated) {
                 return response()->json([
                     'success' => true,
@@ -239,6 +247,13 @@ class RequistionController extends Controller
                 ]);
             }
 
+            if ($validated['status'] == 1) {
+                return response()->json([
+                    'success' => false,
+                    'message' => __('You are to only process payment by clicking only PAID option.'),
+                ]);
+            }
+
             $project = Project::findOrFail($requisition->project_id);
             if ($project) {
                 $budgetResult = $this->budgetDeductions($requisition, $project);
@@ -251,7 +266,9 @@ class RequistionController extends Controller
                     ]);
                 }
 
+                // Mark requisition as approved and processed 
                 $requisition->isActive = $validated['status'];
+                $requisition->isPaid = 1;
             
                 if ($requisition->save()) {
                     return response()->json([
@@ -282,7 +299,9 @@ class RequistionController extends Controller
     {
         $validated = $request->validate([
             'status' => 'required|in:pending,denied,approved', 
+            'reasons' => 'nullable|string', 
         ]);
+                    
 
         $requisition = Requistion::find($id);
 
@@ -311,6 +330,8 @@ class RequistionController extends Controller
 
                     // Proceed only if budget deductions were successful
                     $requisition->status = 'approved';
+                    $requisition->reasons = $validated['reasons'];
+
                     $requisition->save();
 
                     $this->requisitionStatusMail($project, $requisition, 'approved');
@@ -318,15 +339,14 @@ class RequistionController extends Controller
                 }
             } else {
                 $requisition->status = $validated['status'];
+                $requisition->reasons = $validated['reasons'];
+
                 $requisition->save();
                 $this->requisitionStatusMail($project, $requisition, $validated['status']);
 
             }
             return response()->json([
                 'success' => true,
-                'reload' => true,
-                'refresh' => false,
-                'componentId' => 'reloadRequisitionComponent',
                 'message' => __('Requisition updated successfully'),
             ]);
         }
@@ -337,6 +357,25 @@ class RequistionController extends Controller
             'message' => __('Requisition not found or status update failed because it night have been approved!'),
         ]);
     }
+
+    function generateVoucherNumber()
+    {
+        // Prefix for payment vouchers
+        $prefix = 'PAY';
+
+        // Current date in YYYYMMDD format
+        $date = now()->format('Ymd');
+
+        // Generate a unique identifier (e.g., random number or incrementing ID)
+        // Check for uniqueness in the database to avoid duplication
+        do {
+            $uniqueId = Str::padLeft(random_int(1, 99999), 5, '0'); // Generate a random 5-digit number
+            $voucherNumber = "{$prefix}-{$date}-{$uniqueId}";
+        } while (DB::table('requistions')->where('voucher', $voucherNumber)->exists());
+
+        return $voucherNumber;
+    }
+
 
     private function requisitionStatusMail($project, $requisition, $action)
     {
@@ -349,51 +388,59 @@ class RequistionController extends Controller
                 $requisition->name,
                 $project->projectName
             );
-
+    
+            // Include reason in the message
+            $reasonText = $requisition->reasons 
+                ? sprintf("\nReason: %s\n", $requisition->reasons) 
+                : "\nNo reason was provided for this status update.\n";
+    
             // Customize message based on action
             switch ($action) {
                 case 'approved':
                     $emailMessage = sprintf(
                         "Hello %s,\n\nGood news! Your requisition for the project '%s' has been approved.\n".
-                        "You can proceed with the next steps i.e. Request the accountant to make payments to you as outlined in the project guidelines.\n\nThank you,\n%s",
+                        "%sYou can proceed with the next steps, i.e., request the accountant to make payments to you as outlined in the project guidelines.\n\nThank you,\n%s",
                         $user->name,
                         $project->projectName,
+                        $reasonText,
                         $companyName
                     );
                     break;
-
+    
                 case 'pending':
                     $emailMessage = sprintf(
                         "Hello %s,\n\nYour requisition for the project '%s' is currently pending review.\n".
-                        "You will be notified once the status is updated. Please ensure all necessary details are provided to avoid delays.\n\nThank you,\n%s",
+                        "%sYou will be notified once the status is updated. Please ensure all necessary details are provided to avoid delays.\n\nThank you,\n%s",
                         $user->name,
                         $project->projectName,
+                        $reasonText,
                         $companyName
                     );
                     break;
-
+    
                 case 'denied':
                     $emailMessage = sprintf(
                         "Hello %s,\n\nUnfortunately, your requisition for the project '%s' has been denied.\n".
-                        "Kindly review the feedback provided and make adjustments if necessary. For further clarification, feel free to reach out.\n\nThank you,\n%s",
+                        "%sKindly review the feedback provided and make adjustments if necessary. For further clarification, feel free to reach out.\n\nThank you,\n%s",
                         $user->name,
                         $project->projectName,
+                        $reasonText,
                         $companyName
                     );
                     break;
-
+    
                 default:
                     $emailMessage = sprintf(
                         "Hello %s,\n\nThis is an update regarding your requisition for the project '%s'.\n".
-                        "Please contact the project team for more details.\n\nThank you,\n%s",
+                        "%sPlease contact the project team for more details.\n\nThank you,\n%s",
                         $user->name,
                         $project->projectName,
+                        $reasonText,
                         $companyName
                     );
                     break;
-                    
             }
-
+    
             $accountants = User::role('accountant')->get();  // Get all users with the accountant role
             if ($accountants) {
                 $accountantEmailMessage = sprintf(
@@ -414,8 +461,7 @@ class RequistionController extends Controller
                     ]));
                 }
             }
-
-
+    
             $content = [
                 'subject' => $subject,
                 'emailMessage' => $emailMessage, // Use this key
@@ -423,11 +469,12 @@ class RequistionController extends Controller
                 'username' => $user->name,
                 'projectName' => $project->projectName,
             ];
-
+    
             // Send email to the user
             Mail::to($user->email)->send(new removeOrAddUserMail($content));
         }
     }
+    
     
     private function budgetDeductions($requisition, $project)
     {
@@ -468,8 +515,13 @@ class RequistionController extends Controller
         }
 
 
-        // Only account can cashout
+        // Only account can cashout or make payments
         if (Auth::user()->hasRole('accountant')) {
+            
+            $voucherNumber = $this->generateVoucherNumber();
+            $requisition->voucher  = $voucherNumber;
+            $requisition->save();
+            
             // Update the project budget
             $project->update([
                 'projectBudget' => $newProjectBudget,
@@ -484,6 +536,13 @@ class RequistionController extends Controller
             // Send mail to project manager and director
             $accountantName = Auth::user()->name;
             $recipients = User::whereIn('role', ['project_manager', 'director'])->pluck('email');
+            
+            $voucherNumber = $this->generateVoucherNumber();
+            $requisition->update([
+                'voucher' => $voucherNumber,
+            ]);
+            
+
 
             foreach ($recipients as $email) {
                 Mail::to($email)->send(new RequisitionProcessedMail([
@@ -491,6 +550,7 @@ class RequistionController extends Controller
                     'requisitionName' => $requisition->name,
                     'accountantName' => $accountantName,
                     'approvedAmount' => $requisition->amount,
+                    'voucher_number' => $voucherNumber,
                 ]));
             }
             

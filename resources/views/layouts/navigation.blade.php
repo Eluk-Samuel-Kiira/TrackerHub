@@ -7,7 +7,7 @@
                 <div data-kt-menu-trigger="click" class="menu-item here {{ is_tab_show(['dashboard','projects.index',]) }} menu-accordion">
                     <span class="menu-link">
                         <span class="menu-icon">
-                            <i class="ki-duotone ki-element-11 fs-2">
+                            <i class="bi bi-building-dash fs-2">
                                 <span class="path1"></span>
                                 <span class="path2"></span>
                                 <span class="path3"></span>
@@ -36,7 +36,7 @@
                 <div data-kt-menu-trigger="click" class="menu-item here {{ is_tab_show(['projects*','project_categories*','clients*']) }} menu-accordion">
                     <span class="menu-link">
                         <span class="menu-icon">
-                            <i class="ki-duotone ki-abstract-41 fs-2">
+                            <i class="bi bi-binoculars-fill fs-2">
                                 <span class="path1"></span>
                                 <span class="path2"></span>
                                 <span class="path3"></span>
@@ -86,14 +86,13 @@
                         </div>
                     @endcan
 
-
                 </div>
 
                 {{--Requistion Mgt --}}
                 <div data-kt-menu-trigger="click" class="menu-item here {{ is_tab_show(['requistion*','expense*']) }} menu-accordion">
                     <span class="menu-link">
                         <span class="menu-icon">
-                            <i class="ki-duotone ki-color-swatch fs-2">
+                            <i class="bi bi-cash-coin fs-2">
                                 <span class="path1"></span>
                                 <span class="path2"></span>
                                 <span class="path3"></span>
@@ -137,7 +136,7 @@
                 <div data-kt-menu-trigger="click" class="menu-item here {{ is_tab_show(['employee*','role*','permission.index']) }} menu-accordion">
                     <span class="menu-link">
                         <span class="menu-icon">
-                            <i class="ki-duotone ki-address-book fs-2">
+                            <i class="bi bi-people-fill fs-2">
                                 <span class="path1"></span>
                                 <span class="path2"></span>
                                 <span class="path3"></span>
@@ -192,7 +191,7 @@
                 <div data-kt-menu-trigger="click" class="menu-item here {{ is_tab_show(['setting*','currencies*','departments*','document*','reports*']) }} menu-accordion">
                     <span class="menu-link">
                         <span class="menu-icon">
-                            <i class="ki-duotone ki-setting fs-2">
+                            <i class="bi bi-bar-chart-steps fs-2">
                                 <span class="path1"></span>
                                 <span class="path2"></span>
                                 <span class="path3"></span>
@@ -221,7 +220,7 @@
                 <div data-kt-menu-trigger="click" class="menu-item here {{ is_tab_show(['setting*','currencies*','departments*','document*']) }} menu-accordion">
                     <span class="menu-link">
                         <span class="menu-icon">
-                            <i class="ki-duotone ki-setting fs-2">
+                            <i class="bi bi-gear-wide-connected fs-2">
                                 <span class="path1"></span>
                                 <span class="path2"></span>
                                 <span class="path3"></span>

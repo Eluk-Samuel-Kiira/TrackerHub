@@ -49,21 +49,21 @@
                             </select>
                         </td>
                         <td>
-                        <select 
-                            name="response" 
-                            class="form-select form-select-solid form-select-sm" 
-                            style="appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: none; padding-right: 10px;" 
-                            onchange="updateResponse({{ $requisition->id }}, this.value)" @if(!auth()->user()->hasRole('director')) disabled @endif>
-                            <option value="pending" {{ $requisition->status == 'pending' ? 'selected' : '' }}>
-                                {{__('Pending')}}
-                            </option>
-                            <option value="approved" {{ $requisition->status == 'approved' ? 'selected' : '' }}>
-                                {{__('Approved')}}
-                            </option>
-                            <option value="denied" {{ $requisition->status == 'denied' ? 'selected' : '' }}>
-                                {{__('Denied')}}
-                            </option>
-                        </select>
+                            <select 
+                                name="response" 
+                                class="form-select form-select-solid form-select-sm" 
+                                style="appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: none; padding-right: 10px;" 
+                                onchange="updateResponse({{ $requisition->id }}, this.value)" @if(!auth()->user()->hasRole('director')) disabled @endif>
+                                <option value="pending" {{ $requisition->status == 'pending' ? 'selected' : '' }}>
+                                    {{__('Pending')}}
+                                </option>
+                                <option value="approved" {{ $requisition->status == 'approved' ? 'selected' : '' }}>
+                                    {{__('Approved')}}
+                                </option>
+                                <option value="denied" {{ $requisition->status == 'denied' ? 'selected' : '' }}>
+                                    {{__('Denied')}}
+                                </option>
+                            </select>
                         </td>
                         <td>
                             @can('edit requisitions')
