@@ -60,6 +60,15 @@
                                 <div id="description{{ $requisition->id }}"></div>
                             </div>
                         </div>
+                        
+                        <div class="row g-9 mb-8">
+                            <div class="d-flex flex-column mb-8 fv-row col-md-12">
+                                <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+                                    <span class="required">Status Reasons</span>
+                                </label>
+                                <input type="text" value="{{ $requisition->reasons }}" class="form-control form-control-solid" name="name" disabled/>
+                            </div>
+                        </div>
 
                         <button type="reset" class="btn btn-light me-3" id="closeModalEditButton{{ $requisition->id }}" data-bs-dismiss="modal">Discard</button>
                         <button onclick="editInstanceLoop({{$requisition->id }})" id="editClientButton{{ $requisition->id }}" type="button" class="btn btn-primary" {{ $requisition->status === 'approved' ? 'disabled' : '' }}>
