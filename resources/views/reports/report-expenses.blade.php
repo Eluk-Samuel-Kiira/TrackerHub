@@ -1,5 +1,5 @@
 <x-app-layout>
-    @section('title', __('Reports Index'))
+    @section('title', __(' Expenses Reports'))
     @section('content')
     
     <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
@@ -36,11 +36,6 @@
                         <div class="fs-5 text-gray-900 fw-bold">Filter Options</div>
                     </div>
                     <div class="separator border-gray-200"></div>
-
-                    <!-- Search Bar -->
-                    <div class="px-7 py-5">
-                        <input type="text" id="searchInput" class="form-control" placeholder="Search Projects...">
-                    </div>
                 </div>
 
             </div>
@@ -54,31 +49,29 @@
                 <div class="card">
                     <div class="container mt-5">
                         <table class="table table-bordered" id="kt_table_project">
-                            <thead class="thead-dark">
+                            <thead>
                                 <tr>
                                     <th>#</th>
                                     <th>Code</th>
                                     <th>Project Name</th>
-                                    <th>Total Tasks</th>
-                                    <th>Completed Tasks</th>
-                                    <th>Progress (%)</th>
+                                    <th> Budget</th>
+                                    <th> BudgetLimit</th>
+                                    <th>Total Approved</th>
+                                    <th>Limit Balance</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($projects as $project)
+                                @foreach($combinedData as $data)
                                     <tr>
-                                        <td>{{ $project['id'] }}</td>
-                                        <td>{{ $project['code'] }}</td>
-                                        <td>{{ $project['name'] }}</td>
-                                        <td>{{ $project['totalTasks'] }}</td>
-                                        <td>{{ $project['completedTasks'] }}</td>
-                                        <td>{{ $project['progressPercentage'] }}%</td>
+                                        <td>{{ $data['project']->id }}</td>
+                                        <td>{{ $data['project']->projectCode }}</td>
+                                        <td>{{ $data['project']->projectName }}</td>
+                                        <td>{{ number_format($data['project']->projectBudget) }}</td>
+                                        <td>{{ number_format($data['project']->projectBudgetLimit) }}</td>
+                                        <td>{{ number_format($data['total_approved']) }}</td>
+                                        <td>{{ number_format(($data['project']->projectBudgetLimit ?? 0) - ($data['total_approved'] ?? 0)) }} </td>
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6" class="text-center">No projects found</td>
-                                    </tr>
-                                @endforelse
+                                @endforeach
                             </tbody>
                         </table>
                     </div>

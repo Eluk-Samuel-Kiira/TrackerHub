@@ -31,19 +31,10 @@ class ProjectExpenseController extends Controller
         $combinedData = $projects->map(function ($project) use ($approvedRequisitions, $project_requisitions, $client_payments) {
             $requisition = $approvedRequisitions->firstWhere('project_id', $project->id);
 
-            // Filter project-specific requisitions
-            $relatedRequisitions = $project_requisitions->where('project_id', $project->id)->where('status', 'approved')->where('isActive', 0);
-            $paid_invoices = $client_payments->where('project_id', $project->id)->where('isPaid', 1)->where('isActive', 0);
-
-            // Filter project-specific client payments
-            $relatedClientPayments = $client_payments->where('project_id', $project->id);
 
             return [
                 'project' => $project,
                 'total_approved' => $requisition ? $requisition->total_approved : 0,
-                'requisitions' => $relatedRequisitions,
-                'invoices' => $paid_invoices,
-                'client_payments' => $relatedClientPayments,
             ];
         });
 
