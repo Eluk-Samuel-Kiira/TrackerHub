@@ -136,6 +136,7 @@ Route::middleware('auth')->group(function () {
 
     // General Reports
     Route::get('/general-reports', [GeneralReportsController::class, 'index'])->name('report.index');
+    Route::get('/expenses-reports', [GeneralReportsController::class, 'expenseReport'])->name('report.expenses');
 
 });
 
