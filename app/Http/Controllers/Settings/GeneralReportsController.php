@@ -49,37 +49,21 @@ class GeneralReportsController extends Controller
             ->where('isActive', 0)
             ->get();
 
-        $client_payments = ProjectInvoice::whereIn('project_id', $approvedRequisitions->pluck('project_id'))
-            ->where('isPaid', 1)
-            ->whereNotNull('paidOn')
-            ->where('isActive', 0)
-            ->get();
-
+            
         // Combine the projects, approved requisitions, project requisitions, and client payments
-        $combinedData = $projects->map(function ($project) use ($approvedRequisitions, $project_requisitions, $client_payments) {
+        $combinedData = $projects->map(function ($project) use ($approvedRequisitions, $project_requisitions) {
             $requisition = $approvedRequisitions->firstWhere('project_id', $project->id);
 
             // Approved and active requisitions for this project
             $relatedRequisitions = $project_requisitions->where('project_id', $project->id);
             $totalSpentOnRequisitions = $relatedRequisitions->sum('approved_amount');
 
-            // Paid invoices for this project
-            $relatedClientPayments = $client_payments->where('project_id', $project->id);
-            $totalPaidInvoices = $relatedClientPayments->sum('amount');
-
-            // Calculate total project cost
-            $totalProjectCost = $totalSpentOnRequisitions + $totalPaidInvoices;
 
             return [
                 'project' => $project,
                 'projectBudget' => $project->budget ?? 0, // Assuming `budget` exists in Project model
                 'total_approved' => $requisition ? $requisition->total_approved : 0,
-                'requisitions' => $relatedRequisitions,
-                'invoices' => $relatedClientPayments,
-                'totalSpentOnRequisitions' => $totalSpentOnRequisitions,
-                'totalPaidInvoices' => $totalPaidInvoices,
-                'totalProjectCost' => $totalProjectCost,
-                'remainingBudget' => ($project->budget ?? 0) - $totalProjectCost,
+                
             ];
         });
         return view('reports.report-expenses', [
