@@ -12,8 +12,8 @@
                         @php
                             $previousUrl = url()->previous();
                             $previousRouteName = optional(app('router')->getRoutes()->match(request()->create($previousUrl)))->getName();
-                            $formattedRouteName = $previousRouteName 
-                                ? Str::of($previousRouteName)->replace('.', ' ')->title() 
+                            $formattedRouteName = $previousRouteName
+                                ? Str::of($previousRouteName)->replace('.', ' ')->title()
                                 : __('Back');
                         @endphp
                         <a href="{{ $previousUrl }}" class="text-muted text-hover-primary">
@@ -37,7 +37,7 @@
                         <div class="fs-5 text-gray-900 fw-bold">Filter Options</div>
                     </div>
                     <div class="separator border-gray-200"></div>
-                    
+
                     <!-- Search Bar -->
                     <div class="px-7 py-5">
                         <input type="text" id="searchInput" class="form-control" placeholder="Search Projects...">
@@ -47,11 +47,11 @@
                 @can('create project')
                     <button class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal" data-bs-target="#add_project_modal">Add Project</button>
                 @endcan
-                @include('projects.projects.create-project')   
+                @include('projects.projects.create-project')
             </div>
         </div>
     </div>
-    
+
     <div class="card-body py-4" id="">
         <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_users">
             <thead>
@@ -101,12 +101,12 @@
                         <td>{{ $project->currency->name }} {{ number_format($project->projectCost,2) }}</td>
                         <td>
                             <div class="progress">
-                                <div 
-                                    class="progress-bar progress-bar-striped bg-primary" 
+                                <div
+                                    class="progress-bar progress-bar-striped bg-primary"
                                     role="progressbar"
-                                    style="width: {{ number_format($project->percentageCompletion, 2) ?? 0}}%" 
-                                    aria-valuenow="{{ number_format($project->percentageCompletion, 2) ?? 0 }}" 
-                                    aria-valuemin="0" 
+                                    style="width: {{ number_format($project->percentageCompletion, 2) ?? 0}}%"
+                                    aria-valuenow="{{ number_format($project->percentageCompletion, 2) ?? 0 }}"
+                                    aria-valuemin="0"
                                     aria-valuemax="100">
                                     {{ number_format($project->percentageCompletion, 2) ?? 0 }}%
                                 </div>
@@ -119,18 +119,18 @@
                                 <i class="bi bi-eye fs-2"></i></a>
                             @endcan
                             @can('edit project')
-                                    
-                                <button 
-                                    class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" 
-                                    data-bs-toggle="modal" 
+
+                                <button
+                                    class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px"
+                                    data-bs-toggle="modal"
                                     data-bs-target="#editClient{{$project->id}}">
                                     <i class="bi bi-pencil-square fs-2"></i>
                             </button>
                             @endcan
                             @can('edit project')
-                                <button 
-                                    class="btn btn-sm btn-icon btn-bg-light btn-active-color-danger w-30px h-30px" 
-                                    data-bs-toggle="modal" 
+                                <button
+                                    class="btn btn-sm btn-icon btn-bg-light btn-active-color-danger w-30px h-30px"
+                                    data-bs-toggle="modal"
                                     data-bs-target="#deleteProject{{$project->id}}">
                                     <i class="bi bi-trash fs-2"></i>
                                 </button>
@@ -392,7 +392,7 @@
                         </div>
                         <!--end::Input group-->
                         <div class="text-center">
-                            <button class="btn btn-light me-3" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-light me-3" data-bs-dismiss="modal">Cancel</button>
                             <button type="submit" class="btn btn-primary">
                                 <span class="indicator-label">Add</span>
                             </button>
@@ -409,15 +409,15 @@
     <!--end::Modal - New Target-->
 
 <script>
-    
+
     function setupTableSearch(inputId, tableId) {
         LiveBlade.searchTableItems(inputId, tableId)
     }
-    
-    
+
+
     document.addEventListener('DOMContentLoaded', function() {
         setupTableSearch('searchInput', 'kt_table_users');
-        
+
     });
 </script>
 
