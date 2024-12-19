@@ -520,6 +520,7 @@ class RequistionController extends Controller
             
             $voucherNumber = $this->generateVoucherNumber();
             $requisition->voucher  = $voucherNumber;
+            $requisition->paid_by  = Auth::user()->id;
             $requisition->save();
             
             // Update the project budget
@@ -618,7 +619,6 @@ class RequistionController extends Controller
             }
         }
     }
-
 
 
     public function uploadRequisitionFile(Request $request, $id)

@@ -12,7 +12,8 @@ use App\Models\ProjectInvoice;
 
 class GeneralReportsController extends Controller
 {
-    public function index(Request $request) {
+    public function index(Request $request) 
+    {
 
         $query = Project::with('tasks');
 
@@ -35,7 +36,8 @@ class GeneralReportsController extends Controller
         ]);
     }
 
-    public function expenseReport(Request $request) {
+    public function expenseReport(Request $request) 
+    {
 
         $approvedRequisitions = ProjectExpense::select('project_id', DB::raw('SUM(approved_amount) as total_approved'))
             ->whereIn('project_id', Project::pluck('id')) // Ensure project_id exists in Projects
@@ -72,4 +74,52 @@ class GeneralReportsController extends Controller
 
     }
 
+    public function requisitionReport(Request $request) 
+    {
+        $requisitions = Requistion::with('requisitionProject')->latest()->get();
+        
+        return view('reports.report-requisitions', [
+            'requisitions' => $requisitions,
+        ]);
+    }
+
+    public function profitReport(Request $request) 
+    {
+        
+        $approvedRequisitions = ProjectExpense::select('project_id', DB::raw('SUM(approved_amount) as total_approved'))
+            ->whereIn('project_id', Project::pluck('id')) // Ensure project_id exists in Projects
+            ->groupBy('project_id') // Group by project_id
+            ->get();
+
+        $projects = Project::whereIn('id', $approvedRequisitions->pluck('project_id'))->get();
+        $project_requisitions = Requistion::whereIn('project_id', $approvedRequisitions->pluck('project_id'))->get();
+        $client_payments = ProjectInvoice::whereIn('project_id', $approvedRequisitions->pluck('project_id'))
+            ->where('isPaid', 1)
+            ->whereNotNull('paidOn')
+            ->get();
+
+        // Combine the projects, approved requisitions, project requisitions, and client payments for ease of use
+        $combinedData = $projects->map(function ($project) use ($approvedRequisitions, $project_requisitions, $client_payments) {
+            $requisition = $approvedRequisitions->firstWhere('project_id', $project->id);
+
+            // Filter project-specific requisitions
+            $relatedRequisitions = $project_requisitions->where('project_id', $project->id)->where('status', 'approved')->where('isActive', 0);
+            $paid_invoices = $client_payments->where('project_id', $project->id)->where('isPaid', 1)->where('isActive', 0);
+
+            // Filter project-specific client payments
+            $relatedClientPayments = $client_payments->where('project_id', $project->id);
+
+            return [
+                'project' => $project,
+                'total_approved' => $requisition ? $requisition->total_approved : 0,
+                'requisitions' => $relatedRequisitions,
+                'invoices' => $paid_invoices,
+                'client_payments' => $relatedClientPayments,
+            ];
+        });
+
+        return view('reports.report-profit', [
+            'combinedData' => $combinedData,
+        ]);
+    }
 }

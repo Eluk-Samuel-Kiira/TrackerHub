@@ -82,6 +82,7 @@
         </div>
     </div>
 </div>  
+
 <style>
     .ck-editor__editable {
         min-height: 200px; /* Adjust the height as needed */

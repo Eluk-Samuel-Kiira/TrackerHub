@@ -14,6 +14,11 @@ class Requistion extends Model
         return $this->belongsTo(User::class, 'created_by', 'id');
     }
 
+    public function requisitionAccountant()
+    {
+        return $this->belongsTo(User::class, 'paid_by', 'id');
+    }
+
     
     public function requisitionProject()
     {
