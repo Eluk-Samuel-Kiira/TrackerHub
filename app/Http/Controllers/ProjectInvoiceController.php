@@ -99,15 +99,14 @@ class ProjectInvoiceController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // \Log::info($request->paidOn);
-
+        // Validate incoming request
         $request->validate([
             'paidBy' => 'required|numeric',
             'paidOn' => 'required|date',
             'invoiceId' => 'required|numeric',
         ]);
-        
 
+        // Find the specified invoice
         $projectInvoice = ProjectInvoice::find($request->invoiceId);
 
         if (!$projectInvoice) {
@@ -117,18 +116,46 @@ class ProjectInvoiceController extends Controller
             ], 404);
         }
 
+        // Update the invoice details
         $projectInvoice->update([
             'paidBy' => $request->paidBy,
             'paidOn' => $request->paidOn,
             'isPaid' => 1,
-            'isActive' => 0,
+            'isActive' => 0, // Assuming the invoice is no longer active after being paid
         ]);
+
+        // Find the associated project
+        $project = Project::find($projectInvoice->project_id);
+
+        if (!$project) {
+            return response()->json([
+                'success' => false,
+                'message' => __('Project not found'),
+            ], 404);
+        }
+
+        $actualAmountPaid = $project->invoices()->where('isPaid', 1)->sum('amount');
+
+        // Check if the project is fully paid off
+        if ($actualAmountPaid >= $project->projectCost) {
+            $project->txn_status = 'paid';
+            $project->isPaidOff = 1; // Indicates the project is fully paid
+        }
+
+        // Check if the project is fully paid and completed
+        if ($project->isPaidOff == 1 && $project->completionStatus == 1) {
+            $project->isActive = 0; // Indicates the project is fully paid and completed
+        }
+
+        // Save project only once after updating the necessary fields
+        $project->save();
 
         return response()->json([
             'success' => true,
             'message' => __('Invoice Paid Successfully'),
         ]);
     }
+
 
 
     /**

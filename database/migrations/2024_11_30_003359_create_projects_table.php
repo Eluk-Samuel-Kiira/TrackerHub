@@ -22,7 +22,7 @@ return new class extends Migration
             $table->foreignId('projectDepartmentId')->constrained('departments')->cascadeOnDelete();
             $table->foreignId('projectClientId')->constrained('clients')->cascadeOnDelete();
             $table->decimal('projectCost', 15, 2);
-            $table->integer('isPaidOff')->enum(['1', '0'])->default(1);
+            $table->integer('isPaidOff')->enum(['1', '0'])->default(0);
             $table->decimal('projectBudget', 15, 2);
             $table->decimal('projectBudgetLimit', 15, 2);
             $table->enum('txn_status', ['pending','paid','incomplete'])->default('pending'); 
