@@ -96,11 +96,13 @@ class TaskController extends Controller
      */
     public function update(Request $request, Task $task)
     {
+        // Validate the input
         $request->validate([
             'task_id' => 'required|numeric',
             'completionDate' => 'required|date',
         ]);
 
+        // Find the task by ID
         $task = Task::find($request->task_id);
 
         if (!$task) {
@@ -110,28 +112,47 @@ class TaskController extends Controller
             ], 404);
         }
 
+        // Update the task details
         $task->update([
             'completionDate' => $request->completionDate,
             'status' => 1,
         ]);
 
-        // determine if project is completed or not
-        // $totalTasks = Task::whereIn('project_id', $task->project_id)->count();
-        // $completedTasks = $totalTasks->where('status', 1)->count();
-        // $percentageCompleted = $totalTasks > 0 ? ($completedTasks / $totalTasks) * 100 : 0;
+        // Determine if the project is completed
+        $totalTasks = Task::where('project_id', $task->project_id)->count();
+        $completedTasks = Task::where('project_id', $task->project_id)
+                            ->where('status', 1)
+                            ->count();
 
-        // \Log::info($percentageCompleted);
-        // $project = Project::find($task->project_id);
-        // if ($percentageCompleted == 100) {
-        //     $project->completionStatus  = 1;
-        //     $project->save();
-        // }
+        $percentageCompleted = $totalTasks > 0 ? ($completedTasks / $totalTasks) * 100 : 0;
+
+        // Log the percentage (optional)
+        \Log::info("Project {$task->project_id} completion: {$percentageCompleted}%");
+
+        // Update the project if fully completed
+        $project = Project::find($task->project_id);
+        if ($project) {
+            if ($percentageCompleted == 100) {
+                $project->completionStatus = 1;
+            }
+
+            if ($project->isPaidOff == 1 && $project->completionStatus == 1) {
+                $project->isActive = 0; // Indicates the project is fully paid and completed
+            }
+            $project->save();
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => __('Project not found'),
+            ], 404);
+        }
+
         return response()->json([
             'success' => true,
-            'message' => __('Task Paid Successfully'),
+            'message' => __('Task updated successfully'),
         ]);
-
     }
+
 
     /**
      * Remove the specified resource from storage.

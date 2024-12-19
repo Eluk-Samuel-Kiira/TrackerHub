@@ -46,9 +46,11 @@
                             <li class="nav-item mt-2">
                                 <a class="nav-link text-active-primary ms-0 me-10 py-5" id="deactivate-tab" data-bs-toggle="tab" href="#meta-information">Meta Info</a>
                             </li>
+                            {{--
                             <li class="nav-item mt-2">
                                 <a class="nav-link text-active-primary ms-0 me-10 py-5" id="database-tab" data-bs-toggle="tab" href="#database-mgt">Database</a>
                             </li>
+                            --}}
                         </ul>
                     @endcan
                 </div>

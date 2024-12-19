@@ -64,8 +64,10 @@
                             <div class="card-body">
                                 <div class="row d-flex justify-content-between align-items-center">
                                     <div class="col">
-                                        <h3 class="card-title text-gray-900 fw-bold fs-3">Project Progress</h3>
-                                        <div class="progress">
+                                        <h3 class="card-title text-gray-900 fw-bold fs-3 mb-4">Project Progress</h3>
+
+                                        <!-- Progress Bar -->
+                                        <div class="progress mb-4">
                                             <div 
                                                 class="progress-bar progress-bar-striped bg-primary" 
                                                 role="progressbar"
@@ -73,52 +75,31 @@
                                                 aria-valuenow="{{ number_format($percentageCompletion, 2) }}" 
                                                 aria-valuemin="0" 
                                                 aria-valuemax="100">
-                                                {{ number_format($percentageCompletion, 2) }}% <!-- Show percentage inside the progress bar -->
+                                                {{ number_format($percentageCompletion, 2) }}%
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
-                    </div>
-
-                    <div class="col-md-6 my-5">
-                        <div class="card hover-elevate-up shadow-sm parent-hover">
-                            <div class="card-body">
-                                <div class="row d-flex justify-content-between align-items-center">
-                                    <div class="col-md-4 text start">
-                                        <h3 class="card-title text-gray-900 fw-bold fs-3">Client</h3>
-                                        {{ $project->client->name }}
-                                    </div>
-                                    <div class="col-md-4 text start">
-                                        <h5 class="card-title text-gray-900 fw-bold fs-3">Category</h5>
-                                        {{ $project->projectCategory->name }}
-                                    </div>
-                                    <div class="col-md-4 text-center">
-                                        <h5 class="card-title text-gray-900 fw-bold fs-3">Department</h5>
-                                        {{ $project->department->name  }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6 my-5">
-                        <div class="card hover-elevate-up shadow-sm parent-hover">
-                            <div class="card-body">
-                                <div class="row d-flex justify-content-between align-items-center">
-                                    <div class="col-md-4 text-center">
-                                        <p>Start Date</p>
-                                        {{ $project->projectStartDate }}
-                                    </div>
-                                    <div class="col-md-4 text-end">
-                                        <p>Deadline</p>
-                                        {{ $project->projectDeadlineDate }}
-                                    </div>
-                                    <div class="col-md-4 text-end">
-                                        <p>Created On</p>
-                                        {{ $project->created_at->format('d M Y, h:i a') }}
+                                        <!-- Project Status Details -->
+                                        <ul class="list-unstyled mb-0">
+                                            <li>
+                                                <span class="fw-bold">Payment Status:</span> 
+                                                <span class="{{ $project->txn_status == 'paid' ? 'text-success' : 'text-danger' }}">
+                                                    {{ ucfirst($project->txn_status) }}
+                                                </span>
+                                            </li>
+                                            <li>
+                                                <span class="fw-bold">Task Completion Status:</span> 
+                                                <span class="{{ $project->completionStatus == 1 ? 'text-success' : 'text-warning' }}">
+                                                    {{ $project->completionStatus == 1 ? 'Completed' : 'In Progress' }}
+                                                </span>
+                                            </li>
+                                            <li>
+                                                <span class="fw-bold">Activity Status:</span> 
+                                                <span class="{{ $project->isActive == 1 ? 'text-success' : 'text-muted' }}">
+                                                    {{ $project->isActive == 1 ? 'Active' : 'Inactive' }}
+                                                </span>
+                                            </li>
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
@@ -126,38 +107,102 @@
                     </div>
 
                     <div class="col-md-6 my-5">
-                        <div class="card hover-elevate-up shadow-sm parent-hover">
+                        <div class="card shadow-sm border-0 hover-elevate-up">
                             <div class="card-body">
-                                <div class="row d-flex justify-content-between align-items-center">
+                                <div class="row gy-4">
+                                    <!-- Client Section -->
+                                    <div class="col-md-4 text-start">
+                                        <h5 class="text-primary fw-bold text-uppercase mb-2">Client</h5>
+                                        <p class="text-gray-800 fs-5 mb-0">{{ $project->client->name }}</p>
+                                    </div>
+
+                                    <!-- Category Section -->
+                                    <div class="col-md-4 text-start">
+                                        <h5 class="text-primary fw-bold text-uppercase mb-2">Category</h5>
+                                        <p class="text-gray-800 fs-5 mb-0">{{ $project->projectCategory->name }}</p>
+                                    </div>
+
+                                    <!-- Department Section -->
                                     <div class="col-md-4 text-center">
-                                        <h4>Project Cost</h4>
-                                        {{ $project->currency->name }} {{ number_format($project->projectCost,2) }}
-                                    </div>
-                                    <div class="col-md-4 text-end">
-                                        <h4>Project Budget</h4>
-                                        {{ $project->currency->name }} {{ number_format($project->projectBudget,2) }}
-                                    </div>
-                                    <div class="col-md-4 text-end">
-                                        <h4>Budget Limit</h4>
-                                        {{ $project->currency->name }} {{ number_format($project->projectBudgetLimit,2) }}
+                                        <h5 class="text-primary fw-bold text-uppercase mb-2">Department</h5>
+                                        <p class="text-gray-800 fs-5 mb-0">{{ $project->department->name }}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-md-12">
-                        <div class="card">
-                            <div class="card-body hover-elevate-up shadow-sm parent-hover">
-                                <div class="mb-14">
-                                    <div class="mb-15">
-                                        <h3 class="fs-2x text-gray-900 mb-6">Project description</h3>
-                                        <div class="fs-5 text-gray-600 fw-semibold">{!! $project->projectDescription !!}</div>
+                    <div class="col-md-6 my-5">
+                        <div class="card shadow-sm border-0 hover-elevate-up">
+                            <div class="card-body">
+                                <div class="row text-center gy-4">
+                                    <!-- Start Date Section -->
+                                    <div class="col-md-4">
+                                        <h5 class="text-primary fw-bold text-uppercase mb-2">Start Date</h5>
+                                        <p class="text-gray-800 fs-5 mb-0">{{ $project->projectStartDate }}</p>
+                                    </div>
+
+                                    <!-- Deadline Section -->
+                                    <div class="col-md-4">
+                                        <h5 class="text-danger fw-bold text-uppercase mb-2">Deadline</h5>
+                                        <p class="text-gray-800 fs-5 mb-0">{{ $project->projectDeadlineDate }}</p>
+                                    </div>
+
+                                    <!-- Created On Section -->
+                                    <div class="col-md-4">
+                                        <h5 class="text-success fw-bold text-uppercase mb-2">Created On</h5>
+                                        <p class="text-gray-800 fs-5 mb-0">{{ $project->created_at->format('d M Y, h:i a') }}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-md-6 my-5">
+                        <div class="card shadow-sm border-0 hover-elevate-up">
+                            <div class="card-body">
+                                <div class="row text-center gy-4">
+                                    <!-- Project Cost Section -->
+                                    <div class="col-md-4">
+                                        <h5 class="text-primary fw-bold text-uppercase mb-2">Project Cost</h5>
+                                        <p class="text-gray-800 fs-5 mb-0">
+                                            {{ $project->currency->name }} {{ number_format($project->projectCost, 2) }}
+                                        </p>
+                                    </div>
+
+                                    <!-- Project Budget Section -->
+                                    <div class="col-md-4">
+                                        <h5 class="text-success fw-bold text-uppercase mb-2">Project Budget</h5>
+                                        <p class="text-gray-800 fs-5 mb-0">
+                                            {{ $project->currency->name }} {{ number_format($project->projectBudget, 2) }}
+                                        </p>
+                                    </div>
+
+                                    <!-- Budget Limit Section -->
+                                    <div class="col-md-4">
+                                        <h5 class="text-danger fw-bold text-uppercase mb-2">Budget Limit</h5>
+                                        <p class="text-gray-800 fs-5 mb-0">
+                                            {{ $project->currency->name }} {{ number_format($project->projectBudgetLimit, 2) }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-12 my-5">
+                        <div class="card shadow-sm border-0 hover-elevate-up">
+                            <div class="card-body">
+                                <div class="mb-4">
+                                    <h3 class="fs-2 text-primary fw-bold mb-4">Project Description</h3>
+                                    <p class="fs-5 text-gray-700 fw-normal">
+                                        {!! $project->projectDescription !!}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
