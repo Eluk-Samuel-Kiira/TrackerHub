@@ -78,10 +78,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/upload-image', [ProfileController::class, 'uploadImage'])->name('profile.upload_image');
 
     //projects
-    Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
-    Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
-    Route::put('/projects/{id}', [ProjectController::class, 'update'])->name('projects.update');
-    Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
+    Route::resource('projects', ProjectController::class);
+    // Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
+    // Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
+    // Route::put('/projects/{project}', [ProjectController::class, 'update'])->name('projects.update');
+    // Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
 
     // meeting
     Route::delete('/meetings/{id}', [ProjectController::class, 'meetingDestroy'])->name('meeting.destroy');
@@ -137,6 +138,8 @@ Route::middleware('auth')->group(function () {
     // General Reports
     Route::get('/general-reports', [GeneralReportsController::class, 'index'])->name('report.index');
     Route::get('/expenses-reports', [GeneralReportsController::class, 'expenseReport'])->name('report.expenses');
+    Route::get('/expenses-requisitions', [GeneralReportsController::class, 'requisitionReport'])->name('report.requisitions');
+    Route::get('/expenses-profit', [GeneralReportsController::class, 'profitReport'])->name('report.profit');
 
 });
 

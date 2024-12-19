@@ -29,6 +29,7 @@ return new class extends Migration
             $table->foreignId('projectCurrencyId')->constrained('currencies')->cascadeOnDelete();
             $table->integer('completionStatus')->enum(['0', '1'])->default(0);
             $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('paid_by')->constrained('users')->cascadeOnDelete();
             $table->integer('isActive')->enum(['1', '0'])->default(1);
             $table->timestamps();
         });

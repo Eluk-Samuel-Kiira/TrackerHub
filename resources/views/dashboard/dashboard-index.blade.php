@@ -42,7 +42,7 @@
                                 <div class="card-header pt-5">
                                     <h3 class="card-title align-items-start flex-column">
                                         <span class="card-label fw-bold text-gray-900">Performance Overview</span>
-                                        <span class="text-gray-500 mt-1 fw-semibold fs-6">Users from all channels</span>
+                                        <span class="text-gray-500 mt-1 fw-semibold fs-6">Summary of %age project progress of the latest 10 projects</span>
                                     </h3>
                                 </div>
                                 <div class="container">
@@ -114,10 +114,10 @@
                                         <div class="d-flex align-items-center">
                                             <span class="fs-4 fw-semibold text-gray-500 me-1 align-self-start">/=</span>
                                             <span class="fs-2hx fw-bold text-gray-900 me-2 lh-1 ls-n2">
-                                                {{ $monthlyData['earningsWithIncrease'][$monthlyData['latestMonth']]['earnings'] ?? 0}}
+                                                {{ number_format($monthlyData['earningsWithIncrease'][$monthlyData['latestMonth']]['earnings'], 2) ?? 0.00}}
                                             </span>
                                             @php
-                                                $percentageIncrease = $monthlyData['earningsWithIncrease'][$monthlyData['latestMonth']]['percentageIncrease'] ?? 0;
+                                                $percentageIncrease = $monthlyData['earningsWithIncrease'][$monthlyData['latestMonth']]['percentageIncrease'] ?? 0.00;
                                                 $isPositive = $percentageIncrease >= 0;
                                             @endphp
 

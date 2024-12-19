@@ -223,6 +223,28 @@
                             </a>
                         </div>
                     </div>
+
+                    <div class="menu-sub menu-sub-accordion">
+                        <div class="menu-item">
+                            <a class="menu-link {{ is_route_active('report.requisitions') }}" href="{{ route('report.requisitions') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">{{__('Project Requisitions')}}</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="menu-sub menu-sub-accordion">
+                        <div class="menu-item">
+                            <a class="menu-link {{ is_route_active('report.profit') }}" href="{{ route('report.profit') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">{{__('Profit Analysis')}}</span>
+                            </a>
+                        </div>
+                    </div>
                 
 
                 </div>

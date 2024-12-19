@@ -199,18 +199,25 @@ class ProjectController extends Controller
         $project = Project::find($id);
 
         $request->validate([
-            "projectCode" => "required|string|unique:projects,projectCode",
-            "projectName" => "required|string|unique:projects,projectName",
+            "projectCode" => "required|string",
+            "projectName" => "required|string",
             "projectStartDate" => "required|date",
             "projectDeadlineDate" => "required|date",
             "projectDescription" => "required|string",
             "projectCategoryId" => "required|exists:project_categories,id",
             "projectDepartmentId" => "required|exists:departments,id",
             "projectClientId" => "required|exists:clients,id",
-            "projectMemberIds" => "required",
-            "projectCost" => "required|numeric",
+            "projectCost" => "required|numeric|gte:projectBudget", // Ensure projectCost is greater than or equal to projectBudget
             "projectBudget" => "required|numeric",
-            "projectBudgetLimit" => "required|numeric",
+            "projectBudgetLimit" => [
+                "required",
+                "numeric",
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($value > $request->projectBudget) {
+                        $fail("The $attribute cannot be greater than the project budget.");
+                    }
+                },
+            ],
             "projectCurrencyId" => "required|exists:currencies,id",
         ]);
 
@@ -228,16 +235,20 @@ class ProjectController extends Controller
             "projectBudgetLimit" => $request->projectBudgetLimit,
             "projectCurrencyId" => $request->projectCurrencyId,
         ]);
-
-        //user sync() when its update, attach() when its create
-        $project->users()->sync($request->projectMemberIds);
+        \Log::info('yes');
 
         // Flash toast messages based on success or failure
-        if ($project->update()) {
-            session()->flash('toast', [
-                'type' => 'success',
-                'message' => 'Project updated successfully!',
+        if ($project) {
+            // session()->flash('toast', [
+            //     'type' => 'success',
+            //     'message' => 'Project updated successfully!',
+            // ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => __('Project Updated Successfully'),
             ]);
+
         } else {
             session()->flash('toast', [
                 'type' => 'error',

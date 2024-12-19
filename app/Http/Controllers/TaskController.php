@@ -115,6 +115,17 @@ class TaskController extends Controller
             'status' => 1,
         ]);
 
+        // determine if project is completed or not
+        // $totalTasks = Task::whereIn('project_id', $task->project_id)->count();
+        // $completedTasks = $totalTasks->where('status', 1)->count();
+        // $percentageCompleted = $totalTasks > 0 ? ($completedTasks / $totalTasks) * 100 : 0;
+
+        // \Log::info($percentageCompleted);
+        // $project = Project::find($task->project_id);
+        // if ($percentageCompleted == 100) {
+        //     $project->completionStatus  = 1;
+        //     $project->save();
+        // }
         return response()->json([
             'success' => true,
             'message' => __('Task Paid Successfully'),
