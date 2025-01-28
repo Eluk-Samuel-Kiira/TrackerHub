@@ -17,6 +17,7 @@ class DashboardController extends Controller
         $totalProjects = Project::count(); 
         $projectIsActive = Project::where('isActive', 1)->count(); 
         $projectIsPending = Project::where('completionStatus', 0)->count(); 
+        $projectCompleted = Project::where('completionStatus', 1)->count(); 
 
         // Calculate the percentage of pending projects
         $percentagePending = $totalProjects > 0 
@@ -30,6 +31,7 @@ class DashboardController extends Controller
             'projectIsActive' => $projectIsActive,
             'projectIsPending' => $projectIsPending,
             'percentagePending' => $percentagePending,
+            'projectCompleted' => $projectCompleted,
         ];
 
 
@@ -38,6 +40,7 @@ class DashboardController extends Controller
             return \Carbon\Carbon::parse($project->created_at)->format('Y-m');
         });
 
+        // dd($groupedProjects);
 
         $monthlyEarnings = [];
         foreach ($groupedProjects as $month => $monthProjects) {
@@ -105,34 +108,38 @@ class DashboardController extends Controller
         ];
 
 
-        // sessions
-        $sessions = DB::table('sessions')->get();
-        $recentActivities = [];
+        // // sessions
+        // $sessions = DB::table('sessions')->get();
+        // $recentActivities = [];
 
-        foreach ($sessions as $session) {
-            // Ensure the session contains a valid 'user_id'
-            if (!empty($session->user_id)) {
-                // Retrieve the user by ID
-                $user = User::find($session->user_id);
+        // foreach ($sessions as $session) {
+        //     // Ensure the session contains a valid 'user_id'
+        //     if (!empty($session->user_id)) {
+        //         // Retrieve the user by ID
+        //         $user = User::find($session->user_id);
 
-                if ($user) {
-                    // Calculate the time difference between last activity and current time
-                    $lastActivity = Carbon::createFromTimestamp($session->last_activity);
-                    $diffForHumans = $lastActivity->diffForHumans();
+        //         if ($user) {
+        //             // Calculate the time difference between last activity and current time
+        //             $lastActivity = Carbon::createFromTimestamp($session->last_activity);
+        //             $diffForHumans = $lastActivity->diffForHumans();
 
-                    // Add session details, including user_agent and ip_address
-                    $recentActivities[] = [
-                        'user' => $user->name,
-                        'time' => $diffForHumans,
-                        'activity' => 'Online', // You can customize this to reflect specific activities
-                        'user_agent' => $session->user_agent ?? 'N/A', // Add user agent from session
-                        'ip_address' => $session->ip_address ?? 'N/A', // Add IP address from session
-                    ];
-                }
-            }
-        }
+        //             // Add session details, including user_agent and ip_address
+        //             $recentActivities[] = [
+        //                 'user' => $user->name,
+        //                 'time' => $diffForHumans,
+        //                 'activity' => 'Online', // You can customize this to reflect specific activities
+        //                 'user_agent' => $session->user_agent ?? 'N/A', // Add user agent from session
+        //                 'ip_address' => $session->ip_address ?? 'N/A', // Add IP address from session
+        //             ];
+        //         }
+        //     }
+        // }
 
-        return view('dashboard.dashboard-index', compact('dashboardData', 'monthlyData', 'recentActivities'));
+        // Total Actual Income for active projects
+
+
+
+        return view('dashboard.dashboard-index', compact('dashboardData', 'monthlyData'));
 
     }
 
@@ -154,5 +161,17 @@ class DashboardController extends Controller
         return response()->json($progressData);
     }
 
+    public function getData($period)
+    {
+        // Example logic based on the period
+        if ($period === 'today') {
+            $data = ''; // Fetch data for today
+        } elseif ($period === 'week') {
+            $data = ''; // Fetch data for the week
+        } elseif ($period === 'month') {
+            $data = ''; // Fetch data for the month
+        }
 
+        return response()->json($data);
+    }
 }
