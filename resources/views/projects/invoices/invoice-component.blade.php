@@ -30,148 +30,145 @@
                         <td>{{ $invoice->ClientPayer->name ?? '' }}</td>
                         <td>{{ $invoice->reference_number ?? '' }}</td>
                         @if ($invoice->isPaid == 0)
-                            <td >
-                                <div class="d-flex gap-2">
-                                    @can('update invoice')
-                                        <button 
-                                            class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" 
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#payInvoiceModal{{$invoice->id}}">
-                                            <i class="bi bi-credit-card-2-back fs-2"></i>
-                                        </button>
-                                    @endcan
+                        <td class="d-flex align-items-center gap-2 flex-column flex-sm-row">
+                        <div class="d-flex justify-content-start align-items-center">
+                        @can('update invoice')
+                                    <button 
+                                        class="btn btn-sm btn-light btn-active-color-primary d-flex align-items-center px-3 py-2"
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#payInvoiceModal{{$invoice->id}}">
+                                        <i class="bi bi-credit-card-2-back me-1 fs-5"></i><span>Update Payment</span>
+                                    </button>
+                                @endcan
 
-                                    @can('send invoice')
-                                        <button 
-                                            class="btn btn-sm btn-icon btn-bg-light btn-active-color-success w-30px h-30px" 
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#sendInvoiceMail{{$invoice->id}}">
-                                            <i class="bi bi-send-check fs-2"></i>
-                                        </button>
-                                    @endcan
+                                @can('send invoice')
+                                    <button 
+                                        class="btn btn-sm btn-light btn-active-color-success d-flex align-items-center mx-2 px-3 py-2"                                             
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#sendInvoiceMail{{$invoice->id}}">
+                                        <i class="bi bi-send-check me-1 fs-5"></i> <span>Send Invoice</span>
+                                    </button>
+                                @endcan
 
-                                    @can('delete invoice')
-                                        <button 
-                                            class="btn btn-sm btn-icon btn-bg-light btn-active-color-danger w-30px h-30px" 
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#deleteInvoiceModal{{$invoice->id}}">
-                                            <i class="bi bi-trash fs-2"></i>
-                                        </button>
-                                    @endcan
-
-                                    
+                                @can('delete invoice')
+                                    <button 
+                                    class="btn btn-sm btn-light btn-active-color-danger d-flex align-items-center mx-2 px-3 py-2"                                        data-bs-toggle="modal" 
+                                        data-bs-target="#deleteInvoiceModal{{$invoice->id}}">
+                                        <i class="bi bi-trash me-1 fs-5"></i> <span>Delete</span>
+                                    </button>
+                                @endcan
+                            </div>
+                        </td>          
                                     <!-- Delete Invoce Modal -->
-                                    <div class="modal fade" id="deleteInvoiceModal{{$invoice->id}}" tabindex="-1" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">{{ __('Confirm Deletion') }}</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <p>{{ __('Are you sure you want to delete this Invoice?') }}</p>
-                                                    <p>{{ __('This action cannot be undone.') }}</p>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <!-- Discard Button -->
-                                                    <button type="button" id="closeDeleteModal{{$invoice->id}}" class="btn btn-light me-3" data-bs-dismiss="modal">{{ __('Discard') }}</button>
-                                                    <!-- Confirm Button -->
-                                                    <button type="button" id="deleteButton{{$invoice->id}}" class="btn btn-danger" 
-                                                        data-item-url="{{ route('invoice.destroy', $invoice->id) }}" 
-                                                        data-item-id="{{ $invoice->id }}"
-                                                        onclick="deleteItem(this)">
-                                                        <span class="indicator-label">{{ __('Confirm') }}</span>
-                                                        <span class="indicator-progress" style="display: none;">
-                                                            {{ __('Please wait...') }}
-                                                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
-                                                        </span>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
+                        <div class="modal fade" id="deleteInvoiceModal{{$invoice->id}}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">{{ __('Confirm Deletion') }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-
-                                    <!-- Resend Invoce Modal -->
-                                    <div class="modal fade" id="sendInvoiceMail{{$invoice->id}}" tabindex="-1" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">{{ __('Resend Invoice') }}</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <p>{{ __('Are you sure you want to resend this Invoice?') }}</p>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <!-- Discard Button -->
-                                                    <button type="button" id="closeInvoiceModal{{$invoice->id}}" class="btn btn-light me-3" data-bs-dismiss="modal">{{ __('Discard') }}</button>
-                                                    <!-- Confirm Button -->
-                                                    <button type="button" id="invoiceButton{{$invoice->id}}" class="btn btn-success" 
-                                                        onclick="resendInvoiceMail({{ $invoice->id }})">
-                                                        <span class="indicator-label">{{ __('Confirm') }}</span>
-                                                        <span class="indicator-progress" style="display: none;">
-                                                            {{ __('Please wait...') }}
-                                                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
-                                                        </span>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <div class="modal-body">
+                                        <p>{{ __('Are you sure you want to delete this Invoice?') }}</p>
+                                        <p>{{ __('This action cannot be undone.') }}</p>
                                     </div>
-                                    
-                                    
-                                    <div class="modal fade" id="payInvoiceModal{{$invoice->id}}" tabindex="-1" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered mw-650px">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">{{ __('Confirm Payment') }}</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <form id="pay_invoice_form{{ $invoice->id }}" class="form">
-                                                        @csrf
-                                                        @method('PUT')
-                                                        <input type="hidden" name="invoiceId" value="{{ $invoice->id }}">
-                                                        <div class="text-center pt-10">
-                                                            <div class="row g-9 mb-8">
-                                                                <div class="d-flex flex-column mb-8 fv-row col-md-6">
-                                                                    <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                                                                        <span class="required">Paid On</span>
-                                                                    </label>
-                                                                    <input class="form-control flatpickr-input" name="paidOn" type="date" >
-                                                                    <div id="paidOn{{ $invoice->id }}"></div>
-                                                                </div>
-
-                                                                <div class="d-flex flex-column mb-8 fv-row col-md-6">
-                                                                    <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                                                                        <span class="required">Client Name</span>
-                                                                    </label>
-                                                                    <div class="d-flex">
-                                                                        <select class="form-select me-2" name="paidBy" >
-                                                                            <option></option>
-                                                                            @foreach ($clients as $client)
-                                                                                <option value="{{ $client->id }}">{{ $client->name }}</option>
-                                                                            @endforeach
-                                                                        </select>
-                                                                    </div>
-                                                                    <div id="paidBy{{ $invoice->id }}"></div>
-                                                                </div>
-                                                            </div>
-
-                                                            <button type="reset" class="btn btn-light me-3" id="closeModalEditButton{{ $invoice->id }}" data-bs-dismiss="modal">Discard</button>
-                                                            <button onclick="editInstanceLoop({{$invoice->id }})" id="editInvoiceButton{{ $invoice->id }}" type="button" class="btn btn-primary" id>
-                                                                <span class="indicator-label">Update</span>
-                                                                <span class="indicator-progress">Please wait...
-                                                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                                                            </button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <div class="modal-footer">
+                                        <!-- Discard Button -->
+                                        <button type="button" id="closeDeleteModal{{$invoice->id}}" class="btn btn-light me-3" data-bs-dismiss="modal">{{ __('Discard') }}</button>
+                                        <!-- Confirm Button -->
+                                        <button type="button" id="deleteButton{{$invoice->id}}" class="btn btn-danger" 
+                                            data-item-url="{{ route('invoice.destroy', $invoice->id) }}" 
+                                            data-item-id="{{ $invoice->id }}"
+                                            onclick="deleteItem(this)">
+                                            <span class="indicator-label">{{ __('Confirm') }}</span>
+                                            <span class="indicator-progress" style="display: none;">
+                                                {{ __('Please wait...') }}
+                                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                            </span>
+                                        </button>
                                     </div>
                                 </div>
-                            </td>
+                            </div>
+                        </div>
+
+                        <!-- Resend Invoce Modal -->
+                        <div class="modal fade" id="sendInvoiceMail{{$invoice->id}}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">{{ __('Resend Invoice') }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>{{ __('Are you sure you want to resend this Invoice?') }}</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <!-- Discard Button -->
+                                        <button type="button" id="closeInvoiceModal{{$invoice->id}}" class="btn btn-light me-3" data-bs-dismiss="modal">{{ __('Discard') }}</button>
+                                        <!-- Confirm Button -->
+                                        <button type="button" id="invoiceButton{{$invoice->id}}" class="btn btn-success" 
+                                            onclick="resendInvoiceMail({{ $invoice->id }})">
+                                            <span class="indicator-label">{{ __('Confirm') }}</span>
+                                            <span class="indicator-progress" style="display: none;">
+                                                {{ __('Please wait...') }}
+                                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        
+                        <div class="modal fade" id="payInvoiceModal{{$invoice->id}}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered mw-650px">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">{{ __('Confirm Payment') }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="pay_invoice_form{{ $invoice->id }}" class="form">
+                                            @csrf
+                                            @method('PUT')
+                                            <input type="hidden" name="invoiceId" value="{{ $invoice->id }}">
+                                            <div class="text-center pt-10">
+                                                <div class="row g-9 mb-8">
+                                                    <div class="d-flex flex-column mb-8 fv-row col-md-6">
+                                                        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+                                                            <span class="required">Paid On</span>
+                                                        </label>
+                                                        <input class="form-control flatpickr-input" name="paidOn" type="date" >
+                                                        <div id="paidOn{{ $invoice->id }}"></div>
+                                                    </div>
+
+                                                    <div class="d-flex flex-column mb-8 fv-row col-md-6">
+                                                        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+                                                            <span class="required">Client Name</span>
+                                                        </label>
+                                                        <div class="d-flex">
+                                                            <select class="form-select me-2" name="paidBy" >
+                                                                <option></option>
+                                                                @foreach ($clients as $client)
+                                                                    <option value="{{ $client->id }}">{{ $client->name }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div id="paidBy{{ $invoice->id }}"></div>
+                                                    </div>
+                                                </div>
+
+                                                <button type="reset" class="btn btn-light me-3" id="closeModalEditButton{{ $invoice->id }}" data-bs-dismiss="modal">Discard</button>
+                                                <button onclick="editInstanceLoop({{$invoice->id }})" id="editInvoiceButton{{ $invoice->id }}" type="button" class="btn btn-primary" id>
+                                                    <span class="indicator-label">Update</span>
+                                                    <span class="indicator-progress">Please wait...
+                                                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         @else
                         <td>
                             <button 

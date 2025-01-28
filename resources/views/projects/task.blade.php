@@ -36,14 +36,14 @@
                             <td>
                                 {{ $task->status == '0' ? 'Not Started' : ($task->status == '1' ? 'Completed' : 'Completed') }}
                             </td>
-                            <td>
-                                <div class="d-flex gap-2">
+                            <td class="d-flex align-items-center gap-2 flex-column flex-sm-row">
+                            <div class="d-flex gap-2">
                                     @can('update task')
                                         <button 
-                                            class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" 
-                                            data-bs-toggle="modal" 
+                                        class="btn btn-sm btn-light btn-active-color-primary d-flex align-items-center px-3 py-2" 
+                                        data-bs-toggle="modal" 
                                             data-bs-target="#completeTaskModal{{$task->id}}">
-                                            <i class="bi bi-infinity fs-2"></i>
+                                            <i class="bi bi-infinity me-1 fs-5"></i> <span>{{ __('Update') }}</span>
                                         </button>
                                     @endcan
 
@@ -89,8 +89,8 @@
                                             @csrf
                                             @method('DELETE')
                                             <button 
-                                                class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px">
-                                                <i class="bi bi-trash fs-2"></i>
+                                            class="btn btn-sm btn-light btn-active-color-danger d-flex align-items-center px-3 py-2" 
+                                            <i class="bi bi-trash me-1 fs-5"></i> <span>{{ __('Delete') }}</span>
                                             </button>
                                         </form>
                                     @endcan
