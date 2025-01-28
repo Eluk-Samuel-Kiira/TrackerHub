@@ -37,21 +37,23 @@
                         </div>
                     </div>
                 </div>
-                <div class="d-flex flex-lg-row-fluid w-lg-50 bgi-size-cover bgi-position-center order-1 order-lg-2" style="background-image: url({{ asset('assets/media/misc/auth-bg.png') }} )">
+                <div class="d-flex flex-lg-row-fluid w-lg-50 bgi-size-cover bgi-position-center order-1 order-lg-2" 
+                    style="background-image: url({{ asset('assets/media/misc/auth-bg.png') }})">
                     <div class="d-flex flex-column flex-center py-7 py-lg-15 px-5 px-md-15 w-100">
-                        {{-- <a href="{{ Route::currentRouteName() }}" class="mb-0 mb-lg-12">
-                            <img alt="Logo" src="{{ asset('assets/media/logos/custom-1.png') }}" class="h-60px h-lg-75px" />
-                        </a> --}}
+                        {{-- Text Section --}}
                         <a href="{{ Route::currentRouteName() }}" style="display: flex; flex-direction: column; align-items: center; text-decoration: none; color: white;">
                             {{--<img src="{{ getLogoImage() }}" style="height: 25px; display: inline-block;" class="app-sidebar-logo-default" /> --}}
-                            <span style="font-weight: bold; font-size: 3rem; line-height: 1.2; margin-top: 8px; white-space: nowrap; color: white;">
+                            <span
+                                style="font-weight: bold; font-size: 3rem; line-height: 1.2; white-space: nowrap; color: white; margin-bottom: 2rem;">
                                 {{-- appDefaultName() --}}
-                                {{__('Bamzee Project')}}
+                                {{ __('Bamzee PMS') }}
                             </span>
                         </a>
 
-                        <img class="d-none d-lg-block mx-auto w-275px w-md-50 w-xl-500px mb-10 mb-lg-20" src="{{ asset('assets/media/misc/auth-screens.png') }}" alt="" />
-                        <h1 class="d-none d-lg-block text-white fs-2qx fw-bolder text-center mb-7">{{__('Management System')}}</h1>
+                        {{-- Image Section --}}
+                        <img class="d-none d-lg-block mx-auto w-275px w-md-50 w-xl-500px mb-10 mb-lg-20" 
+                            src="{{ asset('assets/media/misc/6034676.jpg') }}" alt="" />
+                        {{-- <h1 class="d-none d-lg-block text-white fs-2qx fw-bolder text-center mb-7">{{__('Management System')}}</h1> --}}
                     </div>
                 </div>
             </div>
