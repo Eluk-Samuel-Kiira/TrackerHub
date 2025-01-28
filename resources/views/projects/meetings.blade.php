@@ -49,15 +49,15 @@
                 </td>
 
                 <!-- Action Buttons -->
-                <td>
-                    <div class="d-flex justify-content-start align-items-center">
+                <td class="d-flex align-items-center gap-2 flex-column flex-sm-row">
+                <div class="d-flex justify-content-start align-items-center">
 
                         @can('edit members')
                             <button 
-                                class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" 
-                                data-bs-toggle="modal" 
+                            class="btn btn-sm btn-light btn-active-color-primary d-flex align-items-center px-3 py-2" 
+                            data-bs-toggle="modal" 
                                 data-bs-target="#editMeeting{{$meeting->id}}">
-                                <i class="bi bi-pencil-square fs-2"></i>
+                                <i class="bi bi-pencil-square me-1 fs-5"></i><span>{{ __('Edit') }}</span>
                             </button>
                         @endcan
 
@@ -116,8 +116,9 @@
                                 method="POST">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-icon btn-bg-light btn-active-color-danger w-30px h-30px">
-                                    <i class="bi bi-trash fs-2"></i>
+                                <button type="submit"  class="btn btn-sm btn-light btn-active-color-danger d-flex align-items-center px-3 py-2" 
+                                >
+                                <i class="bi bi-trash me-1 fs-5"></i> <span>{{ __('Delete') }}</span>
                                 </button>
                             </form>
                         @endcan
