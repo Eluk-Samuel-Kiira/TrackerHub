@@ -16,6 +16,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\removeOrAddUserMail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Storage;
 
 
 class ProjectController extends Controller
@@ -31,6 +34,7 @@ class ProjectController extends Controller
         $departments = Department::where('isActive', 1)->get();
         $users = User::where('status', 'active')->get();
         $roles = Role::all()->pluck('name');
+        $documentTypes = DocumentType::where('isActive', 1)->get();
         
         if (in_array(auth()->user()->role, ['director', 'project_manager', 'accountant'])) {
             $projects = Project::with('projectCategory', 'department', 'client', 'currency', 'users', 'tasks')->latest()->get();
@@ -51,7 +55,7 @@ class ProjectController extends Controller
             $project->percentageCompletion = $totalTasks > 0 ? ($completedTasks / $totalTasks) * 100 : 0;
         });
 
-        return view('projects.index', compact('clients', 'projectCategories', 'currencies', 'departments', 'users', 'roles', 'projects'));
+        return view('projects.index', compact('clients', 'projectCategories', 'currencies', 'departments', 'users', 'roles', 'projects', 'documentTypes'));
     }
 
 
@@ -68,17 +72,30 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
-        //dd($request->all());
+
+        \Log::info($request->all());
+        // Clear application cache
+        Artisan::call('optimize:clear');
+
+        
+        if ($request->documentName || $request->hasFile('document')) {
+            $request->validate([
+                'documentName'=>'required|string|unique:project_files,document_name',
+                'documentTypeId'=> 'required',
+                'document'=> 'file',
+            ]);
+        }
+
 
         $request->validate([
-            "projectCode" => "required|string|unique:projects,projectCode",
+            // "projectCode" => "required|string|unique:projects,projectCode",
             "projectName" => "required|string|unique:projects,projectName",
             "projectStartDate" => "required|date",
             "projectDeadlineDate" => "required|date",
             "projectDescription" => "required|string",
             'meetingDate' => 'required|date|after:now',
             "projectCategoryId" => "required|exists:project_categories,id",
-            "projectDepartmentId" => "required|exists:departments,id",
+            // "projectDepartmentId" => "required|exists:departments,id",
             "projectClientId" => "required|exists:clients,id",
             "projectMemberIds" => "required",
             "projectCost" => "required|numeric|gte:projectBudget", // Ensure projectCost is greater than or equal to projectBudget
@@ -95,16 +112,18 @@ class ProjectController extends Controller
             "projectCurrencyId" => "required|exists:currencies,id",
         ]);
         
-        
+        do {
+            $projectCode = 'PRJ-' . strtoupper(Str::random(6));
+        } while (Project::where('projectCode', $projectCode)->exists());
 
         $project = Project::create([
-            "projectCode" => $request->projectCode,
+            "projectCode" => $projectCode,
             "projectName" => $request->projectName,
             "projectStartDate" => $request->projectStartDate,
             "projectDeadlineDate" => $request->projectDeadlineDate,
             "projectDescription" => $request->projectDescription,
             "projectCategoryId" => $request->projectCategoryId,
-            "projectDepartmentId" => $request->projectDepartmentId,
+            "projectDepartmentId" => 2,
             "projectClientId" => $request->projectClientId,
             "projectCost" => $request->projectCost,
             "projectBudget" => $request->projectBudget,
@@ -119,14 +138,33 @@ class ProjectController extends Controller
        // Flash toast messages based on success or failure
         if ($project) {
 
+            // Meeting Location
             $projectMeeting = DB::table('project_meetings')->insert([
                 'project_id' => $project->id,
                 'meetingDate' => $request->meetingDate,
+                'meetingType' => $request->meetingType,
+                'meetingLocation' => $request->meetingLocation,
                 'status' => 0,
                 'created_at' => now(), 
                 'updated_at' => now(),
             ]);
 
+            if ($request->documentName) {
+
+                if (!Storage::disk('public')->exists('uploads')) {
+                    Storage::disk('public')->makeDirectory('uploads');
+                }
+        
+                $documentPath = $request->file('document')->storeAs('uploads', time() . '_' . $request->file('document')->getClientOriginalName(), 'public');
+        
+                $projectFile = ProjectFile::create([
+                    'project_id'=>$request->project->id,
+                    'document_name'=>$request->documentName,
+                    'document_path'=>$documentPath,
+                    'created_by'=>Auth::user()->id,
+                    'document_type'=>$request->documentTypeId,
+                ]);
+            }
             
             $users = User::whereIn('id', $request->projectMemberIds)->get();
             
