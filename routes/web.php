@@ -30,6 +30,7 @@ Route::middleware('auth')->group(function () {
     // dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/get-project-progress-data', [DashboardController::class, 'getProjectProgressData']);
+    Route::get('/data/{period}', [DashboardController::class, 'getData']);
 
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
