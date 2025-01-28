@@ -34,28 +34,27 @@
                         <td>{{ $category->created_at->format('d M Y, h:i a') }}</td>
                         <td>
                             <select name="status" class="form-select form-select-solid form-select-sm" onchange="updateStatus({{ $category->id }}, this.value)" @cannot('update category') disabled @endcannot>
-                                <option value="1" {{ $category->isActive == 1 ? 'selected' : '' }}><span>{{__('Active')}}</option>
+                                <option value="1" {{ $category->isActive == 1 ? 'selected' : '' }}><span>{{__('Active')}}</span></option>
                                 <option value="0" {{ $category->isActive == 0 ? 'selected' : '' }}>{{__('Inactive')}}</option>
                             </select>
                         </td>
-                        <td>
+                        <td class="d-flex align-items-center gap-2 flex-column flex-sm-row">
                             @can('edit category')
                                 <button 
-                                    class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" 
+                                    class="btn btn-sm btn-light btn-active-color-primary d-flex align-items-center px-3 py-2" 
                                     data-bs-toggle="modal" 
                                     data-bs-target="#editCategory{{$category->id}}">
-                                    <i class="bi bi-pencil-square fs-2"></i>
+                                    <i class="bi bi-pencil-square me-1 fs-5"></i> <span>{{ __('Edit') }}</span>
                                 </button>
                             @endcan
                             @can('delete category')
                                 <button type="button" 
-                                    class="btn btn-sm btn-icon btn-bg-light btn-active-color-danger w-30px h-30px" 
+                                    class="btn btn-sm btn-light btn-active-color-danger d-flex align-items-center px-3 py-2" 
                                     data-bs-toggle="modal" 
                                     data-bs-target="#deleteCategoryModal{{$category->id}}">
-                                    <i class="bi bi-trash fs-2"></i>
+                                    <i class="bi bi-trash me-1 fs-5"></i> <span>{{ __('Delete') }}</span>
                                 </button>
                             @endcan
-                            
                             <div class="modal fade" id="deleteCategoryModal{{$category->id}}" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content">
@@ -64,13 +63,11 @@
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <p>{{ __('Are you sure you want to delete this user/Employee?') }}</p>
+                                            <p>{{ __('Are you sure you want to delete this category?') }}</p>
                                             <p>{{ __('This action cannot be undone.') }}</p>
                                         </div>
                                         <div class="modal-footer">
-                                            <!-- Discard Button -->
                                             <button type="button" id="closeDeleteModal{{$category->id}}" class="btn btn-light me-3" data-bs-dismiss="modal">{{ __('Discard') }}</button>
-                                            <!-- Confirm Button -->
                                             <button type="button" id="deleteButton{{$category->id}}" class="btn btn-danger" 
                                                 data-item-url="{{ route('project_categories.destroy', $category->id) }}" 
                                                 data-item-id="{{ $category->id }}"
@@ -93,7 +90,6 @@
         </tbody>
     </table>
 </div>
-
 
 <script>
     function deleteItem(button) {
