@@ -46,12 +46,6 @@
                                 <span class="path4"></span>
                             </i>
                         </span>
-                        <h4>
-                            <a href="{{ route('dashboard') }}" class="menu-link {{ is_route_active('dashboard') }}">
-                                <span id="custom-menu-title">{{ __('Overview') }}</span>
-                            </a>
-                        </h4>
-                    </span>
                 </div>
 
                 {{--Project Mgt --}}
