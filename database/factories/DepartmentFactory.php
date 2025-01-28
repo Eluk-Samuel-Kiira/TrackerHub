@@ -28,4 +28,5 @@ class DepartmentFactory extends Factory
     {
         return $this->state(fn (array $attributes) => ['isActive' => 0]);
     }
+    
 }
