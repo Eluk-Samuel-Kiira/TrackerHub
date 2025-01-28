@@ -38,21 +38,21 @@
                                 <option value="0" {{ $currency->isActive == 0 ? 'selected' : '' }}>{{__('Inactive')}}</option>
                             </select>
                         </td>
-                        <td>
+                        <td class="d-flex align-items-center gap-2 flex-column flex-sm-row">
                             <!-- Edit User Button -->
                              <button 
-                                class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" 
-                                data-bs-toggle="modal" 
+                             class="btn btn-sm btn-light btn-active-color-primary d-flex align-items-center px-3 py-2" 
+                             data-bs-toggle="modal" 
                                 data-bs-target="#editCurrency{{$currency->id}}">
-                                <i class="bi bi-pencil-square fs-2"></i>
-                            </button>
+                                <i class="bi bi-pencil-square me-1 fs-5"></i> <span>{{ __('Edit') }}</span>
+                                </button>
                             <!-- Delete User Button -->
                             <button type="button" 
-                                class="btn btn-sm btn-icon btn-bg-light btn-active-color-danger w-30px h-30px" 
-                                data-bs-toggle="modal" 
+                            class="btn btn-sm btn-light btn-active-color-danger d-flex align-items-center px-3 py-2" 
+                            data-bs-toggle="modal" 
                                 data-bs-target="#deleteUserModal{{$currency->id}}">
-                                <i class="bi bi-trash fs-2"></i>
-                            </button>
+                                <i class="bi bi-trash me-1 fs-5"></i> <span>{{ __('Delete') }}</span>
+                                </button>
 
                             <!-- Delete User Modal -->
                             <div class="modal fade" id="deleteUserModal{{$currency->id}}" tabindex="-1" aria-hidden="true">

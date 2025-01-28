@@ -1,4 +1,3 @@
-
 <div class="card-body py-4" id="reloadEmployeeComponent">
     <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_users">
         <thead>
@@ -54,26 +53,25 @@
                         <td>
                             <select name="status" class="form-select form-select-solid form-select-sm" onchange="updateStatus({{ $employee->id }}, this.value)"
                             @cannot('update user') disabled @endcannot>
-                                <option value="active" {{ $employee->status === 'active' ? 'selected' : '' }}><span>{{__('Active')}}</option>
+                                <option value="active" {{ $employee->status === 'active' ? 'selected' : '' }}><span>{{__('Active')}}</span></option>
                                 <option value="inactive" {{ $employee->status === 'inactive' ? 'selected' : '' }}>{{__('Inactive')}}</option>
                             </select>
                         </td>
-                        <td>
+                        <td class="d-flex align-items-center gap-2 flex-column flex-sm-row">
                             @can('edit user')
-                             <button 
-                                class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#editUserModal{{$employee->id}}">
-                                <i class="bi bi-pencil-square fs-2"></i>
-                            </button>
+                                <button 
+                                class="btn btn-sm btn-light btn-active-color-primary d-flex align-items-center px-3 py-2"  
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#editUserModal{{$employee->id}}">
+                                    <i class="bi bi-pencil-square me-1 fs-5"></i> <span>{{ __('Edit') }}</span>
+                                </button>
                             @endcan
                             @can('delete user')
                                 <button type="button" 
-                                    class="btn btn-sm btn-icon btn-bg-light btn-active-color-danger w-30px h-30px" 
-                                    data-bs-toggle="modal" 
+                                class="btn btn-sm btn-light btn-active-color-danger d-flex align-items-center px-3 py-2" 
+                                data-bs-toggle="modal" 
                                     data-bs-target="#deleteUserModal{{$employee->id}}">
-                                    <i class="bi bi-trash fs-2"></i>
-                                </button>
+                                    <i class="bi bi-trash me-1 fs-5"></i> <span>{{ __('Delete') }}</span>                                </button>
                             @endcan
 
                             <!-- Delete User Modal -->

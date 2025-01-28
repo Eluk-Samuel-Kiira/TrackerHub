@@ -39,21 +39,21 @@
                                 <option value="0" {{ $document_type->isActive == 0 ? 'selected' : '' }}>{{__('Inactive')}}</option>
                             </select>
                         </td>
-                        <td>
+                        <td class="d-flex align-items-center gap-2 flex-column flex-sm-row">
                             @can('edit documents')
                                 <button 
                                     class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" 
                                     data-bs-toggle="modal" 
                                     data-bs-target="#editDocument{{$document_type->id}}">
-                                    <i class="bi bi-pencil-square fs-2"></i>
+                                    <i class="bi bi-pencil-square me-1 fs-5"></i> <span>{{ __('Edit') }}</span>
                                 </button>
                             @endcan
                             @can('delete documents')
                                 <button type="button" 
-                                    class="btn btn-sm btn-icon btn-bg-light btn-active-color-danger w-30px h-30px" 
-                                    data-bs-toggle="modal" 
+                                class="btn btn-sm btn-light btn-active-color-danger d-flex align-items-center px-3 py-2" 
+                                data-bs-toggle="modal" 
                                     data-bs-target="#deleteUserModal{{$document_type->id}}">
-                                    <i class="bi bi-trash fs-2"></i>
+                                    <i class="bi bi-trash me-1 fs-5"></i> <span>{{ __('Delete') }}</span>
                                 </button>
                             @endcan
 
