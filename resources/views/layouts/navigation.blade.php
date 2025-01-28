@@ -14,11 +14,6 @@
                                 <span class="path4"></span>
                             </i>
                         </span>
-                        <span class="menu-title">{{__('Dashboards')}}</span>
-                        <span class="menu-arrow"></span>
-                    </span>
-
-                    <div class="menu-sub menu-sub-accordion">
                         <div class="menu-item">
                             <a class="menu-link {{ is_route_active('dashboard') }}" href="{{ route('dashboard') }}">
                                 <span class="menu-bullet">
@@ -27,6 +22,9 @@
                                 <span class="menu-title">{{ __('Dashboard') }}</span>
                             </a>
                         </div>
+                    </span>
+
+                    <div class="menu-sub menu-sub-accordion">
 
                     </div>
 

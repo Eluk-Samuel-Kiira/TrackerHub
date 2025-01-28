@@ -47,7 +47,7 @@
 				@include('layouts.header')
 				<div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
                     <div id="kt_app_sidebar" class="app-sidebar flex-column"
-                        style="background-color: #006400;"
+                        style="background-color: #0F172A;"
                         data-kt-drawer="true"
                         data-kt-drawer-name="app-sidebar"
                         data-kt-drawer-activate="{default: true, lg: false}"
@@ -55,8 +55,9 @@
                         data-kt-drawer-width="225px"
                         data-kt-drawer-direction="start"
                         data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
+                        {{--
                         <div class="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
-                            <a href="{{ Route::currentRouteName() }}" class="d-block mb-4"> <!-- Adjusted margin-bottom -->
+                            <a href="{{ Route::currentRouteName() }}" class="d-block mb-4"> 
                                 <img 
                                     src="{{ getLogoImage() }}" 
                                     class="img-fluid" 
@@ -69,11 +70,36 @@
                                 <i class="ki-duotone ki-black-left-line fs-3 rotate-180"><span class="path1"></span><span class="path2"></span></i>
                             </div>
                         </div>
+                        --}}
+
+                        <!--begin::Logo-->
+						<div class="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
+							<!--begin::Logo image-->
+                            <h1 class="flex items-center">
+                                <a href="{{ Route::currentRouteName() }}" class="flex items-center text-white text-2xl font-bold">
+                                    <span class="app-sidebar-logo-default mr-2">
+                                        {{ __('Bamzee PMS') }}
+                                    </span>
+                                    <span class="app-sidebar-logo-minimize hidden">
+                                        {{ __('B') }}
+                                    </span>
+                                </a>
+                            </h1>
+							<!--end::Logo image-->
+							<!--begin::Sidebar toggle-->
+							<div id="kt_app_sidebar_toggle" class="app-sidebar-toggle btn btn-icon btn-shadow btn-sm btn-color-muted btn-active-color-primary h-30px w-30px position-absolute top-50 start-100 translate-middle rotate" data-kt-toggle="true" data-kt-toggle-state="active" data-kt-toggle-target="body" data-kt-toggle-name="app-sidebar-minimize">
+								<i class="ki-duotone ki-black-left-line fs-3 rotate-180">
+									<span class="path1"></span>
+									<span class="path2"></span>
+								</i>
+							</div>
+							<!--end::Sidebar toggle-->
+						</div>
+						<!--end::Logo-->
                         @include('layouts.navigation')
                     </div>
 					<div class="app-main flex-column flex-row-fluid" id="kt_app_main">
 						<div class="d-flex flex-column flex-column-fluid">
-
 							@yield('content')
 						</div>
 					</div>

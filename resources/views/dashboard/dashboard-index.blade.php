@@ -114,7 +114,10 @@
                                         <div class="d-flex align-items-center">
                                             <span class="fs-4 fw-semibold text-gray-500 me-1 align-self-start">/=</span>
                                             <span class="fs-2hx fw-bold text-gray-900 me-2 lh-1 ls-n2">
-                                                {{ number_format($monthlyData['earningsWithIncrease'][$monthlyData['latestMonth']]['earnings'], 2) ?? 0.00}}
+                                            {{ number_format(
+                                                    $monthlyData['earningsWithIncrease'][$monthlyData['latestMonth']]['earnings'] ?? 0.00,
+                                                    2
+                                                ) }}
                                             </span>
                                             @php
                                                 $percentageIncrease = $monthlyData['earningsWithIncrease'][$monthlyData['latestMonth']]['percentageIncrease'] ?? 0.00;
