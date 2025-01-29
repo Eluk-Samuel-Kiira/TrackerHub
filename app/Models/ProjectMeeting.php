@@ -11,6 +11,8 @@ class ProjectMeeting extends Model
     protected $fillable = [
         'project_id',
         'meetingDate',
+        'meetingType',
+        'meetingLocation',
         'description',
         'status',
     ];
