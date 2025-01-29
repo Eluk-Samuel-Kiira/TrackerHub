@@ -105,6 +105,22 @@
                             {{ $budget_status }}
                         </p>
                     </div>
+                    <div class="px-5 my-7">
+                    <div class="row g-4">
+                        @foreach($requisitions as $requisition)
+                            <div class="col-md-6">
+                                <div class="border p-3 rounded bg-light dark-mode-bg">
+                                    <h6 class="mb-1">{{ $requisition->name }}</h6>
+                                    <p class="text-muted mb-1">Amount Spent: {{ $requisition->amount ?? 0 }}</p>
+                                    <p class="text-muted mb-1">Voucher Number: {{ $requisition->voucher ?? '---' }}</p>
+                                    <small class="text-muted">Spent By: {{ $requisition->requisitionCreater->name ?? 'None' }} on 
+                                        {{ $requisition->created_at->format('d M Y, h:i a') }}
+                                    </small>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div> 
                 </div>
             </div>
             <div class="modal-footer">
@@ -117,7 +133,8 @@
             </div>
         </div>
     </div>
-</div>  
+</div>
+ 
 
 <script>
     function printReport(reportId) {

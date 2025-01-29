@@ -126,14 +126,7 @@
                         <input type="hidden" name="projectId" value="{{ $project->id }}">
                         <div class="card-body shadow-none">
                             <div class="row row-cards py-5">
-                                <div class="col-md-6">
-                                    <div class="mb-10">
-                                        <label class="form-label">Task Code</label>
-                                        <input type="text" class="form-control" name="taskCode" />
-                                        <div id="taskCode"></div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <div class="mb-10">
                                         <label class="form-label">Task</label>
                                         <input type="text" class="form-control" name="task" />

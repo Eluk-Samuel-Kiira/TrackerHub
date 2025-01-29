@@ -6,6 +6,7 @@ use App\Models\Task;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\removeOrAddUserMail; 
 
@@ -34,15 +35,20 @@ class TaskController extends Controller
     {
         $request->validate([
             'projectId' => 'required',
-            'taskCode' => 'required|unique:tasks', 
+            //'taskCode' => 'required|unique:tasks', 
             'task' => 'required|string',
             'taskDeadlineDate' => 'required|date',
             'projectMemberId' => 'required',
         ]);
         
 
+        do {
+            $taskCode = 'TSK-' . strtoupper(Str::random(6));
+        } while (Task::where('taskCode', $taskCode)->exists());
+
         $task = Task::create([
-            'taskCode' => $request->taskCode,
+            //'taskCode' => $request->taskCode,
+            'taskCode' => $taskCode,
             'project_id' => $request->projectId,
             'user_id' => $request->projectMemberId,
             'description' => $request->task,
