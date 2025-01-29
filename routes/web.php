@@ -20,6 +20,7 @@ use App\Http\Controllers\Project\RequistionController;
 use App\Http\Controllers\Project\ProjectExpenseController;
 use App\Http\Controllers\ProjectInvoiceController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UOMController;
 
 Route::get('/', function () {
     return view('home.welcome');
@@ -40,6 +41,11 @@ Route::middleware('auth')->group(function () {
     // Currencies
     Route::resource('currencies', CurrencyController::class);
     Route::post('/currency-status/{id}', [CurrencyController::class, 'changeCurrencyStatus'])->name('currency.status');
+
+    
+    // Uom
+    Route::resource('uoms', UOMController::class);
+    Route::post('/uom-status/{id}', [UOMController::class, 'changeUOMStatus'])->name('uom.status');
 
 
     // Project Categories
