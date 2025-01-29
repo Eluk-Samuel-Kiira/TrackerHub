@@ -103,39 +103,39 @@
                                 @endif
                             </td>
                             <td class="d-flex align-items-center gap-2 flex-column flex-sm-row">
-                            <div class="d-flex justify-content-start align-items-center flex-sm-row">
-                                 @can('view report')
-                                    <button 
-                                    class="btn btn-sm btn-light btn-active-color-primary d-flex align-items-center mx-2 px-3 py-2"
-                                    data-bs-toggle="modal" 
-                                        data-bs-target="#viewReport{{ $project->id }}">
-                                        <i class="bi bi-printer fs-5 me-1"></i><span>{{ __('Detailed Report') }}</span>
-                                    </button>
-                                @endcan
+                                <div class="d-flex justify-content-start align-items-center flex-sm-row">
+                                    @can('view report')
+                                        <button 
+                                        class="btn btn-sm btn-light btn-active-color-primary d-flex align-items-center mx-2 px-3 py-2"
+                                        data-bs-toggle="modal" 
+                                            data-bs-target="#viewReport{{ $project->id }}">
+                                            <i class="bi bi-printer fs-5 me-1"></i><span>{{ __('Detailed Report') }}</span>
+                                        </button>
+                                    @endcan
 
-                                @can('view requisitions')
-                                    <button 
-                                    class="btn btn-sm btn-light btn-active-color-success d-flex align-items-center mx-2 px-3 py-2"
-                                    data-bs-toggle="modal" 
-                                        data-bs-target="#viewRequisition{{ $project->id }}">
-                                        <i class="bi bi-bar-chart-line fs-5 me-1"></i><span>{{ __('Approved Requisitions') }}</span>
-                                    </button>
-                                @endcan
-                                
-                                @can('view invoice')
-                                    <button 
-                                    class="btn btn-sm btn-light btn-active-color-primary d-flex align-items-center px-3 py-2"
-                                    data-bs-toggle="modal" 
-                                        data-bs-target="#viewInvoices{{ $project->id }}">
-                                        <i class="bi bi-receipt fs-5 me-1"></i><span>{{ __('Paid Invoices') }}</span>
-                                    </button>
-                                @endcan
-                            </div>
-                            <div class= "py-2">
-                                @include('requistions.expenses.detail-report')
-                                @include('requistions.expenses.requisition-details')
-                                @include('requistions.expenses.invoices-paid')
-                            </div>
+                                    @can('view requisitions')
+                                        <button 
+                                        class="btn btn-sm btn-light btn-active-color-success d-flex align-items-center mx-2 px-3 py-2"
+                                        data-bs-toggle="modal" 
+                                            data-bs-target="#viewRequisition{{ $project->id }}">
+                                            <i class="bi bi-bar-chart-line fs-5 me-1"></i><span>{{ __('Approved Requisitions') }}</span>
+                                        </button>
+                                    @endcan
+                                    
+                                    @can('view invoice')
+                                        <button 
+                                        class="btn btn-sm btn-light btn-active-color-primary d-flex align-items-center px-3 py-2"
+                                        data-bs-toggle="modal" 
+                                            data-bs-target="#viewInvoices{{ $project->id }}">
+                                            <i class="bi bi-receipt fs-5 me-1"></i><span>{{ __('Paid Invoices') }}</span>
+                                        </button>
+                                    @endcan
+                                </div>
+                                <div class= "py-2">
+                                    @include('requistions.expenses.detail-report')
+                                    @include('requistions.expenses.requisition-details')
+                                    @include('requistions.expenses.invoices-paid')
+                                </div>
                             </td>
                         </tr>
                     @endforeach

@@ -116,6 +116,13 @@ class UserSeeder extends Seeder
             'edit documents',
             'delete documents',
             'update documents',
+
+            // Documents Management
+            'create uom',
+            'view uom',
+            'edit uom',
+            'delete uom',
+            'update uom',
             
         
             // Admin Management

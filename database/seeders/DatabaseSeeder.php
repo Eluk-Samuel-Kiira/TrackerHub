@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             CurrencySeeder::class,
             DocumentTypeSeeder::class,
             SMTPSeeder::class,
+            UOMSeeder::class,
         ]);
     }
 }

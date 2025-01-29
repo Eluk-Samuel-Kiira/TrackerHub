@@ -272,7 +272,7 @@
                 </div>
                 
                 {{--System setting --}}
-                <div data-kt-menu-trigger="click" class="menu-item here {{ is_tab_show(['setting*','currencies*','departments*','document*']) }} menu-accordion">
+                <div data-kt-menu-trigger="click" class="menu-item here {{ is_tab_show(['setting*','currencies*','departments*','document*','uoms.*']) }} menu-accordion">
                     <span class="menu-link">
                         <span class="menu-icon">
                             <i class="bi bi-gear-wide-connected fs-2">
@@ -310,7 +310,7 @@
                         </div>
                     @endcan
 
-                    @can('view department')
+                    @can('view category')
                         <div class="menu-sub menu-sub-accordion">
                             <div class="menu-item">
                                 <a class="menu-link {{ is_route_active('departments.index') }}" href="{{ route('departments.index') }}">
@@ -331,6 +331,19 @@
                                         <span class="bullet bullet-dot"></span>
                                     </span>
                                     <span class="menu-title">{{__('Document Types')}}</span>
+                                </a>
+                            </div>
+                        </div>
+                    @endcan
+
+                    @can('view documents')
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ is_route_active('uoms.index') }}" href="{{ route('uoms.index') }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">{{__('Unit of Measure')}}</span>
                                 </a>
                             </div>
                         </div>

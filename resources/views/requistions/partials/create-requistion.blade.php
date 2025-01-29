@@ -1,6 +1,6 @@
  
 <div class="modal fade" id="kt_modal_add_requistion" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered mw-850px">
+    <div class="modal-dialog modal-fullscreen">
         <div class="modal-content">
             <div class="modal-header" id="kt_modal_add_requistion">
                 <h2 class="fw-bold">{{__('Create New Requistion')}}</h2>
@@ -38,7 +38,109 @@
                                 <div id="amount"></div>
                             </div>
                         </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="requisitionTable">
+                                <thead>
+                                    <tr>
+                                        <th>S/No</th>
+                                        <th>Requisition Title/Name</th>
+                                        <th>Category</th>
+                                        <th>UoM</th>
+                                        <th>Qtn</th>
+                                        <th>Unit Cost</th>
+                                        <th>Amount</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td><input type="text" class="form-control" name="requisitionTitle[]"></td>
+                                        <td>
+                                            <select class="form-select" name="requisitionCategoryId[]">
+                                                <option></option>
+                                                @foreach ($departments as $department)
+                                                    <option value="{{ $department->id }}">{{ $department->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </td>
+                                        <td><input type="text" class="form-control" name="uom[]"></td>
+                                        <td><input type="number" class="form-control qty" name="quantity[]" oninput="calculateRowAmount(this)"></td>
+                                        <td><input type="number" class="form-control unit-cost" name="unitCost[]" oninput="calculateRowAmount(this)"></td>
+                                        <td><input type="number" class="form-control amount" name="amount[]" readonly></td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger btn-sm removeRow"><i class="bi bi-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-end mt-2">
+                                <button type="button" class="btn btn-sm btn-primary" id="addRow">
+                                    <i class="bi bi-plus-lg"></i> Add Item
+                                </button>
+                            </div>
+                        </div>
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function () {
+                                let table = document.getElementById("requisitionTable").getElementsByTagName("tbody")[0];
 
+                                // Add new row
+                                document.getElementById("addRow").addEventListener("click", function () {
+                                    let rowCount = table.rows.length + 1;
+                                    let newRow = table.insertRow();
+                                    
+                                    newRow.innerHTML = `
+                                        <td>${rowCount}</td>
+                                        <td><input type="text" class="form-control" name="requisitionTitle[]"></td>
+                                        <td>
+                                            <select class="form-select" name="requisitionCategoryId[]">
+                                                <option></option>
+                                                @foreach ($departments as $department)
+                                                    <option value="{{ $department->id }}">{{ $department->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </td>
+                                        <td><input type="text" class="form-control" name="uom[]"></td>
+                                        <td><input type="number" class="form-control qty" name="quantity[]" oninput="calculateRowAmount(this)"></td>
+                                        <td><input type="number" class="form-control unit-cost" name="unitCost[]" oninput="calculateRowAmount(this)"></td>
+                                        <td><input type="number" class="form-control amount" name="amount[]" readonly></td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger btn-sm removeRow"><i class="bi bi-trash"></i></button>
+                                        </td>
+                                    `;
+
+                                    updateRowNumbers();
+                                });
+
+                                // Remove row
+                                table.addEventListener("click", function (e) {
+                                    if (e.target.closest(".removeRow")) {
+                                        e.target.closest("tr").remove();
+                                        updateRowNumbers();
+                                    }
+                                });
+
+                                // Update row numbering
+                                function updateRowNumbers() {
+                                    let rows = table.getElementsByTagName("tr");
+                                    for (let i = 0; i < rows.length; i++) {
+                                        rows[i].cells[0].textContent = i + 1;
+                                    }
+                                }
+                            });
+
+                            // Calculate row amount
+                            function calculateRowAmount(input) {
+                                let row = input.closest("tr");
+                                let qty = row.querySelector(".qty").value || 0;
+                                let unitCost = row.querySelector(".unit-cost").value || 0;
+                                let amountField = row.querySelector(".amount");
+                                amountField.value = qty * unitCost;
+                            }
+                        </script>
+
+
+                        <!-- 
                         <div class="row g-9 mb-8">
                             <div class="d-flex flex-column mb-8 fv-row col-md-6">
                                 <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
@@ -72,7 +174,7 @@
                                 <textarea name="description" id="kt_docs_ckeditor_classic"></textarea>
                                 <div id="description"></div>
                             </div>
-                        </div>
+                        </div> -->
 
                         <button type="reset" class="btn btn-light me-3" id="discardCategoryButton" data-bs-dismiss="modal">Discard</button>
                         <button id="submitRequisitionButton" type="submit" class="btn btn-primary" id>

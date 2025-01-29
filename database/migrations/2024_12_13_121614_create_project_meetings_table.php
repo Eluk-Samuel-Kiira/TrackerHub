@@ -17,7 +17,7 @@ return new class extends Migration
             $table->dateTime('meetingDate')->nullable();
             $table->text('description')->nullable();
             $table->string('meetingLocation')->default('online');
-            $table->integer('meetingType')->enum(['online', 'physical'])->default('online');
+            $table->string('meetingType')->enum(['online', 'physical'])->default('online');
             $table->integer('status')->enum(['0', '1'])->default(0);
             $table->timestamps();
         });
