@@ -27,7 +27,7 @@
                                 <span class="menu-icon" data-kt-element="icon">
                                     <i class="ki-duotone ki-night-day fs-2"><span class="path1"></span><span class="path2"></span></i>
                                 </span>
-                                <span class="menu-title">Light</span>
+                                <span class="menu-title fs-8">Light</span>
                             </a>
                         </div>
                         <div class="menu-item px-3 my-0">
@@ -35,7 +35,7 @@
                                 <span class="menu-icon" data-kt-element="icon">
                                     <i class="ki-duotone ki-moon fs-2"><span class="path1"></span><span class="path2"></span></i>
                                 </span>
-                                <span class="menu-title">Dark</span>
+                                <span class="menu-title fs-8">Dark</span>
                             </a>
                         </div>
                         <div class="menu-item px-3 my-0">
@@ -43,7 +43,7 @@
                                 <span class="menu-icon" data-kt-element="icon">
                                     <i class="ki-duotone ki-screen fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
                                 </span>
-                                <span class="menu-title">System</span>
+                                <span class="menu-title fs-8">System</span>
                             </a>
                         </div>
                     </div>
@@ -68,11 +68,11 @@
                         </div>
                         <div class="separator my-2"></div>
                         <div class="menu-item px-5">
-                            <a href="{{ route('profile.edit') }}" class="menu-link px-5">My Profile</a>
+                            <a href="{{ route('profile.edit') }}" class="menu-link px-5 fs-7">My Profile</a>
                         </div>
                         <div class="separator my-2"></div>
                         <div class="menu-item px-5">
-                            <a  href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"class="menu-link px-5">{{__('Sign Out')}}</a>
+                            <a  href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"class="menu-link px-5 fs-7">{{__('Sign Out')}}</a>
                             <!-- Logout form (hidden) -->
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                 @csrf
