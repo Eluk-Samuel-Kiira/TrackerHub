@@ -67,7 +67,7 @@
                             </div>
                         </div>
                         <div class="row g-9 mb-8">
-                            <div class="d-flex flex-column mb-8 fv-row col-md-6">
+                            <div class="d-flex flex-column mb-8 fv-row col-md-12">
                                 <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
                                     <span class="required">Role</span>
                                 </label>
@@ -84,24 +84,8 @@
                                 </select>
                                 <div id="role{{ $employee->id }}"></div>
                             </div>
+                            <input type="hidden" id="department_id" value="2" class="form-control form-control-solid" name="department_id" />
 
-                            <div class="d-flex flex-column mb-8 fv-row col-md-6">
-                                <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                                    <span class="required">User Department</span>
-                                </label>
-                                <select name="department_id" class="form-select form-select" data-control="select2" data-close-on-select="false" data-placeholder="Select an option" data-allow-clear="true">
-                                    <option value="" disabled {{ is_null($employee->department_id) ? 'selected' : '' }}></option> <!-- Optional blank/empty option -->
-                                    @foreach ($departments as $department)
-                                        <option value="{{ $department->id }}" 
-                                                @if($department->id == $employee->department_id) 
-                                                    selected 
-                                                @endif>
-                                            {{ $department->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <div id="department_id{{ $employee->id }}"></div>
-                            </div>
                         </div>
                     </div>
                         

@@ -52,6 +52,10 @@ class TaskController extends Controller
         if ($task) {
 
             $project = Project::findOrFail($task->project_id);
+            if ($project->exists) {
+                //return it back to zero incase it was completed as one
+                $project->update(['completionStatus' => 0]);
+            }
             $user = User::find($task->user_id);
 
             $this->taskAssignmentMail($project, $task, $user);

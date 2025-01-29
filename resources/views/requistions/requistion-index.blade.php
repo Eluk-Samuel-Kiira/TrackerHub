@@ -22,7 +22,7 @@
                     <li class="breadcrumb-item">
                         <span class="bullet bg-gray-500 w-5px h-2px"></span>
                     </li>
-                    <li class="breadcrumb-item text-muted">{{__('Requistions')}}</li>
+                    <li class="breadcrumb-item text-muted">{{__('Requisitions')}}</li>
                 </ul>
             </div>
             <div class="d-flex align-items-center gap-2 gap-lg-3">
@@ -44,7 +44,7 @@
                 </div>
                 @can('create requisitions')
                     <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_requistion">
-                    <i class="ki-duotone ki-plus fs-2"></i>{{__('Add Requistion')}}</button>
+                    <i class="ki-duotone ki-plus fs-2"></i>{{__('Add Requisition')}}</button>
                 @endcan
                 @include('requistions.partials.create-requistion')    
             </div>

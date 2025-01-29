@@ -40,12 +40,27 @@
                         </div>
 
                         <div class="row g-9 mb-8">
-                            <div class="d-flex flex-column mb-8 fv-row col-md-12">
+                            <div class="d-flex flex-column mb-8 fv-row col-md-6">
                                 <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
                                         <span class="required">Requisition Title</span>
                                 </label>
                                 <input type="text" value="{{ $requisition->name }}" class="form-control form-control-solid" name="name" />
                                 <div id="name{{ $requisition->id }}"></div>
+                            </div>
+                            
+                            <div class="d-flex flex-column mb-8 fv-row col-md-6">
+                                <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+                                        <span class="required">Requisition Category</span>
+                                </label>
+                                <div class="d-flex">
+                                    <select id="requisition_category" class="form-select me-2" name="requisitionCategoryId"  data-allow-clear="true" data-placeholder="Select a category">
+                                        <option></option>
+                                        @foreach ($departments as $department)
+                                            <option value="{{ $department->id }}" {{ $requisition->requisitionCategoryId == $department->id ? 'selected' : '' }}>{{ $department->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div> 
+                                <div id="requisitionCategoryId{{ $requisition->id }}"></div>
                             </div>
                         </div>
 

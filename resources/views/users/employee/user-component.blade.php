@@ -12,7 +12,6 @@
                 <th class="min-w-125px">{{__('Role')}}</th>
                 <th class="min-w-125px">{{__('Telephone')}}</th>
                 <th class="min-w-125px">{{__('Job Title')}}</th>
-                <th class="min-w-125px">{{__('Department')}}</th>
                 <th class="min-w-125px">{{__('Created At')}}</th>
                 <th class="min-w-125px">{{__('Status')}}</th>
                 <th class="text-end min-w-100px">{{__('Actions')}}</th>
@@ -48,7 +47,6 @@
                             <div class="badge badge-light fw-bold">{{ $employee->telephone_number }}</div>
                         </td>
                         <td>{{ $employee->job_title }}</td>
-                        <td>{{ ucwords(str_replace('_', ' ', $employee->departmentName->name)) }}</td>
                         <td>{{ $employee->created_at->format('d M Y, h:i a') }}</td>
                         <td>
                             <select name="status" class="form-select form-select-solid form-select-sm" onchange="updateStatus({{ $employee->id }}, this.value)"

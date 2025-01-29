@@ -121,7 +121,7 @@
                                 <span class="path4"></span>
                             </i>
                         </span>
-                        <span class="menu-title" id="custom-menu-title">{{__('Funds Requistion')}}</span>
+                        <span class="menu-title" id="custom-menu-title">{{__('Funds Requisition')}}</span>
                         <span class="menu-arrow"></span>
                     </span>
 
@@ -132,7 +132,7 @@
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
                                     </span>
-                                    <span class="menu-title">{{__('Requistion Index')}}</span>
+                                    <span class="menu-title">{{__('Requisition Index')}}</span>
                                 </a>
                             </div>
                         </div>
@@ -317,7 +317,7 @@
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
                                     </span>
-                                    <span class="menu-title">{{__('Departments')}}</span>
+                                    <span class="menu-title">{{__('Requisition Category')}}</span>
                                 </a>
                             </div>
                         </div>

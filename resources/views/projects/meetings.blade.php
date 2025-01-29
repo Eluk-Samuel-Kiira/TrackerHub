@@ -2,6 +2,8 @@
     <thead>
         <tr class="fw-bold fs-6 text-gray-800">
             <th>Next Meeting</th>
+            <th>Meeting Type</th>
+            <th>Meeting Location</th>
             <th>Meeting Status</th>
             <th>Scheduled On</th>
             <th>Days Left</th>
@@ -13,6 +15,8 @@
             <tr>
                 <!-- Format the meeting date -->
                 <td>{{ \Carbon\Carbon::parse($meeting->meetingDate)->format('F j, Y g:i A') }}</td>
+                <td>{{ $meeting->meetingType }}</td>
+                <td>{{ $meeting->meetingLocation ?? 'Online' }}</td>
                 
                 <!-- Display meeting status -->
                 <td>
@@ -157,8 +161,39 @@
                                     <div id="meetingDate"></div>
                                 </div>
 
+                                <div class="mb-10">
+                                    <label class="form-label">Meeting Type</label><br>
+                                    <div>
+                                        <input type="radio" id="onlineMeeting" name="meetingType" value="online" onclick="toggleMeetingType()" checked>
+                                        <label for="onlineMeeting">Online</label>
+                                    </div>
+                                    <div>
+                                        <input type="radio" id="physicalMeeting" name="meetingType" value="physical" onclick="toggleMeetingType()">
+                                        <label for="physicalMeeting">Physical</label>
+                                    </div>
+                                </div>
+
+                                <!-- Location field, hidden by default -->
+                                <div class="mb-10" id="locationField" style="display: none;">
+                                    <label class="form-label" for="meetingLocation">Meeting Location</label><br>
+                                    <input id="meetingLocation" name="meetingLocation" class="form-control" type="text" placeholder="Enter location" />
+                                </div>
                             </div>
                         </div>
+                        
+                        <script>
+                            function toggleMeetingType() {
+                                const isPhysical = document.getElementById('physicalMeeting').checked;
+                                const locationField = document.getElementById('locationField');
+
+                                if (isPhysical) {
+                                    locationField.style.display = 'block'; // Show location input
+                                } else {
+                                    locationField.style.display = 'none'; // Hide location input
+                                }
+                            }
+                        </script>
+
                         <div class="card-footer text-end" style="margin-top:-5rem;">
                             <button type="reset" class="btn btn-light me-3" id="discardMeetingButton" data-bs-dismiss="modal">Discard</button>
                             <button id="submitMeetingButton" type="submit" class="btn btn-primary">
@@ -199,7 +234,6 @@
         var formData = new FormData(form);
 
         var data = Object.fromEntries(formData.entries());
-        // console.log(data);
 
         // Set up the URL dynamically
         var updateUrl = '{{ route('meeting.update', ['meeting' => ':id']) }}'.replace(':id', uniqueId);
@@ -245,6 +279,7 @@
             // Reference the submit button and reloading
             const submitButton = document.getElementById(submitButtonId);
             LiveBlade.toggleButtonLoading(submitButton, true);
+            console.log(formData);
 
             // Submit form data asynchronously
             LiveBlade.submitFormItems(formData)

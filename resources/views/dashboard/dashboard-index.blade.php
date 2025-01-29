@@ -135,41 +135,6 @@
                                     </div>
                                 </div>
                             </div>
-                            
-                            <div class="card card-flush h-lg-50">
-                                <div class="card-header pt-5">
-                                    <h3 class="card-title text-gray-800 fw-bold">Total (Actual) Income</h3>
-                                    <div class="card-toolbar">
-                                        <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-end" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
-                                            <i class="ki-duotone ki-dots-square fs-1 text-gray-500 me-n1">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                                <span class="path3"></span>
-                                                <span class="path4"></span>
-                                            </i>
-                                        </button>
-                                        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px" data-kt-menu="true">
-                                            <div class="separator mb-3 opacity-75"></div>
-                                            <div class="menu-item px-3">
-                                                <a href="#" class="menu-link px-3" style="font-size: 12px;" onclick="fetchData('today')">Today</a>
-                                                <a href="#" class="menu-link px-3" style="font-size: 12px;" onclick="fetchData('week')">Week</a>
-                                                <a href="#" class="menu-link px-3" style="font-size: 12px;" onclick="fetchData('month')">Month</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card-body pt-4">
-                                    <div class="d-flex flex-stack">
-                                        <span class="text-primary fw-semibold fs-6 me-2">Active/Pending Projects</span>
-                                        <span>30000</span>
-                                    </div>
-                                    <div class="separator separator-dashed my-3"></div>
-                                    <div class="d-flex flex-stack">
-                                        <span class="text-primary fw-semibold fs-6 me-2">Completed/Inactive Projects</span>
-                                        <span>30000</span>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
 

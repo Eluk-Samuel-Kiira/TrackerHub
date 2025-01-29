@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
+use App\Models\ProjectFile;
 
 
 class ProjectController extends Controller
@@ -73,7 +74,7 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
 
-        \Log::info($request->all());
+        // \Log::info($request->all());
         // Clear application cache
         Artisan::call('optimize:clear');
 
@@ -82,7 +83,7 @@ class ProjectController extends Controller
             $request->validate([
                 'documentName'=>'required|string|unique:project_files,document_name',
                 'documentTypeId'=> 'required',
-                'document'=> 'file',
+                // 'document'=> 'file',
             ]);
         }
 
@@ -148,23 +149,6 @@ class ProjectController extends Controller
                 'created_at' => now(), 
                 'updated_at' => now(),
             ]);
-
-            if ($request->documentName) {
-
-                if (!Storage::disk('public')->exists('uploads')) {
-                    Storage::disk('public')->makeDirectory('uploads');
-                }
-        
-                $documentPath = $request->file('document')->storeAs('uploads', time() . '_' . $request->file('document')->getClientOriginalName(), 'public');
-        
-                $projectFile = ProjectFile::create([
-                    'project_id'=>$request->project->id,
-                    'document_name'=>$request->documentName,
-                    'document_path'=>$documentPath,
-                    'created_by'=>Auth::user()->id,
-                    'document_type'=>$request->documentTypeId,
-                ]);
-            }
             
             $users = User::whereIn('id', $request->projectMemberIds)->get();
             
@@ -243,7 +227,7 @@ class ProjectController extends Controller
             "projectDeadlineDate" => "required|date",
             "projectDescription" => "required|string",
             "projectCategoryId" => "required|exists:project_categories,id",
-            "projectDepartmentId" => "required|exists:departments,id",
+            // "projectDepartmentId" => "required|exists:departments,id",
             "projectClientId" => "required|exists:clients,id",
             "projectCost" => "required|numeric|gte:projectBudget", // Ensure projectCost is greater than or equal to projectBudget
             "projectBudget" => "required|numeric",
@@ -266,7 +250,7 @@ class ProjectController extends Controller
             "projectDeadlineDate" => $request->projectDeadlineDate,
             "projectDescription" => $request->projectDescription,
             "projectCategoryId" => $request->projectCategoryId,
-            "projectDepartmentId" => $request->projectDepartmentId,
+            "projectDepartmentId" => 2,
             "projectClientId" => $request->projectClientId,
             "projectCost" => $request->projectCost,
             "projectBudget" => $request->projectBudget,
@@ -452,10 +436,11 @@ class ProjectController extends Controller
             'meetingDate' => 'required|date|after:now',
         ]);
 
-        
         $projectMeeting = DB::table('project_meetings')->insert([
             'project_id' => $request->projectId,
             'meetingDate' => $request->meetingDate,
+            'meetingType' => $request->meetingType,
+            'meetingLocation' => $request->meetingLocation,
             'status' => 0,
             'created_at' => now(), 
             'updated_at' => now(),
@@ -502,6 +487,44 @@ class ProjectController extends Controller
         return response()->json([
             'success' => true,
             'message' => __('Project Meeting Updated Successfully'),
+        ]);
+    }
+
+    public function storeProjectFile(Request $request) 
+    {      
+        if (!$request->hasFile('document')) {
+            return response()->json([
+                'success' => false,
+                'message' => __('No file was uploaded. Please try again.'),
+            ], 400);
+        }  
+
+        // Ensure the 'uploads' directory exists in public storage
+        if (!Storage::disk('public')->exists('uploads')) {
+            Storage::disk('public')->makeDirectory('uploads');
+        }
+
+        $documentPath = $request->file('document')->storeAs('uploads', time() . '_' . $request->file('document')->getClientOriginalName(), 'public');
+        $projectId = Project::latest()->first()->id ?? null;
+
+        if ($projectId) {
+            $projectFile = ProjectFile::create([
+                'project_id'=>$projectId,
+                'document_name'=>$request->documentName,
+                'document_path'=>$documentPath,
+                'created_by'=>Auth::user()->id,
+                'document_type'=>$request->documentTypeId,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => __('File Uploaded'),
+            ]);
+        }
+        
+        return response()->json([
+            'success' => false,
+            'message' => __('File Upload Failed'),
         ]);
     }
 }

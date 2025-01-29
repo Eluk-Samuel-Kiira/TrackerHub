@@ -62,7 +62,7 @@
                         </div>
 
                         <div class="row g-9 mb-8">
-                            <div class="d-flex flex-column mb-8 fv-row col-md-6">
+                            <div class="d-flex flex-column mb-8 fv-row col-md-12">
                                 <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
                                         <span class="required">Role</span>
                                 </label>
@@ -74,8 +74,9 @@
                                 </select>
                                 <div id="role"></div>
                             </div>
+                            <input type="hidden" id="department_id" value="2" class="form-control form-control-solid" name="department_id" />
 
-                            <div class="d-flex flex-column mb-8 fv-row col-md-6">
+                            <!-- <div class="d-flex flex-column mb-8 fv-row col-md-6">
                                 <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
                                     <span class="required">User Department</span>
                                 </label>
@@ -86,7 +87,7 @@
                                     @endforeach
                                 </select>
                                 <div id="department_id"></div>
-                            </div>
+                            </div> -->
                         </div>
                         <button type="reset" class="btn btn-light me-3" id="discardButton" data-bs-dismiss="modal">Discard</button>
                         <button id="submitButton" type="submit" class="btn btn-primary" id>

@@ -24,6 +24,7 @@ class UpdateRequistionRequest extends FormRequest
         return [
             'project_id' => 'required|integer',
             'amount' => 'required|numeric',
+            'requisitionCategoryId' => 'required|integer',
             'name' => 'required|string|max:256',
             'description' => 'required|string|max:2555',
         ];

@@ -10,6 +10,7 @@
                 <th class="min-w-125px">{{__('Req-ID')}}</th>
                 <th class="min-w-125px">{{__('Title')}}</th>
                 <th class="min-w-125px">{{__('Project')}}</th>
+                <th class="min-w-125px">{{__('Category')}}</th>
                 <th class="min-w-125px">{{__('Amount')}}</th>
                 <th class="min-w-125px">{{__('Creator')}}</th>
                 <th class="min-w-125px">{{__('Created At')}}</th>
@@ -34,6 +35,7 @@
                         </td>
                         <td>{{ $requisition->name }}</td>
                         <td>{{ $requisition->requisitionProject->projectName ?? 'none' }}</td>
+                        <td>{{ $requisition->requisitionCategory->name ?? 'none' }}</td>
                         <td>{{ $requisition->amount }}</td>
                         <td>{{ $requisition->requisitionCreater->name ?? 'None' }}
                         </td>
@@ -44,7 +46,7 @@
                             <select name="status" class="form-select form-select-solid form-select-sm"
                             style="appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: none; padding-right: 10px;" 
                                  onchange="updateStatus({{ $requisition->id }}, this.value)" @if(!auth()->user()->hasRole('accountant')) disabled @endif>
-                                <option value="1" {{ $requisition->isActive == 1 ? 'selected' : '' }}><span>{{__('Upaid')}}</option>
+                                <option value="1" {{ $requisition->isActive == 1 ? 'selected' : '' }}><span>{{__('Unpaid')}}</option>
                                 <option value="0" {{ $requisition->isActive == 0 ? 'selected' : '' }}>{{__('Paid')}}</option>
                             </select>
                         </td>

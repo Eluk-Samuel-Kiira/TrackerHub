@@ -21,6 +21,7 @@ use App\Mail\removeOrAddUserMail;
 use App\Mail\RequisitionProcessedMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use App\Models\Department;
 
 class RequistionController extends Controller
 {
@@ -30,6 +31,7 @@ class RequistionController extends Controller
      */
     public function index(Request $request)
     {    
+        $departments = Department::latest()->get();
         if (in_array(auth()->user()->role, ['director', 'project_manager'])) {
             $requisitions = Requistion::latest()->get();
             $projects = Project::latest()->get();
@@ -65,6 +67,7 @@ class RequistionController extends Controller
                     'requisitions' => $requisitions,
                     'document_types' => $document_types,
                     'requistion_files' => $requistion_files,
+                    'departments' => $departments,
                 ]);
             default:
                 return view('requistions.requistion-index', [
@@ -72,6 +75,7 @@ class RequistionController extends Controller
                     'requisitions' => $requisitions,
                     'document_types' => $document_types,
                     'requistion_files' => $requistion_files,
+                    'departments' => $departments,
                 ]);
         }
     }

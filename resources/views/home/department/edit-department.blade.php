@@ -3,7 +3,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header" id="kt_modal_add_currency">
-                <h2 class="fw-bold">{{__('Edit Department')}} - {{ $department->name }}</h2>
+                <h2 class="fw-bold">{{__('Edit Requisition Category')}} - {{ $department->name }}</h2>
                 <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal">
                     <i class="ki-duotone ki-cross fs-1">
                         <span class="path1"></span>
@@ -19,7 +19,7 @@
                         <div class="row g-9 mb-8">
                             <div class="d-flex flex-column mb-8 fv-row col-md-12">
                                 <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                                    <span class="required">Department </span>
+                                    <span class="required">Requisition Category </span>
                                 </label>
                                 <input type="text" value="{{ $department->name }}" class="form-control form-control-solid" name="department_name" />
                                 <div id="department_name{{ $department->id }}"></div>

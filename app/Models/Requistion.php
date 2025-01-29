@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Requistion extends Model
 {
     
-    protected $fillable = ['name', 'description', 'amount','project_id', 'isActive', 'status', 'created_by'];
+    protected $fillable = ['name', 'description', 'requisitionCategoryId','amount','project_id', 'isActive', 'status', 'created_by'];
 
     public function requisitionCreater()
     {
@@ -23,5 +23,10 @@ class Requistion extends Model
     public function requisitionProject()
     {
         return $this->belongsTo(Project::class, 'project_id', 'id');
+    }
+
+    public function requisitionCategory()
+    {
+        return $this->belongsTo(Department::class, 'requisitionCategoryId', 'id');
     }
 }

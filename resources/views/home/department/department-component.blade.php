@@ -7,8 +7,8 @@
                         <input class="form-check-input" type="checkbox" data-kt-check="true" data-kt-check-target="#kt_table_users .form-check-input" value="1" />
                     </div>
                 </th>
-                <th class="min-w-125px">{{__('Department ID')}}</th>
-                <th class="min-w-125px">{{__('Name')}}</th>
+                <th class="min-w-125px">{{__('Category ID')}}</th>
+                <th class="min-w-125px">{{__('Requisition Category')}}</th>
                 <th class="min-w-125px">{{__('Creater')}}</th>
                 <th class="min-w-125px">{{__('Created At')}}</th>
                 <th class="min-w-125px">{{__('Status')}}</th>
@@ -34,13 +34,13 @@
                         <td>{{ $department->created_at->format('d M Y, h:i a') }}</td>
                         <td>
                             <select name="status" class="form-select form-select-solid form-select-sm" onchange="updateStatus({{ $department->id }}, this.value)"
-                            @cannot('update department') disabled @endcannot>
+                            @cannot('update category') disabled @endcannot>
                                 <option value="1" {{ $department->isActive == 1 ? 'selected' : '' }}><span>{{__('Active')}}</option>
                                 <option value="0" {{ $department->isActive == 0 ? 'selected' : '' }}>{{__('Inactive')}}</option>
                             </select>
                         </td>
                         <td class="d-flex align-items-center gap-2 flex-column flex-sm-row">
-                            @can('edit department')
+                            @can('edit category')
                                 <button 
                                 class="btn btn-sm btn-light btn-active-color-primary d-flex align-items-center px-3 py-2" 
                                 data-bs-toggle="modal" 
@@ -48,7 +48,7 @@
                                     <i class="bi bi-pencil-square me-1 fs-5"></i> <span>{{ __('Edit') }}</span>
                                     </button>
                             @endcan
-                            @can('delete department')
+                            @can('delete category')
                                 <button type="button" 
                                 class="btn btn-sm btn-light btn-active-color-danger d-flex align-items-center px-3 py-2" 
                                 data-bs-toggle="modal" 
@@ -66,7 +66,7 @@
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <p>{{ __('Are you sure you want to delete this user/Employee?') }}</p>
+                                            <p>{{ __('Are you sure you want to delete this Requisition Category?') }}</p>
                                             <p>{{ __('This action cannot be undone.') }}</p>
                                         </div>
                                         <div class="modal-footer">

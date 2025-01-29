@@ -1,5 +1,5 @@
 <x-app-layout>
-    @section('title', __('Department Index'))
+    @section('title', __('Requisition Category'))
     @section('content')
     
     <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
@@ -22,7 +22,7 @@
                     <li class="breadcrumb-item">
                         <span class="bullet bg-gray-500 w-5px h-2px"></span>
                     </li>
-                    <li class="breadcrumb-item text-muted">{{__('Department')}}</li>
+                    <li class="breadcrumb-item text-muted">{{__('Requisition Category')}}</li>
                 </ul>
             </div>
             <div class="d-flex align-items-center gap-2 gap-lg-3">
@@ -42,9 +42,9 @@
                         <input type="text" id="searchInput" class="form-control" placeholder="Search department...">
                     </div>
                 </div>
-                @can('create department')
+                @can('create category')
                     <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_department">
-                    <i class="ki-duotone ki-plus fs-2"></i>{{__('Add Department')}}</button>
+                    <i class="ki-duotone ki-plus fs-2"></i>{{__('Add Requisition Category')}}</button>
                 @endcan
 
                 @include('home.department.create-department')    
