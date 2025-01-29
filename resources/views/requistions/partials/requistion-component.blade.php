@@ -67,31 +67,31 @@
                                 </option>
                             </select>
                         </td>
-                        <td>
-                            @can('edit requisitions')
+                        <td class="d-flex align-items-center gap-2 flex-column flex-sm-row">
+                        @can('edit requisitions')
                                 <button 
-                                    class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" 
-                                    data-bs-toggle="modal" 
+                                class="btn btn-sm btn-light btn-active-color-primary d-flex align-items-center px-3 py-2" 
+                                data-bs-toggle="modal" 
                                     data-bs-target="#editRequisition{{$requisition->id}}"
                                     onclick="initializeCKEditor('kt_docs_ckeditor_classic_{{$requisition->id}}')">
-                                    <i class="bi bi-pencil-square fs-2"></i>
+                                    <i class="bi bi-pencil-square fs-5 me-1"></i><span>{{__('Edit')}}</span>
                                 </button>
                             @endcan
                             
                             @can('upload requisitions')
                                 <button 
-                                    class="btn btn-sm btn-icon btn-bg-light btn-active-color-success w-30px h-30px" 
-                                    data-bs-toggle="modal" 
+                                class="btn btn-sm btn-light btn-active-color-success d-flex align-items-center px-3 py-2" 
+                                data-bs-toggle="modal" 
                                     data-bs-target="#attachDocuments{{$requisition->id}}">
-                                    <i class="bi bi-folder-symlink fs-2"></i>
+                                    <i class="bi bi-folder-symlink fs-5 me-1"></i><span>{{__('File upload')}}</span>
                                 </button>
                             @endcan
                             @can('delete requisitions')
                                 <button type="button" 
-                                    class="btn btn-sm btn-icon btn-bg-light btn-active-color-danger w-30px h-30px" 
-                                    data-bs-toggle="modal" 
+                                class="btn btn-sm btn-light btn-active-color-danger d-flex align-items-center px-3 py-2" 
+                                data-bs-toggle="modal" 
                                     data-bs-target="#deleteRequisitionModal{{$requisition->id}}">
-                                    <i class="bi bi-trash fs-2"></i>
+                                    <i class="bi bi-trash fs-5 me-1"></i><span>{{__('Delete')}}</span>
                                 </button>
                             @endcan
 
