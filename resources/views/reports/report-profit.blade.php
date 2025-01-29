@@ -77,7 +77,7 @@
                                     <tr>
                                         <td>{{ $project->projectCode }}</td>
                                         <td>{{ $project->projectName }}</td>
-                                        <td>{{ $project->currency->name }}</td>
+                                        <td>{{ $project->currency->name ?? 'N\A' }}</td>
                                         <td>{{ $project->projectCost }}</td>
                                         <td>{{ $project->projectBudget }}</td>
                                         <td>{{ number_format($expectedProfit, 2) }}</td>

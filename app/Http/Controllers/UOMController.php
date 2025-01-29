@@ -139,8 +139,7 @@ class UOMController extends Controller
         ]);
     }
 
-    
-    
+
     public function changeUOMStatus(Request $request, $id) 
     {
         // Validate the request data for status
