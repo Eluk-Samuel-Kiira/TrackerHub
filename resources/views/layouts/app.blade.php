@@ -73,28 +73,29 @@
                         --}}
 
                         <!--begin::Logo-->
-						<div class="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
-							<!--begin::Logo image-->
-                            <h1 class="flex items-center">
-                                <a href="{{ Route::currentRouteName() }}" class="flex items-center text-white text-2xl font-bold">
-                                    <span class="app-sidebar-logo-default mr-2">
-                                        {{ __('Bamzee PMS') }}
-                                    </span>
-                                    <span class="app-sidebar-logo-minimize hidden">
-                                        {{ __('B') }}
-                                    </span>
-                                </a>
-                            </h1>
-							<!--end::Logo image-->
-							<!--begin::Sidebar toggle-->
-							<div id="kt_app_sidebar_toggle" class="app-sidebar-toggle btn btn-icon btn-shadow btn-sm btn-color-muted btn-active-color-primary h-30px w-30px position-absolute top-50 start-100 translate-middle rotate" data-kt-toggle="true" data-kt-toggle-state="active" data-kt-toggle-target="body" data-kt-toggle-name="app-sidebar-minimize">
-								<i class="ki-duotone ki-black-left-line fs-3 rotate-180">
-									<span class="path1"></span>
-									<span class="path2"></span>
-								</i>
-							</div>
-							<!--end::Sidebar toggle-->
-						</div>
+<div class="app-sidebar-logo px-6 flex justify-center items-center" id="kt_app_sidebar_logo">
+    <!--begin::Logo image-->
+    <h1 class="flex justify-center items-center w-full">
+        <a href="{{ Route::currentRouteName() }}" class="flex justify-center items-center text-white text-2xl font-bold w-full">
+            <span class="app-sidebar-logo-default text-center">
+                {{ __('Bamzee PMS') }}
+            </span>
+            <span class="app-sidebar-logo-minimize hidden">
+                {{ __('BZ') }}
+            </span>
+        </a>
+    </h1>
+    <!--end::Logo image-->
+    <!--begin::Sidebar toggle-->
+    <div id="kt_app_sidebar_toggle" class="app-sidebar-toggle btn btn-icon btn-shadow btn-sm btn-color-muted btn-active-color-primary h-30px w-30px position-absolute top-50 start-100 translate-middle rotate" data-kt-toggle="true" data-kt-toggle-state="active" data-kt-toggle-target="body" data-kt-toggle-name="app-sidebar-minimize">
+        <i class="ki-duotone ki-black-left-line fs-3 rotate-180">
+            <span class="path1"></span>
+            <span class="path2"></span>
+        </i>
+    </div>
+    <!--end::Sidebar toggle-->
+</div>
+
 						<!--end::Logo-->
                         @include('layouts.navigation')
                     </div>
