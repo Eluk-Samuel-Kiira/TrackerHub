@@ -29,7 +29,7 @@
                         </td>
                         <td>{{ $uom->name }}</td>
                         <td>
-                            <div class="badge badge-light fw-bold">{{ $uom->departmentCreater->name ?? 'None' }}</div>
+                            <div class="badge badge-light fw-bold">{{ $uom->UOMCreater->name ?? 'None' }}</div>
                         </td>
                         <td>{{ $uom->created_at->format('d M Y, h:i a') }}</td>
                         <td>

@@ -58,13 +58,13 @@
                                     <tr>
                                         <td>{{ $requisition->id }}</td>
                                         <td>{{ $requisition->name }}</td>
-                                        <td>{{ $requisition->requisitionProject->projectCode }}</td>
-                                        <td>{{ $requisition->requisitionProject->projectName }}</td>
+                                        <td>{{ $requisition->requisitionProject->projectCode ?? 'N\A'  }}</td>
+                                        <td>{{ $requisition->requisitionProject->projectName  ?? 'N\A' }}</td>
                                         <td>{{ number_format($requisition->amount, 2) }}</td>
-                                        <td>{{ $requisition->requisitionCreater->name }}</td>
+                                        <td>{{ $requisition->requisitionCreater->name  ?? 'N\A' }}</td>
                                         <td>{{ $requisition->status }}</td>
                                         <td>{{ $requisition->isPaid == 1 ? 'Paid' : 'Unpaid' }}</td>
-                                        <td>{{ $requisition->requisitionAccountant->name }}</td>
+                                        <td>{{ $requisition->requisitionAccountant->name  ?? 'N\A'  }}</td>
                                         <td>{{ $requisition->updated_at }}</td>
                                         <td>{{ $requisition->voucher }}</td>
                                     </tr>

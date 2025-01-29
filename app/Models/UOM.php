@@ -10,4 +10,10 @@ class UOM extends Model
     use HasFactory;
 
     protected $fillable = ['name', 'isActive', 'created_by'];
+
+    
+    public function UOMCreater()
+    {
+        return $this->belongsTo(User::class, 'created_by', 'id');
+    }
 }
