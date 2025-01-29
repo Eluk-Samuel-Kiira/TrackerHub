@@ -85,6 +85,9 @@ Route::middleware('auth')->group(function () {
     // Route::put('/projects/{project}', [ProjectController::class, 'update'])->name('projects.update');
     // Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
 
+    Route::post('/project-files', [ProjectController::class, 'storeProjectFile'])->name('project.upload');
+
+
     // meeting
     Route::delete('/meetings/{id}', [ProjectController::class, 'meetingDestroy'])->name('meeting.destroy');
     Route::post('/store-meeting', [ProjectController::class, 'storeMeeting'])->name('meeting.store');

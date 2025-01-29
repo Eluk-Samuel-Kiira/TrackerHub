@@ -281,6 +281,40 @@
                     console.log(noErrors);
                     
                     if (noErrors) {
+                        // store files
+                        const form = document.querySelector("#kt_modal_add_project_form"); // Select the form
+                        const formData = new FormData(form); // Create a new FormData instance
+
+                        // Get the file input
+                        const documentFile = document.querySelector("input[name='document']").files[0];
+
+                        // Create a new FormData to send only required fields
+                        const newFormData = new FormData();
+                        newFormData.append("document", documentFile);
+                        newFormData.append("documentName", formData.get("documentName"));
+                        newFormData.append("documentTypeId", formData.get("documentTypeId"));
+
+                        fetch("{{ route('project.upload') }}", {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: newFormData,
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                console.log(data.message);
+                            } else {
+                                console.error(data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error("File upload error:", error);
+                            document.getElementById("uploadStatus").innerHTML = `<div class="alert alert-danger">File upload failed. Please try again.</div>`;
+                        });
+
+
                         // Close the modal if no errors
                         const closeModal = () => {
                             document.getElementById('discardCategoryButton').click();

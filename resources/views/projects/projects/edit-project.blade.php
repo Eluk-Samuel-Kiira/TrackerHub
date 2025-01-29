@@ -57,7 +57,7 @@
                                         <div id="projectDescription{{$project->id}}"></div>
                                     </div>
                                 </div>
-                                <div class="col-sm-6 col-md-4">
+                                <div class="col-sm-6 col-md-6">
                                     <div class="mb-10">
                                         <label class="form-label">Project Category</label>
                                         <div class="d-flex">
@@ -72,22 +72,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-sm-6 col-md-4">
-                                    <div class="mb-10">
-                                        <label class="form-label">Department</label>
-                                        <div class="d-flex">
-                                            <select id="department" class="form-select me-2" name="projectDepartmentId"   data-dropdown-parent="#edit_project_modal" data-control="select2" data-allow-clear="true" data-placeholder="Select a department">
-                                                <option></option>
-                                                @foreach ($departments as $department)
-                                                    <option value="{{ $department->id }}" {{ $project->projectDepartmentId == $department->id ? 'selected' : '' }}>{{ $department->name }}</option>
-                                                @endforeach
-                                            </select>
-                                            <div id="projectDepartmentId{{$project->id}}"></div>                                            
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-sm-6 col-md-4">
+                                <div class="col-sm-6 col-md-6">
                                     <div class="mb-10">
                                         <label class="form-label">Client</label>
                                         <div class="d-flex">

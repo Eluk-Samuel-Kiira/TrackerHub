@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->decimal('amount', 15, 2);
             $table->foreignId('project_id')->constrained('projects')->cascadeOnDelete();
+            $table->foreignId('requisitionCategoryId')->constrained('departments')->cascadeOnDelete();
             $table->longText('description')->nullable();
             $table->longText('reasons')->nullable();
             $table->string('voucher')->nullable();

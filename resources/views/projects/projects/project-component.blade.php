@@ -66,7 +66,9 @@
 
                         @can('edit project')
                         <div>
-                            <button class="btn btn-icon btn-bg-light btn-active-color-primary w-auto h-30px d-flex align-items-center">
+                            <button class="btn btn-icon btn-bg-light btn-active-color-primary w-auto h-30px d-flex align-items-center"
+                                data-bs-toggle="modal" 
+                                data-bs-target="#edit_project_modal{{$project->id}}">
                                 <i class="bi bi-pencil-square fs-5 me-2"></i> 
                                 <span class="fw-semibold">{{ __('Edit') }}</span>
                             </button>
