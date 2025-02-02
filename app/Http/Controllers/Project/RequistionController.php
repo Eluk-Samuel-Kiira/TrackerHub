@@ -22,6 +22,8 @@ use App\Mail\RequisitionProcessedMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use App\Models\Department;
+use App\Models\UOM;
+use App\Models\RequisitionItem;
 
 class RequistionController extends Controller
 {
@@ -31,7 +33,9 @@ class RequistionController extends Controller
      */
     public function index(Request $request)
     {    
+        $requisitionItems = RequisitionItem::latest()->get();
         $departments = Department::latest()->get();
+        $uoms = UOM::latest()->get();
         if (in_array(auth()->user()->role, ['director', 'project_manager'])) {
             $requisitions = Requistion::latest()->get();
             $projects = Project::latest()->get();
@@ -68,6 +72,8 @@ class RequistionController extends Controller
                     'document_types' => $document_types,
                     'requistion_files' => $requistion_files,
                     'departments' => $departments,
+                    'uoms' => $uoms,
+                    'requisitionItems' => $requisitionItems,
                 ]);
             default:
                 return view('requistions.requistion-index', [
@@ -76,6 +82,8 @@ class RequistionController extends Controller
                     'document_types' => $document_types,
                     'requistion_files' => $requistion_files,
                     'departments' => $departments,
+                    'uoms' => $uoms,
+                    'requisitionItems' => $requisitionItems,
                 ]);
         }
     }
@@ -95,7 +103,29 @@ class RequistionController extends Controller
     {
         $validatedData = $request->validated();
         $validatedData['created_by'] = auth()->user()->id;
-        $requistion = Requistion::create($validatedData);
+        $validatedData['name'] = 'REQ-' . strtoupper(Str::random(8));
+
+        $requisition = Requistion::create($validatedData);
+
+        // \Log::info($request);
+        do {
+            $receipt_no = 'BMCL-' . strtoupper(Str::random(6));
+        } while (RequisitionItem::where('receipt_no', $receipt_no)->exists());
+
+        if ($request->has('requisitionTitle')) {
+            foreach ($request->requisitionTitle as $key => $title) {
+                RequisitionItem::create([
+                    'requisition_id' => $requisition->id,
+                    'title' => $title,
+                    'receipt_no' => $receipt_no,
+                    'category_id' => $request->requisitionCategoryId[$key],
+                    'uom_id' => $request->uom[$key],
+                    'quantity' => $request->quantity[$key],
+                    'unit_cost' => $request->unitCost[$key],
+                    'amount' => $request->total_amount[$key],
+                ]);
+            }
+        }
 
         if (isset($request->requistion_page) && !empty($request->requistion_page)) {
 

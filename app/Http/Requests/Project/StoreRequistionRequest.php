@@ -24,9 +24,7 @@ class StoreRequistionRequest extends FormRequest
         return [
             'requistion_page' => 'nullable|string',
             'project_id' => 'required|integer',
-            'requisitionCategoryId' => 'required|integer',
-            'amount' => 'required|numeric',
-            'name' => 'required|string|max:256|unique:requistions,name',
+            'amount' => 'required',
             'description' => 'required|string|max:2555',
         ];
     }

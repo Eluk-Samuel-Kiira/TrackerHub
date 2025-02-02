@@ -10,7 +10,6 @@
                 <th class="min-w-125px">{{__('Req-ID')}}</th>
                 <th class="min-w-125px">{{__('Title')}}</th>
                 <th class="min-w-125px">{{__('Project')}}</th>
-                <th class="min-w-125px">{{__('Category')}}</th>
                 <th class="min-w-125px">{{__('Amount')}}</th>
                 <th class="min-w-125px">{{__('Creator')}}</th>
                 <th class="min-w-125px">{{__('Created At')}}</th>
@@ -35,7 +34,6 @@
                         </td>
                         <td>{{ $requisition->name }}</td>
                         <td>{{ $requisition->requisitionProject->projectName ?? 'none' }}</td>
-                        <td>{{ $requisition->requisitionCategory->name ?? 'none' }}</td>
                         <td>{{ $requisition->amount }}</td>
                         <td>{{ $requisition->requisitionCreater->name ?? 'None' }}
                         </td>
@@ -169,6 +167,30 @@
 
 
 <script>
+    
+    let editorInstance = null; // Store the CKEditor instance globally
+
+    function initializeCKEditor(textareaId) {
+        // If an editor instance already exists, destroy it
+        if (editorInstance) {
+            editorInstance.destroy().then(() => {
+                // console.log('CKEditor instance destroyed');
+            }).catch(error => {
+                // console.error('Error destroying CKEditor:', error);
+            });
+        }
+
+        // Initialize CKEditor for the new textarea
+        ClassicEditor
+            .create(document.querySelector(`#${textareaId}`))
+            .then(editor => {
+                editorInstance = editor; // Store the new CKEditor instance
+            })
+            .catch(error => {
+                console.error('Error initializing CKEditor:', error);
+            });
+    }
+    
     
     function initializeComponentScripts() {
         

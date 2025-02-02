@@ -11,16 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('requistions', function (Blueprint $table) {
+        Schema::create('requisition_items', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
+            $table->unsignedBigInteger('requisition_id');
+            $table->string('title')->nullable();
+            $table->string('receipt_no')->nullable();
+            $table->unsignedBigInteger('category_id');
+            $table->unsignedBigInteger('uom_id');
+            $table->integer('quantity');
+            $table->decimal('unit_cost', 15, 2);
             $table->decimal('amount', 15, 2);
-            $table->foreignId('project_id')->constrained('projects')->cascadeOnDelete();
-            $table->longText('description')->nullable();
-            $table->longText('reasons')->nullable();
-            $table->string('voucher')->nullable();
-            $table->integer('isPaid')->enum('1', '0')->default(0);
-            $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
+            $table->foreign('requisition_id')->references('id')->on('requistions')->onDelete('cascade');
             $table->integer('isActive')->enum('1', '0')->default(1);
             $table->enum('status', ['pending', 'approved', 'denied'])->default('pending');
             $table->timestamps();
@@ -32,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('requistions');
+        Schema::dropIfExists('requisition_items');
     }
 };
