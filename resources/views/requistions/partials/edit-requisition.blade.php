@@ -34,7 +34,7 @@
                                 <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
                                     <span class="required">Requisition Total Amount</span>
                                 </label>
-                                <input type="text" value="{{ $requisition->amount }}" class="form-control form-control-solid" name="amount" />
+                                <input type="text" name="amount" id="totalRequisitionAmount_{{ $requisition->id }}" value="{{ $requisition->amount }}" class="form-control form-control-solid"  readonly/>
                                 <div id="amount{{ $requisition->id }}"></div>
                             </div>
                         </div>
@@ -55,7 +55,9 @@
                             @foreach($requisitionItems as $key => $item)
                                 @if($item->requisition_id === $requisition->id)
                                     <div class="col-md-12 mb-3" id="row_{{ $key }}">
-                                        <div class="row" id="requisitionRow_{{ $key }}">
+                                        <div class="row requisition-row" id="requisitionRow_{{ $key }}" data-requisition-id="{{ $item->requisition_id }}">
+
+                                            <input type="hidden" class="form-control" name="requisitionItemId[]" value="{{ $item->id }}" required>
                                             <!-- Requisition Title -->
                                             <div class="col-md-2">
                                                 <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
@@ -92,12 +94,13 @@
                                                 </select>
                                             </div>
                                             <!-- Quantity -->
-                                            <div class="col-md-1">
+                                            <div class="col-md-2">
                                                 <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
                                                     <span class="required">Quantity</span>
                                                 </label>
                                                 <input type="number" class="form-control qty" name="quantity[]" value="{{ $item->quantity }}" oninput="calculateRowAmount(this)" required>
                                             </div>
+
                                             <!-- Unit Cost -->
                                             <div class="col-md-2">
                                                 <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
@@ -105,6 +108,7 @@
                                                 </label>
                                                 <input type="number" class="form-control unit-cost" name="unitCost[]" value="{{ $item->unit_cost }}" oninput="calculateRowAmount(this)" required>
                                             </div>
+
                                             <!-- Amount -->
                                             <div class="col-md-2">
                                                 <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
@@ -112,60 +116,83 @@
                                                 </label>
                                                 <input type="number" class="form-control amount" name="total_amount[]" value="{{ $item->amount }}" readonly>
                                             </div>
-                                            <!-- Remove Button -->
-                                            <div class="col-md-1">
-                                                <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                                                    <span class="required">Action</span>
-                                                </label>
-                                                <button type="button" class="btn btn-danger btn-sm removeRow">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </div>
                                         </div>
                                     </div>
                                 @endif
                             @endforeach
-
-                            <div class="d-flex justify-content-end mt-2">
-                                <button type="button" class="btn btn-sm btn-primary" id="addRow">
-                                    <i class="bi bi-plus-lg"></i> Add Item
-                                </button>
-                            </div>
-                            <script>
+                            
+                        </div>
+                        
+                        <script>
                             document.addEventListener("DOMContentLoaded", function () {
-                                // Calculate total amount when changing quantity or unit cost
                                 function calculateRowAmount(input) {
-                                    const row = input.closest(".row");
-                                    const qty = row.querySelector(".qty").value || 0;
-                                    const unitCost = row.querySelector(".unit-cost").value || 0;
+                                    const row = input.closest(".requisition-row"); // Make sure this matches the correct class
+
+                                    if (!row) {
+                                        console.error("Row not found for input", input);
+                                        return;
+                                    }
+
+                                    const qty = parseFloat(row.querySelector(".qty")?.value) || 0;
+                                    const unitCost = parseFloat(row.querySelector(".unit-cost")?.value) || 0;
                                     const amountField = row.querySelector(".amount");
+
+                                    // Calculate amount for the row
                                     amountField.value = (qty * unitCost).toFixed(2);
+
+                                    // Recalculate total for requisition
                                     calculateGrandTotal();
                                 }
 
-                                // Calculate the grand total of all rows
                                 function calculateGrandTotal() {
-                                    let total = 0;
-                                    const amounts = document.querySelectorAll(".amount");
-                                    amounts.forEach(amount => {
-                                        total += parseFloat(amount.value) || 0;
+                                    let requisitionTotals = {}; // Store totals per requisition ID
+
+                                    document.querySelectorAll(".amount").forEach(amountField => {
+                                        const row = amountField.closest(".requisition-row");
+
+                                        if (!row) {
+                                            console.error("Row not found for amount field", amountField);
+                                            return;
+                                        }
+
+                                        const requisitionId = row.getAttribute("data-requisition-id");
+
+                                        if (!requisitionId) {
+                                            // console.error("Requisition ID not found for row", row);
+                                            return;
+                                        }
+
+                                        if (!requisitionTotals[requisitionId]) {
+                                            requisitionTotals[requisitionId] = 0;
+                                        }
+
+                                        requisitionTotals[requisitionId] += parseFloat(amountField.value) || 0;
                                     });
-                                    document.getElementById("grandTotal").value = total.toFixed(2);
+
+                                    // Update the respective requisition total amount fields
+                                    Object.keys(requisitionTotals).forEach(requisitionId => {
+                                        const totalAmountDiv = document.getElementById(`amount${requisitionId}`);
+                                        if (totalAmountDiv) {
+                                            totalAmountDiv.innerHTML = `<strong>Total: ${requisitionTotals[requisitionId].toFixed(2)}</strong>`;
+                                        }
+
+                                        // Update the input field
+                                        const totalAmountInput = document.getElementById(`totalRequisitionAmount_${requisitionId}`);
+                                        if (totalAmountInput) {
+                                            totalAmountInput.value = requisitionTotals[requisitionId].toFixed(2);
+                                        }
+                                    });
                                 }
 
-                                // Initialize total calculation
                                 document.querySelectorAll('.qty, .unit-cost').forEach(input => {
                                     input.addEventListener('input', function() {
                                         calculateRowAmount(input);
                                     });
                                 });
 
-                                // Calculate grand total on page load in case values are already populated
-                                calculateGrandTotal();
+                                calculateGrandTotal(); // Recalculate on page load
                             });
                         </script>
-                        </div>
-
                         
                         <div class="row g-9 mb-8">
                             <div class="d-flex flex-column mb-8 fv-row col-md-12">
@@ -215,7 +242,45 @@
         }
 
         var data = Object.fromEntries(formData.entries());
-        // console.log(data);
+        
+        let requisitionTitles = [];
+        let requisitionItemIds = [];
+        let requisitionCategoryIds = [];
+        let uoms = [];
+        let quantities = [];
+        let unitCosts = [];
+        let total_amounts = [];
+
+        document.querySelectorAll(".requisition-row").forEach(row => {
+            // Ensure the row is not hidden and matches the requisition_id
+            let rowRequisitionId = row.getAttribute("data-requisition-id");
+            if (row.style.display !== "none" && rowRequisitionId == uniqueId) {
+
+                requisitionItemIds.push(row.querySelector("input[name='requisitionItemId[]']").value);
+                requisitionTitles.push(row.querySelector("input[name='requisitionTitle[]']").value);
+
+                let categorySelect = row.querySelector("select[name='requisitionCategoryId[]']");
+                requisitionCategoryIds.push(categorySelect ? categorySelect.value : "");
+
+                let uomSelect = row.querySelector("select[name='uom[]']");
+                uoms.push(uomSelect ? uomSelect.value : "");
+
+                quantities.push(row.querySelector("input[name='quantity[]']").value);
+                unitCosts.push(row.querySelector("input[name='unitCost[]']").value);
+                total_amounts.push(row.querySelector("input[name='total_amount[]']").value);
+            }
+        });
+
+        // append items
+        data.requisitionItemId = requisitionItemIds;
+        data.requisitionTitle = requisitionTitles;
+        data.requisitionCategoryId = requisitionCategoryIds;
+        data.uom = uoms;
+        data.quantity = quantities;
+        data.unitCost = unitCosts;
+        data.total_amount = total_amounts;
+
+        console.log(data);
 
         // Set up the URL dynamically
         var updateUrl = '{{ route('requistion.update', ['requistion' => ':id']) }}'.replace(':id', uniqueId);
@@ -228,6 +293,7 @@
                     if (closeButton) {
                         closeButton.click();
                     }
+
                 }
                 })
                 .catch(error => {
@@ -237,6 +303,7 @@
                 .finally(() => {
                     // End loading state using reusable function
                     LiveBlade.toggleButtonLoading(submitButton, false);
+                    // window.location.href = '{{ route('requistion.index') }}';
                 });
 
 

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Requistion extends Model
 {
     
-    protected $fillable = ['name', 'description', 'requisitionCategoryId','amount','project_id', 'isActive', 'status', 'created_by'];
+    protected $fillable = ['name', 'description', 'requisitionCategoryId','amount','approvedAmount','project_id', 'isActive', 'status', 'created_by'];
 
     public function requisitionCreater()
     {

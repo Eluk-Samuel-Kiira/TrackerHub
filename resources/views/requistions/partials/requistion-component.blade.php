@@ -165,7 +165,6 @@
 </script>
 
 
-
 <script>
     
     let editorInstance = null; // Store the CKEditor instance globally

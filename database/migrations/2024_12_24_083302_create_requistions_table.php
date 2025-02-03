@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->decimal('amount', 15, 2);
+            $table->decimal('approvedAmount', 15, 2);
             $table->foreignId('project_id')->constrained('projects')->cascadeOnDelete();
             $table->longText('description')->nullable();
             $table->longText('reasons')->nullable();
