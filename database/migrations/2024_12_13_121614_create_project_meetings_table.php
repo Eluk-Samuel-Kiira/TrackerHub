@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('project_id')->constrained('projects')->cascadeOnDelete();
             $table->dateTime('meetingDate')->nullable();
             $table->text('description')->nullable();
-            $table->string('meetingLocation')->default('online');
+            $table->string('meetingLocation')->nullable();
             $table->string('meetingType')->enum(['online', 'physical'])->default('online');
             $table->integer('status')->enum(['0', '1'])->default(0);
             $table->timestamps();

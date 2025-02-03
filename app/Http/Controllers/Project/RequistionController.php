@@ -19,9 +19,12 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\BudgetLimitMail;
 use App\Mail\removeOrAddUserMail;
 use App\Mail\RequisitionProcessedMail;
+use App\Mail\RequisitionNotificationMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use App\Models\Department;
+use App\Models\UOM;
+use App\Models\RequisitionItem;
 
 class RequistionController extends Controller
 {
@@ -31,7 +34,9 @@ class RequistionController extends Controller
      */
     public function index(Request $request)
     {    
+        $requisitionItems = RequisitionItem::latest()->get();
         $departments = Department::latest()->get();
+        $uoms = UOM::latest()->get();
         if (in_array(auth()->user()->role, ['director', 'project_manager'])) {
             $requisitions = Requistion::latest()->get();
             $projects = Project::latest()->get();
@@ -68,6 +73,8 @@ class RequistionController extends Controller
                     'document_types' => $document_types,
                     'requistion_files' => $requistion_files,
                     'departments' => $departments,
+                    'uoms' => $uoms,
+                    'requisitionItems' => $requisitionItems,
                 ]);
             default:
                 return view('requistions.requistion-index', [
@@ -76,6 +83,8 @@ class RequistionController extends Controller
                     'document_types' => $document_types,
                     'requistion_files' => $requistion_files,
                     'departments' => $departments,
+                    'uoms' => $uoms,
+                    'requisitionItems' => $requisitionItems,
                 ]);
         }
     }
@@ -95,7 +104,53 @@ class RequistionController extends Controller
     {
         $validatedData = $request->validated();
         $validatedData['created_by'] = auth()->user()->id;
-        $requistion = Requistion::create($validatedData);
+        $validatedData['amount'] = $request->amount_create;
+        $validatedData['name'] = 'BECL-' . date('mY') . '-' . strtoupper(Str::random(8));
+
+        $requisition = Requistion::create($validatedData);
+
+        // \Log::info($request);
+        do {
+            $receipt_no = 'BMCL-' . strtoupper(Str::random(6));
+        } while (RequisitionItem::where('receipt_no', $receipt_no)->exists());
+
+        $totalAmount = 0;
+        $requisitionItems = [];
+        if ($request->has('requisitionTitle')) {
+            foreach ($request->requisitionTitle as $key => $title) {
+                $amount = $request->total_amount[$key];
+                $totalAmount += $amount;
+
+                $item = RequisitionItem::create([
+                    'requisition_id' => $requisition->id,
+                    'title' => $title,
+                    'receipt_no' => $receipt_no,
+                    'category_id' => $request->requisitionCategoryId[$key],
+                    'uom_id' => $request->uom[$key],
+                    'quantity' => $request->quantity[$key],
+                    'unit_cost' => $request->unitCost[$key],
+                    'amount' => $amount,
+                ]);
+
+                $requisitionItems[] = $item;
+            }
+        }
+
+        
+        // Fetch recipients
+        $recipients = User::whereIn('role', ['project_manager', 'director'])->pluck('email');
+
+        // Send email notification
+        foreach ($recipients as $email) {
+            Mail::to($email)->send(new RequisitionNotificationMail([
+                'projectName' => $requisition->requisitionProject->projectName,
+                'requisitionName' => $requisition->name,
+                'submittedBy' => auth()->user()->name,
+                'requisition_items' => $requisitionItems,
+                'totalAmount' => $totalAmount,
+                'description' => $request->description,
+            ]));
+        }
 
         if (isset($request->requistion_page) && !empty($request->requistion_page)) {
 
@@ -138,6 +193,20 @@ class RequistionController extends Controller
             // \Log::info($request);
             $updated = $requistion->update($validatedData);
 
+            if ($request->has('requisitionTitle')) {
+                foreach ($request->requisitionTitle as $key => $title) {
+                    $requisitionItem = RequisitionItem::find($request->requisitionItemId[$key]);
+                    $requisitionItem->update([
+                        'title' => $title,
+                        'category_id' => $request->requisitionCategoryId[$key],
+                        'uom_id' => $request->uom[$key],
+                        'quantity' => $request->quantity[$key],
+                        'unit_cost' => $request->unitCost[$key],
+                        'amount' => $request->total_amount[$key],
+                    ]);
+                }
+            }
+
             if ($requistion->status === 'approved') {
                 return response()->json([
                     'success' => false,
@@ -153,13 +222,21 @@ class RequistionController extends Controller
             }
 
             if ($updated) {
+                // return response()->json([
+                //     'success' => true,
+                //     'reload' => true,
+                //     'componentId' => 'reloadRequisitionComponent',
+                //     'refresh' => false,
+                    // 'message' => __('Requisition updated and submitted successfully'),
+                    // 'redirect' => route('requistion.index'),
+                // ]);
+
                 return response()->json([
                     'success' => true,
-                    'reload' => true,
-                    'componentId' => 'reloadRequisitionComponent',
-                    'refresh' => false,
-                    'message' => __('Requisition updated and submitted successfully'),
+                    'refresh' => true,
+                    'reload' => false,
                     'redirect' => route('requistion.index'),
+                    'message' => __('Requisition Updated and Submitted successfully'),
                 ]);
             }
 
@@ -239,7 +316,7 @@ class RequistionController extends Controller
             if ($requisition->status !== 'approved') {
                 return response()->json([
                     'success' => false,
-                    'message' => __('You cannot make the payment for this requisition unless the Managing Director approves it.'),
+                    'message' => __('You cannot make the payment for this requisition unless the Managing Director approves it first.'),
                 ]);
             }
 
@@ -304,10 +381,17 @@ class RequistionController extends Controller
         $validated = $request->validate([
             'status' => 'required|in:pending,denied,approved', 
             'reasons' => 'nullable|string', 
+            'amount' => 'nullable', 
         ]);
                     
 
         $requisition = Requistion::find($id);
+        // \Log::info($validated);
+        if ($validated['status'] === 'approved') {
+            $requisition->approvedAmount = $validated['amount'];
+            $requisition->save(); 
+        }
+        
 
         if ($requisition) {
             // Check if the requisition is already approved
@@ -335,7 +419,6 @@ class RequistionController extends Controller
                     // Proceed only if budget deductions were successful
                     $requisition->status = 'approved';
                     $requisition->reasons = $validated['reasons'];
-
                     $requisition->save();
 
                     $this->requisitionStatusMail($project, $requisition, 'approved');
@@ -365,7 +448,7 @@ class RequistionController extends Controller
     function generateVoucherNumber()
     {
         // Prefix for payment vouchers
-        $prefix = 'PAY';
+        $prefix = 'BECL';
 
         // Current date in YYYYMMDD format
         $date = now()->format('Ymd');
@@ -482,8 +565,8 @@ class RequistionController extends Controller
     
     private function budgetDeductions($requisition, $project)
     {
-        // Validate requisition amount
-        if (!isset($requisition->amount) || !is_numeric($requisition->amount) || $requisition->amount <= 0) {
+        // Validate requisition amount that has to be approved by MD
+        if (!isset($requisition->approvedAmount) || !is_numeric($requisition->approvedAmount) || $requisition->approvedAmount <= 0) {
             \Log::error('Invalid requisition amount: ' . json_encode($requisition));
             return [
                 'success' => false,
@@ -500,15 +583,15 @@ class RequistionController extends Controller
             ];
         }
 
-        // Calculate the new budget
-        $newProjectBudget = $project->projectBudget - $requisition->amount;
+        // Calculate the new budget if approved
+        $newProjectBudget = $project->projectBudget - $requisition->approvedAmount;
 
 
-        // Check if the expenditure exceeds the budget limit
+        // Check if the expenditure(What has already been spent on a particular project) exceeds the budget limit
         $project_expenditure = ProjectExpense::where('project_id', $project->id)->sum('approved_amount');
         
-        $expected_expenditure = $project_expenditure + $requisition->amount;
-        \Log::info($expected_expenditure);
+        $expected_expenditure = $project_expenditure + $requisition->approvedAmount;
+        // \Log::info($expected_expenditure);
         if ($expected_expenditure > $project->projectBudgetLimit) {
             // \Log::info('Budget limit exceeded. Requisition: ' . json_encode($requisition));
             $this->budgetLimitMail($requisition, $project);
@@ -519,7 +602,7 @@ class RequistionController extends Controller
         }
 
 
-        // Only account can cashout or make payments
+        // Only accountant can cashout or make payments
         if (Auth::user()->hasRole('accountant')) {
             
             $voucherNumber = $this->generateVoucherNumber();
@@ -535,26 +618,29 @@ class RequistionController extends Controller
             $project_expenses = ProjectExpense::create([
                 'project_id' => $project->id,
                 'requested_by' => $requisition->created_by,
-                'approved_amount' => $requisition->amount,
+                'approved_amount' => $requisition->approvedAmount,
             ]);
 
             // Send mail to project manager and director
             $accountantName = Auth::user()->name;
             $recipients = User::whereIn('role', ['project_manager', 'director'])->pluck('email');
             
-            $voucherNumber = $this->generateVoucherNumber();
-            $requisition->update([
-                'voucher' => $voucherNumber,
-            ]);
+            // $voucherNumber = $this->generateVoucherNumber();
+            // $requisition->update([
+            //     'voucher' => $voucherNumber,
+            // ]);
             
 
-
+            $requisition_items = RequisitionItem::where('requisition_id', $requisition->id)->get();
+            // \Log::info($requisition_items);
+            
             foreach ($recipients as $email) {
                 Mail::to($email)->send(new RequisitionProcessedMail([
                     'projectName' => $project->projectName,
                     'requisitionName' => $requisition->name,
                     'accountantName' => $accountantName,
-                    'approvedAmount' => $requisition->amount,
+                    'requisition_items' => $requisition_items,
+                    'approvedAmount' => $requisition->approvedAmount,
                     'voucher_number' => $voucherNumber,
                 ]));
             }
@@ -588,11 +674,11 @@ class RequistionController extends Controller
             $subject = sprintf(
                 'Budget Limit Exceeded for %s Requisition, Amount: %s %s',
                 $requisition->name,
-                $requisition->amount,
+                $requisition->approvedAmount,
                 $project->currency->name
             );
             $message = sprintf(
-                "Project '%s' has a budget limit of %s. However, the requisition '%s' exceeds this limit.\n\n".
+                "Project '%s' has a budget limit of %s. However, when requisition '%s' is approved, this limit will be exceeded.\n\n".
                 "Details:\n".
                 "- Requisition Amount: %s %s\n".
                 "- Description: %s\n\n".
@@ -600,7 +686,7 @@ class RequistionController extends Controller
                 $project->projectName,
                 $project->projectBudgetLimit,
                 $requisition->name,
-                $requisition->amount,
+                $requisition->approvedAmount,
                 $project->currency->name,
                 $requisition->description
             );
@@ -612,7 +698,7 @@ class RequistionController extends Controller
                 'projectName' => $project->projectName,
                 'projectBudgetLimit' => $project->projectBudgetLimit,
                 'requisitionName' => $requisition->name,
-                'requisitionAmount' => $requisition->amount,
+                'requisitionAmount' => $requisition->approvedAmount,
                 'currency' => $project->currency->name,
                 'description' => $requisition->description,
             ];

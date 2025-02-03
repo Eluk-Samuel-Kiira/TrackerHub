@@ -224,6 +224,8 @@
                         <span class="menu-arrow"></span>
                     </span>
 
+                    @can('view financial reports')
+                        
                     <div class="menu-sub menu-sub-accordion">
                         <div class="menu-item">
                             <a class="menu-link {{ is_route_active('report.index') }}" href="{{ route('report.index') }}">
@@ -267,6 +269,7 @@
                             </a>
                         </div>
                     </div>
+                    @endcan
                 
 
                 </div>

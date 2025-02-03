@@ -10,8 +10,8 @@
                 <th class="min-w-125px">{{__('Req-ID')}}</th>
                 <th class="min-w-125px">{{__('Title')}}</th>
                 <th class="min-w-125px">{{__('Project')}}</th>
-                <th class="min-w-125px">{{__('Category')}}</th>
                 <th class="min-w-125px">{{__('Amount')}}</th>
+                <th class="min-w-125px">{{__('Approved Amount')}}</th>
                 <th class="min-w-125px">{{__('Creator')}}</th>
                 <th class="min-w-125px">{{__('Created At')}}</th>
                 <th class="min-w-125px">{{__('Status')}}</th>
@@ -23,7 +23,9 @@
             @if (!empty($requisitions) && $requisitions->count() > 0)
                 @foreach ($requisitions as $requisition)
                     <tr data-role="{{ strtolower($requisition->name) }}"
-                        style="{{ $requisition->isActive == 0 ? 'background-color: #f8d7da;' : '' }}"
+                        style="
+                            {{ $requisition->isActive == 0 ? 'background-color: #f8d7da;' : '' }}
+                            {{ $requisition->status == 'pending' ? 'background-color: #d4edda;' : '' }}"
                     >
                         <td>
                             <div class="form-check form-check-sm form-check-custom form-check-solid">
@@ -35,8 +37,8 @@
                         </td>
                         <td>{{ $requisition->name }}</td>
                         <td>{{ $requisition->requisitionProject->projectName ?? 'none' }}</td>
-                        <td>{{ $requisition->requisitionCategory->name ?? 'none' }}</td>
                         <td>{{ $requisition->amount }}</td>
+                        <td>{{ $requisition->approvedAmount }}</td>
                         <td>{{ $requisition->requisitionCreater->name ?? 'None' }}
                         </td>
                         <td>
@@ -45,7 +47,7 @@
                         <td>
                             <select name="status" class="form-select form-select-solid form-select-sm"
                             style="appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: none; padding-right: 10px;" 
-                                 onchange="updateStatus({{ $requisition->id }}, this.value)" @if(!auth()->user()->hasRole('accountant')) disabled @endif>
+                                 onchange="updateStatus({{ $requisition->id }},{{ $requisition->approvedAmount }}, this.value)" @if(!auth()->user()->hasRole('accountant')) disabled @endif>
                                 <option value="1" {{ $requisition->isActive == 1 ? 'selected' : '' }}><span>{{__('Unpaid')}}</option>
                                 <option value="0" {{ $requisition->isActive == 0 ? 'selected' : '' }}>{{__('Paid')}}</option>
                             </select>
@@ -167,8 +169,31 @@
 </script>
 
 
-
 <script>
+    
+    let editorInstance = null; // Store the CKEditor instance globally
+
+    function initializeCKEditor(textareaId) {
+        // If an editor instance already exists, destroy it
+        if (editorInstance) {
+            editorInstance.destroy().then(() => {
+                // console.log('CKEditor instance destroyed');
+            }).catch(error => {
+                // console.error('Error destroying CKEditor:', error);
+            });
+        }
+
+        // Initialize CKEditor for the new textarea
+        ClassicEditor
+            .create(document.querySelector(`#${textareaId}`))
+            .then(editor => {
+                editorInstance = editor; // Store the new CKEditor instance
+            })
+            .catch(error => {
+                console.error('Error initializing CKEditor:', error);
+            });
+    }
+    
     
     function initializeComponentScripts() {
         

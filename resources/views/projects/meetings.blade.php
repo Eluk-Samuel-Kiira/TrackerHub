@@ -135,7 +135,7 @@
 
 
 <div class="modal fade" id="add_project_meetings_modal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered mw-650px">
+    <div class="modal-dialog modal-dialog-centered mw-750px">
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Schedule Next Project Meeting for {{ $project->projectName }}</h3>
@@ -151,50 +151,50 @@
                     <form class="card"  id="kt_modal_add_meeting_form">
                         @csrf
                         <input type="hidden" name="projectId" value="{{ $project->id }}">
-                        <div class="card-body shadow-none">
-                            <div class="row row-cards py-5">
-                                <div class="col-sm-6 col-md-12">
-                                    <div class="mb-10">
-                                        <label class="form-label" for="meetingDate">Schedule Meeting</label><br>
-                                        <input id="meetingDate" name="meetingDate" class="form-control" type="text" placeholder="Select a date and time" />
-                                    </div>
-                                    <div id="meetingDate"></div>
+                        
+                        <div class="col-sm-6 col-md-12">
+                            <div class="mb-10">
+                                <label class="form-label">Meeting Type</label><br>
+                                <div>
+                                    <input type="radio" id="onlineMeeting" name="meetingType" value="online" onclick="toggleMeetingFields()" checked>
+                                    <label for="onlineMeeting">Online</label>
                                 </div>
-
-                                <div class="mb-10">
-                                    <label class="form-label">Meeting Type</label><br>
-                                    <div>
-                                        <input type="radio" id="onlineMeeting" name="meetingType" value="online" onclick="toggleMeetingType()" checked>
-                                        <label for="onlineMeeting">Online</label>
-                                    </div>
-                                    <div>
-                                        <input type="radio" id="physicalMeeting" name="meetingType" value="physical" onclick="toggleMeetingType()">
-                                        <label for="physicalMeeting">Physical</label>
-                                    </div>
-                                </div>
-
-                                <!-- Location field, hidden by default -->
-                                <div class="mb-10" id="locationField" style="display: none;">
-                                    <label class="form-label" for="meetingLocation">Meeting Location</label><br>
-                                    <input id="meetingLocation" name="meetingLocation" class="form-control" type="text" placeholder="Enter location" />
+                                <div>
+                                    <input type="radio" id="physicalMeeting" name="meetingType" value="physical" onclick="toggleMeetingFields()">
+                                    <label for="physicalMeeting">Physical</label>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <script>
-                            function toggleMeetingType() {
-                                const isPhysical = document.getElementById('physicalMeeting').checked;
-                                const locationField = document.getElementById('locationField');
 
-                                if (isPhysical) {
-                                    locationField.style.display = 'block'; // Show location input
-                                } else {
-                                    locationField.style.display = 'none'; // Hide location input
-                                }
+                            <div class="mb-10">
+                                <label class="form-label" for="meetingDate">Schedule Meeting</label><br>
+                                <input id="meetingDate" name="meetingDate" class="form-control" type="datetime-local" />
+                            </div>
+
+                            <!-- Meeting Location (Only for Physical) -->
+                            <div class="mb-10" id="locationField" style="display: none;">
+                                <label class="form-label" for="meetingLocation">Meeting Location</label><br>
+                                <input id="meetingLocation" name="meetingLocation" class="form-control" type="text" placeholder="Enter location" />
+                            </div>
+
+                            <!-- Meeting Link (Only for Online) -->
+                            <div class="mb-10" id="meetingLinkField">
+                                <label class="form-label" for="meetingLink">Meeting Link</label><br>
+                                <input id="meetingLink" name="meetingLink" class="form-control" type="url" placeholder="Enter meeting link" />
+                            </div>
+                        </div>
+
+                        <script>
+                            function toggleMeetingFields() {
+                                const isPhysical = document.getElementById('physicalMeeting').checked;
+                                document.getElementById('locationField').style.display = isPhysical ? 'block' : 'none';
+                                document.getElementById('meetingLinkField').style.display = isPhysical ? 'none' : 'block';
                             }
+
+                            // Ensure correct initial state
+                            document.addEventListener("DOMContentLoaded", toggleMeetingFields);
                         </script>
 
-                        <div class="card-footer text-end" style="margin-top:-5rem;">
+                        <div class="card-footer text-end" style="margin-top:-2rem;">
                             <button type="reset" class="btn btn-light me-3" id="discardMeetingButton" data-bs-dismiss="modal">Discard</button>
                             <button id="submitMeetingButton" type="submit" class="btn btn-primary">
                                 <span class="indicator-label">Submit</span>

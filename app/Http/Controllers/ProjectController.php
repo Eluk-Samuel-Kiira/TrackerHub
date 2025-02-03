@@ -99,6 +99,7 @@ class ProjectController extends Controller
             // "projectDepartmentId" => "required|exists:departments,id",
             "projectClientId" => "required|exists:clients,id",
             "projectMemberIds" => "required",
+            "clientReference" => "nullable",
             "projectCost" => "required|numeric|gte:projectBudget", // Ensure projectCost is greater than or equal to projectBudget
             "projectBudget" => "required|numeric",
             "projectBudgetLimit" => [
@@ -114,7 +115,7 @@ class ProjectController extends Controller
         ]);
         
         do {
-            $projectCode = 'PRJ-' . strtoupper(Str::random(6));
+            $projectCode = 'BECL-' . date('mY') . '-' . strtoupper(Str::random(8));
         } while (Project::where('projectCode', $projectCode)->exists());
 
         $project = Project::create([
@@ -126,6 +127,7 @@ class ProjectController extends Controller
             "projectCategoryId" => $request->projectCategoryId,
             "projectDepartmentId" => 2,
             "projectClientId" => $request->projectClientId,
+            "clientReference" => $request->clientReference,
             "projectCost" => $request->projectCost,
             "projectBudget" => $request->projectBudget,
             "projectBudgetLimit" => $request->projectBudgetLimit,
@@ -139,23 +141,27 @@ class ProjectController extends Controller
        // Flash toast messages based on success or failure
         if ($project) {
 
-            // Meeting Location
-            $projectMeeting = DB::table('project_meetings')->insert([
+            // Insert Meeting and Get ID
+            $meetingId = DB::table('project_meetings')->insertGetId([
                 'project_id' => $project->id,
                 'meetingDate' => $request->meetingDate,
                 'meetingType' => $request->meetingType,
-                'meetingLocation' => $request->meetingLocation,
+                'meetingLocation' => $request->meetingLocation ?: $request->meetingLink,
                 'status' => 0,
                 'created_at' => now(), 
                 'updated_at' => now(),
             ]);
-            
+
+            // Retrieve the meeting record
+            $projectMeeting = DB::table('project_meetings')->where('id', $meetingId)->first();
+
             $users = User::whereIn('id', $request->projectMemberIds)->get();
-            
+
             $action = 'add_user';
             foreach ($users as $user) {
-                $this->removeOrAddUserToProjectMail($request, $user, $action);
+                $this->removeOrAddUserToProjectMail($request, $user, $action, $projectMeeting);
             }
+
 
 
             // session()->flash('toast', [
@@ -303,7 +309,7 @@ class ProjectController extends Controller
         if ($project->users()->detach($user)) {
             // \Log::info($project);
             $action = 'remove_user';
-            $this->removeOrAddUserToProjectMail($project, $user, $action);
+            $this->removeOrAddUserToProjectMail($project, $user, $action, '');
 
             session()->flash('toast', [
                 'type' => 'success',
@@ -319,7 +325,7 @@ class ProjectController extends Controller
     }
 
     
-    private function removeOrAddUserToProjectMail($project, $user, $action)
+    private function removeOrAddUserToProjectMail($project, $user, $action, $projectMeeting)
     {
         if (getMailOptions('mail_status') === 'enabled') {
             // Define email content
@@ -343,10 +349,12 @@ class ProjectController extends Controller
                 $emailMessage = sprintf(
                     "Hello %s,\n\nThis is to inform or remind you that you have been allocated/attached to the above project.\n" .
                     "The first meeting is scheduled on %s.\n\n" .
+                    "Meeting Location/Link is %s.\n\n" .
                     "You are required to start accomplishing the assigned tasks with deadlines in mind.\n\n" .
                     "Thank you,\n%s",
                     $user->name,
                     \Carbon\Carbon::parse($project->meetingDate)->format('F j, Y g:i A'),
+                    $projectMeeting->meetingLocation,
                     $companyName
                 );                
             } elseif ($action['type'] === 'send_reminder') {
@@ -358,11 +366,13 @@ class ProjectController extends Controller
                 $emailMessage = sprintf(
                     "Hello %s,\n\nThis is to inform or remind you that there is a scheduled meeting to the '%s' project.\n" .
                     "The next meeting is scheduled on %s.\n\n" .
+                    "Meeting Location/Link is %s.\n\n" .
                     "You are required to start accomplishing the assigned tasks with deadlines in mind.\n\n" .
                     "Thank you,\n%s",
                     $user->name,
                     $project->projectName,
                     \Carbon\Carbon::parse($action['meetingDate'])->format('F j, Y g:i A'),
+                    $projectMeeting->meetingLocation,
                     $companyName,
                 );
             }
@@ -387,11 +397,14 @@ class ProjectController extends Controller
         ]);
         $users = User::whereIn('id', $request->projectMemberIds)->get();
         
+        // Fetch the latest meeting associated with this project
+        $latestMeeting = $project->meetings()->latest()->first();
+
         // Attach the user to the project (if many-to-many relationship)
         if ($project->users()->syncWithoutDetaching($request->projectMemberIds)) {
             $action = 'add_user';
             foreach ($users as $user) {
-                $this->removeOrAddUserToProjectMail($project, $user, $action);
+                $this->removeOrAddUserToProjectMail($project, $user, $action, $latestMeeting);
             }
 
             session()->flash('toast', [
@@ -440,7 +453,7 @@ class ProjectController extends Controller
             'project_id' => $request->projectId,
             'meetingDate' => $request->meetingDate,
             'meetingType' => $request->meetingType,
-            'meetingLocation' => $request->meetingLocation,
+            'meetingLocation' => $request->meetingLocation ?: $request->meetingLink,
             'status' => 0,
             'created_at' => now(), 
             'updated_at' => now(),
@@ -454,12 +467,15 @@ class ProjectController extends Controller
         
         $users = User::whereIn('id', $projectMembersIds)->get();
 
+        
+        // Fetch the latest meeting associated with this project
+        $latestMeeting = $project->meetings()->latest()->first();
         $action = [
             'type' => 'send_reminder',
             'meetingDate' => $request['meetingDate'], 
         ];
         foreach ($users as $user) {
-            $this->removeOrAddUserToProjectMail($project, $user, $action);
+            $this->removeOrAddUserToProjectMail($project, $user, $action, $latestMeeting);
         }
 
         return response()->json([
