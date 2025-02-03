@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Requistion extends Model
 {
     
-    protected $fillable = ['name', 'description', 'requisitionCategoryId','amount','approvedAmount','project_id', 'isActive', 'status', 'created_by'];
+    protected $fillable = ['name', 'description', 'requisitionCategoryId','amount','approvedAmount','project_id', 'isActive', 'status', 'created_by', 'paid_by'];
 
     public function requisitionCreater()
     {
@@ -29,4 +29,10 @@ class Requistion extends Model
     {
         return $this->belongsTo(Department::class, 'requisitionCategoryId', 'id');
     }
+    
+    public function requisitionItems()
+    {
+        return $this->hasMany(RequisitionItem::class, 'requisition_id', 'id');
+    }
+
 }

@@ -34,8 +34,8 @@
                                 <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
                                     <span class="required">Requisition Total Amount</span>
                                 </label>
-                                <input type="text" class="form-control form-control-solid" name="amount" readonly/>
-                                <div id="amount"></div>
+                                <input type="text" class="form-control form-control-solid" name="amount_create" readonly/>
+                                <div id="amount_create"></div>
                             </div>
                         </div>
                         
@@ -66,9 +66,9 @@
                                 <tbody>
                                     <tr>
                                         <td>1</td>
-                                        <td><input type="text" class="form-control" name="requisitionTitle[]" required></td>
+                                        <td><input type="text" class="form-control" name="CreateRequisitionTitle[]" required></td>
                                         <td>
-                                            <select class="form-select" name="requisitionCategoryId[]" required>
+                                            <select class="form-select" name="CreateRequisitionCategoryId[]" required>
                                                 <option></option>
                                                 @foreach ($departments as $department)
                                                     <option value="{{ $department->id }}">{{ $department->name }}</option>
@@ -76,16 +76,16 @@
                                             </select>
                                         </td>
                                         <td>
-                                            <select class="form-select" name="uom[]" required>
+                                            <select class="form-select" name="CreateUom[]" required>
                                                 <option></option>
                                                 @foreach ($uoms as $uom)
                                                     <option value="{{ $uom->id }}">{{ $uom->name }}</option>
                                                 @endforeach
                                             </select>
                                         </td>
-                                        <td><input type="number" class="form-control qty" name="quantity[]" oninput="calculateRowAmount(this)" required></td>
-                                        <td><input type="number" class="form-control unit-cost" name="unitCost[]" oninput="calculateRowAmount(this)" required></td>
-                                        <td><input type="number" class="form-control amount" name="total_amount[]" readonly></td>
+                                        <td><input type="number" class="form-control qty_create" name="CreateQuantity[]" oninput="calculateRowAmount(this)" required></td>
+                                        <td><input type="number" class="form-control unit-cost_create" name="CreateUnitCost[]" oninput="calculateRowAmount(this)" required></td>
+                                        <td><input type="number" class="form-control amount_create" name="CreateTotal_amount[]" readonly></td>
                                         <td>
                                             <button type="button" class="btn btn-danger btn-sm removeRow"><i class="bi bi-trash"></i></button>
                                         </td>
@@ -101,7 +101,7 @@
                         <script>
                             document.addEventListener("DOMContentLoaded", function () {
                                 let table = document.getElementById("requisitionTable").getElementsByTagName("tbody")[0];
-                                let totalAmountField = document.querySelector("input[name='amount']");
+                                let totalAmountField = document.querySelector("input[name='amount_create']");
 
                                 // Add new row
                                 document.getElementById("addRow").addEventListener("click", function () {
@@ -110,9 +110,9 @@
                                     
                                     newRow.innerHTML = `
                                         <td>${rowCount}</td>
-                                        <td><input type="text" class="form-control" name="requisitionTitle[]" required></td>
+                                        <td><input type="text" class="form-control" name="CreateRequisitionTitle[]" required></td>
                                         <td>
-                                            <select class="form-select" name="requisitionCategoryId[]" required>
+                                            <select class="form-select" name="CreateRequisitionCategoryId[]" required>
                                                 <option></option>
                                                 @foreach ($departments as $department)
                                                     <option value="{{ $department->id }}">{{ $department->name }}</option>
@@ -120,16 +120,16 @@
                                             </select>
                                         </td>
                                         <td>
-                                            <select class="form-select" name="uom[]" required>
+                                            <select class="form-select" name="CreateUom[]" required>
                                                 <option></option>
                                                 @foreach ($uoms as $uom)
                                                     <option value="{{ $uom->id }}">{{ $uom->name }}</option>
                                                 @endforeach
                                             </select>
                                         </td>
-                                        <td><input type="number" class="form-control qty" name="quantity[]" oninput="calculateRowAmount(this)" required></td>
-                                        <td><input type="number" class="form-control unit-cost" name="unitCost[]" oninput="calculateRowAmount(this)" required></td>
-                                        <td><input type="number" class="form-control amount" name="total_amount[]" readonly></td>
+                                        <td><input type="number" class="form-control qty_create" name="CreateQuantity[]" oninput="calculateRowAmount(this)" required></td>
+                                        <td><input type="number" class="form-control unit-cost_create" name="CreateUnitCost[]" oninput="calculateRowAmount(this)" required></td>
+                                        <td><input type="number" class="form-control amount_create" name="CreateTotal_amount[]" readonly></td>
                                         <td>
                                             <button type="button" class="btn btn-danger btn-sm removeRow"><i class="bi bi-trash"></i></button>
                                         </td>
@@ -159,9 +159,9 @@
                                 // Calculate row amount and update total
                                 window.calculateRowAmount = function (input) {
                                     let row = input.closest("tr");
-                                    let qty = row.querySelector(".qty").value || 0;
-                                    let unitCost = row.querySelector(".unit-cost").value || 0;
-                                    let amountField = row.querySelector(".amount");
+                                    let qty = row.querySelector(".qty_create").value || 0;
+                                    let unitCost = row.querySelector(".unit-cost_create").value || 0;
+                                    let amountField = row.querySelector(".amount_create");
                                     amountField.value = (qty * unitCost).toFixed(2);
                                     calculateTotalAmount();
                                 }
@@ -169,7 +169,7 @@
                                 // Calculate total amount of all rows
                                 function calculateTotalAmount() {
                                     let total = 0;
-                                    let amounts = document.querySelectorAll(".amount");
+                                    let amounts = document.querySelectorAll(".amount_create");
                                     amounts.forEach(amount => {
                                         total += parseFloat(amount.value) || 0;
                                     });
@@ -214,27 +214,27 @@
             let unitCosts = [];
             let total_amounts = [];
 
-            document.querySelectorAll("input[name='requisitionTitle[]']").forEach(input => {
+            document.querySelectorAll("input[name='CreateRequisitionTitle[]']").forEach(input => {
                 requisitionTitles.push(input.value);
             });
 
-            document.querySelectorAll("select[name='requisitionCategoryId[]']").forEach(select => {
+            document.querySelectorAll("select[name='CreateRequisitionCategoryId[]']").forEach(select => {
                 requisitionCategoryIds.push(select.value);
             });
 
-            document.querySelectorAll("select[name='uom[]']").forEach(select => {
+            document.querySelectorAll("select[name='CreateUom[]']").forEach(select => {
                 uoms.push(select.value);
             });
 
-            document.querySelectorAll("input[name='quantity[]']").forEach(input => {
+            document.querySelectorAll("input[name='CreateQuantity[]']").forEach(input => {
                 quantities.push(input.value);
             });
 
-            document.querySelectorAll("input[name='unitCost[]']").forEach(input => {
+            document.querySelectorAll("input[name='CreateUnitCost[]']").forEach(input => {
                 unitCosts.push(input.value);
             });
 
-            document.querySelectorAll("input[name='total_amount[]']").forEach(input => {
+            document.querySelectorAll("input[name='CreateTotal_amount[]']").forEach(input => {
                 total_amounts.push(input.value);
             });
 

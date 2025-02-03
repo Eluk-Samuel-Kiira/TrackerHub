@@ -103,7 +103,14 @@
                                 </div>
 
                                 <div class="col-sm-6 col-md-4">
+                                    <input class="form-control" name="projectCurrencyId" value="1" type="hidden" readonly="readonly">
+
                                     <div class="mb-10">
+                                        <label class="form-label" for="refrence">Client Reference</label><br>
+                                        <input name="clientReference" class="form-control" type="text"  />
+                                    </div>
+
+                                    <!-- <div class="mb-10">
                                         <label class="form-label">Currency</label>
                                         <div class="d-flex">
                                             <select id="currency" class="form-select form-select" name="projectCurrencyId" data-dropdown-parent="#add_project_modal" data-control="select2" data-allow-clear="true" data-close-on-select="false" data-placeholder="Select an option" data-allow-clear="true">
@@ -115,7 +122,8 @@
                                             <button type="button" class="btn btn-sm btn-secondary mx-2" data-bs-stacked-modal="#add_currency_modal">Add</button>
                                         </div>
                                         <div id="projectCurrencyId"></div>
-                                    </div>
+                                    </div> -->
+
                                 </div>
 
                                 <div class="col-sm-6 col-md-12">
@@ -133,61 +141,68 @@
                                         <div id="projectMemberIds"></div>
                                     </div>
                                 </div>
+
                                 <div class="col-sm-6 col-md-12">
                                     <div class="mb-10">
                                         <label class="form-label">Meeting Type</label><br>
                                         <div>
-                                            <input type="radio" id="onlineMeeting" name="meetingType" value="online" onclick="toggleMeetingType()" checked>
+                                            <input type="radio" id="onlineMeeting" name="meetingType" value="online" onclick="toggleMeetingFields()" checked>
                                             <label for="onlineMeeting">Online</label>
                                         </div>
                                         <div>
-                                            <input type="radio" id="physicalMeeting" name="meetingType" value="physical" onclick="toggleMeetingType()">
+                                            <input type="radio" id="physicalMeeting" name="meetingType" value="physical" onclick="toggleMeetingFields()">
                                             <label for="physicalMeeting">Physical</label>
                                         </div>
                                     </div>
 
                                     <div class="mb-10">
                                         <label class="form-label" for="meetingDate">Schedule Meeting</label><br>
-                                        <input id="meetingDate" name="meetingDate" class="form-control" type="text" placeholder="Select a date and time" />
+                                        <input id="meetingDate" name="meetingDate" class="form-control" type="datetime-local" />
                                     </div>
 
-                                    <!-- Location field, hidden by default -->
+                                    <!-- Meeting Location (Only for Physical) -->
                                     <div class="mb-10" id="locationField" style="display: none;">
                                         <label class="form-label" for="meetingLocation">Meeting Location</label><br>
                                         <input id="meetingLocation" name="meetingLocation" class="form-control" type="text" placeholder="Enter location" />
                                     </div>
-                                </div>
-                                <script>
-                                    function toggleMeetingType() {
-                                        const isPhysical = document.getElementById('physicalMeeting').checked;
-                                        const locationField = document.getElementById('locationField');
 
-                                        if (isPhysical) {
-                                            locationField.style.display = 'block'; // Show location input
-                                        } else {
-                                            locationField.style.display = 'none'; // Hide location input
-                                        }
+                                    <!-- Meeting Link (Only for Online) -->
+                                    <div class="mb-10" id="meetingLinkField">
+                                        <label class="form-label" for="meetingLink">Meeting Link</label><br>
+                                        <input id="meetingLink" name="meetingLink" class="form-control" type="url" placeholder="Enter meeting link" />
+                                    </div>
+                                </div>
+
+                                <script>
+                                    function toggleMeetingFields() {
+                                        const isPhysical = document.getElementById('physicalMeeting').checked;
+                                        document.getElementById('locationField').style.display = isPhysical ? 'block' : 'none';
+                                        document.getElementById('meetingLinkField').style.display = isPhysical ? 'none' : 'block';
                                     }
+
+                                    // Ensure correct initial state
+                                    document.addEventListener("DOMContentLoaded", toggleMeetingFields);
                                 </script>
+
 
 
                                 <div class="col-sm-6 col-md-4">
                                     <div class="mb-10">
-                                        <label class="form-label">Budget</label>
+                                        <label class="form-label">Budget (UGX)</label>
                                         <input type="text" class="form-control" name="projectBudget" placeholder="Budget">
                                         <div id="projectBudget"></div>
                                     </div>
                                 </div>
                                 <div class="col-sm-6 col-md-4">
                                     <div class="mb-10">
-                                        <label class="form-label">Budget Limit</label>
+                                        <label class="form-label">Budget Limit (UGX)</label>
                                         <input type="text" class="form-control" name="projectBudgetLimit" placeholder="Budget Limit">
                                         <div id="projectBudgetLimit"></div>
                                     </div>
                                 </div>
                                 <div class="col-sm-6 col-md-4">
                                     <div class="mb-10">
-                                        <label class="form-label">Project Cost</label>
+                                        <label class="form-label">Project Cost (UGX)</label>
                                         <input type="text" class="form-control" name="projectCost" placeholder="Project Cost">
                                         <div id="projectCost"></div>
                                     </div>

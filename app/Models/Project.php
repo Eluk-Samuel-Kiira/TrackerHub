@@ -20,6 +20,7 @@ class Project extends Model
         'projectDepartmentId',
         'projectClientId',
         'projectCost',
+        'clientReference',
         'isPaidOff',
         'projectBudget',
         'projectBudgetLimit',

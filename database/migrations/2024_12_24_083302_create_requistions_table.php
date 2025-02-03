@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('voucher')->nullable();
             $table->integer('isPaid')->enum('1', '0')->default(0);
             $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('paid_by')->nullable()->constrained('users')->cascadeOnDelete();
             $table->integer('isActive')->enum('1', '0')->default(1);
             $table->enum('status', ['pending', 'approved', 'denied'])->default('pending');
             $table->timestamps();

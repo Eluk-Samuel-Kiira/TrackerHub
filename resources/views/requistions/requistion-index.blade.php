@@ -63,13 +63,13 @@
     </div>
 
     <script>
-        function updateStatus(uniqueId, selectedStatus) {
+        function updateStatus(uniqueId, approvedAmount, selectedStatus) {
             const updateRoute = '/requisition-status/' + uniqueId;
 
             // SweetAlert confirmation
             Swal.fire({
                 title: 'Are you sure?',
-                text: `You are about to change the status to 'Paid'. This action may be irreversible.`,
+                text: `You are about to confirm payment of UGX ${approvedAmount},  it is irreversible. Make sure you have agreed with other stakeholders before proceeding.`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',

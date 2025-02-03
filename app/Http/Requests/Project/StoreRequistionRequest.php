@@ -24,7 +24,7 @@ class StoreRequistionRequest extends FormRequest
         return [
             'requistion_page' => 'nullable|string',
             'project_id' => 'required|integer',
-            'amount' => 'required',
+            'amount_create' => 'required',
             'description' => 'required|string|max:2555',
         ];
     }

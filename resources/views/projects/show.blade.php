@@ -113,19 +113,19 @@
                                     <!-- Client Section -->
                                     <div class="col-md-4 text-start">
                                         <h5 class="text-primary fw-bold text-uppercase mb-2">Client</h5>
-                                        <p class="text-gray-800 fs-5 mb-0">{{ $project->client->name }}</p>
+                                        <p class="text-gray-800 fs-5 mb-0">{{ $project->client->name ?? 'none'  }}</p>
                                     </div>
 
                                     <!-- Category Section -->
                                     <div class="col-md-4 text-start">
                                         <h5 class="text-primary fw-bold text-uppercase mb-2">Category</h5>
-                                        <p class="text-gray-800 fs-5 mb-0">{{ $project->projectCategory->name }}</p>
+                                        <p class="text-gray-800 fs-5 mb-0">{{ $project->projectCategory->name ?? 'none'  }}</p>
                                     </div>
 
                                     <!-- Department Section -->
                                     <div class="col-md-4 text-center">
-                                        <h5 class="text-primary fw-bold text-uppercase mb-2">Department</h5>
-                                        <p class="text-gray-800 fs-5 mb-0">{{ $project->department->name }}</p>
+                                        <h5 class="text-primary fw-bold text-uppercase mb-2">Client Reference</h5>
+                                        <p class="text-gray-800 fs-5 mb-0">{{ $project->clientReference ?? 'none' }}</p>
                                     </div>
                                 </div>
                             </div>
