@@ -52,75 +52,72 @@
                         </div>
                         
                         <div class="row g-9 mb-8">
-                            @foreach($requisitionItems as $key => $item)
-                                @if($item->requisition_id === $requisition->id)
-                                    <div class="col-md-12 mb-3" id="row_{{ $key }}">
-                                        <div class="row requisition-row" id="requisitionRow_{{ $key }}" data-requisition-id="{{ $item->requisition_id }}">
+                            @foreach($requisition->requisitionItems as  $key => $item)
+                                <div class="col-md-12 mb-3" id="row_{{ $key }}">
+                                    <div class="row requisition-row" id="requisitionRow_{{ $key }}" data-requisition-id="{{ $item->requisition_id }}">
 
-                                            <input type="hidden" class="form-control" name="requisitionItemId[]" value="{{ $item->id }}" required>
-                                            <!-- Requisition Title -->
-                                            <div class="col-md-2">
-                                                <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                                                    <span class="required">Requisition Title/Name</span>
-                                                </label>
-                                                <input type="text" class="form-control" name="requisitionTitle[]" value="{{ $item->title }}" required>
-                                            </div>
-                                            <!-- Category -->
-                                            <div class="col-md-2">
-                                                <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                                                    <span class="required">Category</span>
-                                                </label>
-                                                <select class="form-select" name="requisitionCategoryId[]" required>
-                                                    <option></option>
-                                                    @foreach ($departments as $department)
-                                                        <option value="{{ $department->id }}" {{ $item->category_id == $department->id ? 'selected' : '' }}>
-                                                            {{ $department->name }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <!-- UoM -->
-                                            <div class="col-md-2">
-                                                <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                                                    <span class="required">UoM</span>
-                                                </label>
-                                                <select class="form-select" name="uom[]" required>
-                                                    <option></option>
-                                                    @foreach ($uoms as $uom)
-                                                        <option value="{{ $uom->id }}" {{ $item->uom_id == $uom->id ? 'selected' : '' }}>
-                                                            {{ $uom->name }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <!-- Quantity -->
-                                            <div class="col-md-2">
-                                                <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                                                    <span class="required">Quantity</span>
-                                                </label>
-                                                <input type="number" class="form-control qty" name="quantity[]" value="{{ $item->quantity }}" oninput="calculateRowAmount(this)" required>
-                                            </div>
+                                        <input type="hidden" class="form-control" name="requisitionItemId[]" value="{{ $item->id }}" required>
+                                        <!-- Requisition Title -->
+                                        <div class="col-md-2">
+                                            <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+                                                <span class="required">Requisition Title/Name</span>
+                                            </label>
+                                            <input type="text" class="form-control" name="requisitionTitle[]" value="{{ $item->title }}" required>
+                                        </div>
+                                        <!-- Category -->
+                                        <div class="col-md-2">
+                                            <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+                                                <span class="required">Category</span>
+                                            </label>
+                                            <select class="form-select" name="requisitionCategoryId[]" required>
+                                                <option></option>
+                                                @foreach ($departments as $department)
+                                                    <option value="{{ $department->id }}" {{ $item->category_id == $department->id ? 'selected' : '' }}>
+                                                        {{ $department->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <!-- UoM -->
+                                        <div class="col-md-2">
+                                            <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+                                                <span class="required">UoM</span>
+                                            </label>
+                                            <select class="form-select" name="uom[]" required>
+                                                <option></option>
+                                                @foreach ($uoms as $uom)
+                                                    <option value="{{ $uom->id }}" {{ $item->uom_id == $uom->id ? 'selected' : '' }}>
+                                                        {{ $uom->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <!-- Quantity -->
+                                        <div class="col-md-2">
+                                            <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+                                                <span class="required">Quantity</span>
+                                            </label>
+                                            <input type="number" class="form-control qty" name="quantity[]" value="{{ $item->quantity }}" oninput="calculateRowAmount(this)" required>
+                                        </div>
 
-                                            <!-- Unit Cost -->
-                                            <div class="col-md-2">
-                                                <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                                                    <span class="required">Unit Cost</span>
-                                                </label>
-                                                <input type="number" class="form-control unit-cost" name="unitCost[]" value="{{ $item->unit_cost }}" oninput="calculateRowAmount(this)" required>
-                                            </div>
+                                        <!-- Unit Cost -->
+                                        <div class="col-md-2">
+                                            <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+                                                <span class="required">Unit Cost</span>
+                                            </label>
+                                            <input type="number" class="form-control unit-cost" name="unitCost[]" value="{{ $item->unit_cost }}" oninput="calculateRowAmount(this)" required>
+                                        </div>
 
-                                            <!-- Amount -->
-                                            <div class="col-md-2">
-                                                <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                                                    <span class="required">Amount</span>
-                                                </label>
-                                                <input type="number" class="form-control amount" name="total_amount[]" value="{{ $item->amount }}" readonly>
-                                            </div>
+                                        <!-- Amount -->
+                                        <div class="col-md-2">
+                                            <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+                                                <span class="required">Amount</span>
+                                            </label>
+                                            <input type="number" class="form-control amount" name="total_amount[]" value="{{ $item->amount }}" readonly>
                                         </div>
                                     </div>
-                                @endif
+                                </div>
                             @endforeach
-                            
                         </div>
                         
                         <script>

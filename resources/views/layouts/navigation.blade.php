@@ -132,7 +132,7 @@
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
                                     </span>
-                                    <span class="menu-title">{{__('Requisition Index')}}</span>
+                                    <span class="menu-title">{{__('Requisitions')}}</span>
                                 </a>
                             </div>
                         </div>
